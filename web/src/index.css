@@ -18,8 +18,8 @@
   --color-line: #e8e3dc;
   --color-line-soft: #f0ede8;
 
-  --color-navy: #1b3d6e;
-  --color-navy-dark: #142e54;
+  --color-navy: #012856; /* brand navy, from the logo */
+  --color-navy-dark: #001c3f;
   --color-navy-50: #eef2f8;
   --color-navy-100: #e3eaf5;
   --color-navy-200: #c5d5ec;

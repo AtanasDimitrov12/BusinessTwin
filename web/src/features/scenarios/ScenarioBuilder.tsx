@@ -79,9 +79,10 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
               <div className="space-y-1">
                 <span className="block text-sm font-semibold">Look ahead</span>
                 <Segmented
+                  fullWidth
                   label="Time horizon"
                   value={String(form.horizonMonths)}
-                  options={horizonOptions.map((m) => ({ value: String(m), label: `${m} months` }))}
+                  options={horizonOptions.map((m) => ({ value: String(m), label: `${m} mo` }))}
                   onChange={(v) =>
                     setForm((f) => ({
                       ...f,

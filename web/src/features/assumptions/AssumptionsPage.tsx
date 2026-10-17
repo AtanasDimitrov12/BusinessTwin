@@ -1,6 +1,6 @@
 import { Card, PageHeader, Spinner } from '../../components/ui/primitives'
 import { SourceBadge } from '../../components/ui/SourceBadge'
-import { formatCount, formatCountPrecise, formatEuro, formatEuroWhole, formatPercent } from '../../lib/format'
+import { formatCount, formatEuro, formatEuroWhole, formatHours, formatPercent } from '../../lib/format'
 import { useBaseline, useBaselineSummary } from '../baseline/baseline'
 import { baselineFields, formatField } from '../baseline/fields'
 import { useBusiness } from '../business/business'
@@ -20,7 +20,7 @@ export function AssumptionsPage() {
   if (!b || !s) return null
 
   const calculated = [
-    { label: 'Visits possible per month', value: formatCount(s.capacity), method: `${formatCountPrecise(b.staffHoursPerMonth)} staff hours ÷ ${formatCountPrecise(b.serviceTimeHours)} h per visit` },
+    { label: 'Visits possible per month', value: formatCount(s.capacity), method: `${formatHours(b.staffHoursPerMonth)} staff hours ÷ ${formatHours(b.serviceTimeHours)} h per visit` },
     { label: 'Visits served', value: formatCount(s.servicesDelivered), method: 'The smaller of visits wanted and visits possible' },
     { label: 'Staff busy', value: formatPercent(s.utilisation), method: 'Visits served ÷ visits possible' },
     { label: 'Sales', value: formatEuroWhole(s.revenue), method: `Visits served × ${formatEuro(b.averagePrice)}` },

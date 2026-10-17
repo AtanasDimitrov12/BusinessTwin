@@ -22,7 +22,7 @@ export function ResultHeadline({ result, caseKey }: { result: SimulationResultDt
         {formatEuroDelta(diff)}
       </div>
       <p className={`mt-2 text-sm font-semibold ${negative ? 'text-bad' : 'text-good-dark'}`}>
-        {negative ? 'less' : 'more'} in total than without this decision ({formatEuroWhole(result.baselineSummary.totalResult)})
+        {negative ? 'less' : 'more'} than keeping things as they are (which earns {formatEuroWhole(result.baselineSummary.totalResult)} in this period)
       </p>
       <p className="mt-3 text-sm text-muted">
         Range: <strong className="font-mono text-ink">{formatEuroDelta(pess)}</strong> if it goes badly, up to{' '}
@@ -39,6 +39,7 @@ export function KeyFacts({ result, horizonMonths }: { result: CaseResultDto; hor
       <MetricCard
         label="Catches up"
         value={d.breakEvenMonth ? `Month ${d.breakEvenMonth}` : 'Not yet'}
+        textValue
         sub={d.breakEvenMonth ? 'first month at least as good as today' : `not within ${horizonMonths} months`}
       />
       <MetricCard

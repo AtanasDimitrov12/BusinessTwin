@@ -2,7 +2,7 @@
 
 Business Twin is a web-based decision simulator that helps owners of small service businesses (starting with salons and barbershops) test a decision such as hiring a worker, changing a price or spending more on marketing before they make it. The owner enters today's monthly figures, adds changes, and compares sales, costs, monthly result, cash and staff capacity month by month in a pessimistic, expected and optimistic case.
 
-Status: proof of concept in progress. Done: scenario engine with reference tests, sign-in, business and baseline, baseline dashboard. Next: scenarios and changes, results comparison.
+Status: proof of concept working end to end: landing page, sign-in, salon setup, baseline dashboard, decision builder with live three-case results, outcome and comparison views. Next: usability testing.
 
 Stack: React + TypeScript (Vite) · ASP.NET Core Web API (C#, .NET 10) · PostgreSQL · REST/JSON · EU hosting.
 

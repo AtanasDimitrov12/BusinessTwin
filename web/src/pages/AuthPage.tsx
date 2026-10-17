@@ -35,7 +35,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
     <div className="flex min-h-screen bg-canvas">
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-[3] lg:px-20">
         <div className="mx-auto w-full max-w-md">
-          <Logo />
+          <Logo size={42} />
           <h1 className="mt-12 font-display text-4xl font-semibold leading-tight">
             {mode === 'signIn' ? 'Welcome back' : 'Test your first decision'}
           </h1>

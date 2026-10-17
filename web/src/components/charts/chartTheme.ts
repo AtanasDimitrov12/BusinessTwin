@@ -1,6 +1,6 @@
 /** Chart colours, matching the design tokens in index.css. */
 export const chartColors = {
-  navy: '#1b3d6e',
+  navy: '#012856',
   navySoft: '#c5d5ec',
   amber: '#c8652a',
   good: '#2d7a4f',

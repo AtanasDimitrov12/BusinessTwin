@@ -61,7 +61,7 @@ function CompareTable({ plans, results }: { plans: ScenarioDto[]; results: (Simu
     {
       label: 'Range (pessimistic → optimistic)',
       render: (r) => (
-        <span className="text-xs">
+        <span>
           {formatEuroDelta(caseOf(r, 'pessimistic').difference.totalResult)} → {formatEuroDelta(caseOf(r, 'optimistic').difference.totalResult)}
         </span>
       ),
@@ -70,7 +70,7 @@ function CompareTable({ plans, results }: { plans: ScenarioDto[]; results: (Simu
       label: 'Catches up with today',
       render: (r) => {
         const m = caseOf(r, 'expected').drivers.breakEvenMonth
-        return m ? `Month ${m}` : <span className="text-muted">Not within {r.horizonMonths} months</span>
+        return <span className="font-sans">{m ? `Month ${m}` : <span className="text-muted">Not within {r.horizonMonths} months</span>}</span>
       },
     },
     {

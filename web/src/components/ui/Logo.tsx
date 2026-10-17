@@ -1,19 +1,22 @@
-import { Layers } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-export function Logo({ to = '/', inverted = false, compact = false }: { to?: string; inverted?: boolean; compact?: boolean }) {
+// Brand assets live in public/brand/, trimmed from "public/Business Twin mirrored geometric logo.png".
+const FULL = { src: '/brand/logo.png', width: 850, height: 160 } // wordmark, 5.31 : 1
+const MARK = { src: '/brand/logo-mark.png', width: 160, height: 160 }
+
+/** The Business Twin logo. `compact` shows only the mark. Height is set by `size` (px). */
+export function Logo({ to = '/', compact = false, size = 34 }: { to?: string; compact?: boolean; size?: number }) {
+  const asset = compact ? MARK : FULL
   return (
-    <Link to={to} className="flex items-center gap-2.5" aria-label="Business Twin home">
-      <span
-        className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${inverted ? 'bg-white text-navy' : 'bg-navy text-white'}`}
-      >
-        <Layers size={18} strokeWidth={2} aria-hidden />
-      </span>
-      {!compact && (
-        <span className={`font-display text-lg font-semibold tracking-tight ${inverted ? 'text-white' : 'text-navy'}`}>
-          Business Twin
-        </span>
-      )}
+    <Link to={to} className="inline-flex shrink-0 items-center" aria-label="Business Twin home">
+      <img
+        src={asset.src}
+        alt="Business Twin"
+        width={Math.round((asset.width / asset.height) * size)}
+        height={size}
+        style={{ height: size, width: 'auto' }}
+        decoding="async"
+      />
     </Link>
   )
 }

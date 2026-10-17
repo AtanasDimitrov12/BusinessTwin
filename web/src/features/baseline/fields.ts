@@ -1,5 +1,5 @@
 import type { BaselineInput } from '../../api/client'
-import { formatCount, formatCountPrecise, formatEuro } from '../../lib/format'
+import { formatCount, formatEuro, formatHours } from '../../lib/format'
 
 export type BaselineField = Exclude<keyof BaselineInput, 'sources'>
 export type WizardStep = 'customers' | 'time' | 'costs'
@@ -30,6 +30,6 @@ export const baselineFields: FieldDefinition[] = [
 
 export function formatField(f: FieldDefinition, value: string): string {
   if (f.kind === 'money') return formatEuro(value)
-  if (f.kind === 'hours') return `${formatCountPrecise(value)} ${f.suffix === 'hours' ? 'h' : 'h / month'}`
+  if (f.kind === 'hours') return `${formatHours(value)} ${f.suffix === 'hours' ? 'h' : 'h / month'}`
   return formatCount(value)
 }

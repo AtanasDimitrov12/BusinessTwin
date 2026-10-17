@@ -24,7 +24,8 @@ import { Badge, Eyebrow } from '../components/ui/primitives'
 import { SourceBadge } from '../components/ui/SourceBadge'
 import { changeMeta } from '../features/scenarios/changeForm'
 
-// All figures on this page are an illustrative sample salon, labelled as such. Nothing here is calculated in the browser.
+// Example figures on this page are real scenario-engine output for labelled sample salons, pasted in as text.
+// Nothing here is calculated in the browser.
 
 export function LandingPage() {
   return (
@@ -123,72 +124,72 @@ function Hero() {
   )
 }
 
-/** Product preview built from real UI pieces, filled with a labelled sample. */
+/**
+ * Product preview built from real UI pieces. The figures are real engine output for the sample salon
+ * (420 visits at €42, hire 120 h at €3,200 + €400/month campaign, 12 months), not invented marketing numbers.
+ */
 function HeroVisual() {
-  const bars = [
-    { m: 1, h: 62, neg: true },
-    { m: 2, h: 48, neg: true },
-    { m: 3, h: 30, neg: true },
-    { m: 4, h: 10, neg: true },
-    { m: 5, h: 14, neg: false },
-    { m: 6, h: 22, neg: false },
+  const months = [
+    { m: 1, v: '−€2,002', h: 100 },
+    { m: 2, v: '−€1,483', h: 74 },
+    { m: 3, v: '−€965', h: 48 },
+    { m: 4, v: '−€446', h: 22 },
+    { m: 5, v: '−€446', h: 22 },
+    { m: 6, v: '−€446', h: 22 },
   ]
   return (
-    <div className="relative animate-rise [animation-delay:120ms]" aria-label="Example of a decision result for a sample salon">
+    <div className="relative mb-10 mt-8 animate-rise [animation-delay:120ms] lg:mb-0" aria-label="Example result for a sample salon">
       <div className="rounded-3xl border border-line bg-surface p-5 shadow-lift sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-2">
           <div>
             <div className="text-xs font-semibold text-muted">Sample salon</div>
-            <div className="font-display text-lg font-semibold">Hire a fifth stylist</div>
+            <div className="font-display text-lg font-semibold">Hire a stylist + local campaign</div>
           </div>
           <Badge tone="navy">12 months</Badge>
         </div>
-        <div className="rounded-2xl border border-good-200 bg-good-50 p-4">
+        <div className="rounded-2xl border border-bad-200 bg-bad-50 p-4">
           <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">Expected case</div>
-          <div className="mt-1 font-mono text-3xl text-good-dark">+€4,380</div>
-          <div className="text-xs font-semibold text-good-dark">more over the year than not hiring</div>
+          <div className="mt-1 font-mono text-3xl text-bad">−€8,467</div>
+          <div className="text-xs font-semibold text-bad">less over the year than not doing it</div>
           <div className="mt-3">
             <div className="relative h-2 rounded-full bg-white">
-              <div className="absolute inset-y-0 left-[12%] right-[18%] rounded-full bg-gradient-to-r from-bad via-navy to-good opacity-80" />
-              <div className="absolute -top-1 left-[58%] size-4 rounded-full border-2 border-white bg-navy shadow" />
+              <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-bad via-navy to-good opacity-75" />
+              <div className="absolute -top-1 left-[64%] size-4 -translate-x-1/2 rounded-full border-2 border-white bg-navy shadow" />
             </div>
             <div className="mt-1.5 flex justify-between font-mono text-[10px] text-muted">
-              <span>Pessimistic −€6,120</span>
-              <span>Optimistic +€9,950</span>
+              <span>Pessimistic −€33,102</span>
+              <span>Optimistic +€5,270</span>
             </div>
           </div>
         </div>
         <div className="mt-4">
-          <div className="mb-2 text-xs font-semibold text-muted">Monthly result vs today</div>
-          <div className="flex h-24 items-center gap-2">
-            {bars.map((b) => (
-              <div key={b.m} className="flex h-full flex-1 flex-col justify-center">
-                <div className="flex h-1/2 items-end">{!b.neg && <div className="w-full rounded-t-md bg-good/80" style={{ height: `${b.h * 2}%` }} />}</div>
-                <div className="h-px bg-line" />
-                <div className="flex h-1/2 items-start">{b.neg && <div className="w-full rounded-b-md bg-bad/75" style={{ height: `${b.h}%` }} />}</div>
+          <div className="mb-2 text-xs font-semibold text-muted">Each month vs today (expected)</div>
+          <div className="flex h-20 items-start gap-2 border-t border-line pt-px">
+            {months.map((b) => (
+              <div key={b.m} className="flex h-full flex-1 items-start" title={`Month ${b.m}: ${b.v}`}>
+                <div className="w-full rounded-b-md bg-bad/75" style={{ height: `${b.h}%` }} />
               </div>
             ))}
           </div>
           <div className="mt-1 flex gap-2 font-mono text-[10px] text-faint">
-            {bars.map((b) => (
+            {months.map((b) => (
               <span key={b.m} className="flex-1 text-center">M{b.m}</span>
             ))}
           </div>
         </div>
+        <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-dark">
+          It only pays off if most of the new stylist’s customers are <strong>new</strong> to the salon. Worth knowing before you sign a contract.
+        </p>
       </div>
-      <div className="absolute -bottom-6 -left-4 max-w-[230px] rotate-[-2deg] rounded-2xl border border-bad-200 bg-surface p-3 shadow-lift sm:-left-8">
-        <div className="flex items-start gap-2 text-xs">
-          <AlertTriangle size={16} className="mt-0.5 shrink-0 text-bad" aria-hidden />
-          <span>
-            <strong className="text-bad">Cash warning</strong>
-            <br />
-            <span className="text-muted">Pessimistic case: below zero in month 3.</span>
-          </span>
+      <div className="absolute -bottom-12 -left-3 rotate-[-2deg] rounded-2xl border border-line bg-surface px-4 py-2.5 shadow-lift sm:-left-8">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-muted">To break even</div>
+        <div className="text-base font-semibold text-navy">
+          <span className="font-mono">100</span> new visits a month
         </div>
       </div>
-      <div className="absolute -right-3 -top-5 rotate-[3deg] rounded-2xl border border-line bg-surface px-3 py-2 shadow-lift sm:-right-6">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-muted">Catches up</div>
-        <div className="font-mono text-lg text-navy">Month 5</div>
+      <div className="absolute -top-9 right-4 rotate-[2deg] rounded-2xl border border-good-200 bg-surface px-4 py-2.5 shadow-lift sm:-right-4">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-muted">Optimistic case</div>
+        <div className="text-base font-semibold text-good-dark">Catches up in month 3</div>
       </div>
     </div>
   )
@@ -471,14 +472,18 @@ function Story() {
             <div className="font-semibold">Running total vs not hiring</div>
             <Badge tone="neutral">Sample salon</Badge>
           </div>
+          <p className="mb-4 text-xs text-muted">
+            4 stylists, 400 visits at €30. The new stylist costs €2,400 a month and grows to 150 appointments in five months; 60% are new to the
+            salon.
+          </p>
           <ol className="space-y-2">
             {[
-              ['Month 1', '−€2,410', 82, true],
-              ['Month 2', '−€4,250', 100, true],
-              ['Month 3', '−€5,180', 74, true],
-              ['Month 4', '−€5,300', 40, true],
-              ['Month 5', '−€4,920', 22, true],
-              ['Month 6', '−€4,150', 12, true],
+              ['Month 1', '−€1,914', 40],
+              ['Month 2', '−€3,342', 71],
+              ['Month 3', '−€4,284', 90],
+              ['Month 4', '−€4,740', 100],
+              ['Month 5', '−€4,710', 99],
+              ['Month 6', '−€4,680', 99],
             ].map(([m, v, w]) => (
               <li key={m as string} className="grid grid-cols-[4.5rem_1fr_5rem] items-center gap-3 text-sm">
                 <span className="text-muted">{m}</span>
@@ -490,7 +495,7 @@ function Story() {
             ))}
           </ol>
           <p className="mt-5 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-dark">
-            The monthly result catches up in <strong>month 4</strong>, but the salon is still <strong>€4,150 behind</strong> after six months. Both
+            The monthly result catches up in <strong>month 5</strong>, but the salon is still <strong>€4,680 behind</strong> after six months. Both
             facts matter for the decision.
           </p>
         </div>

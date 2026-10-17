@@ -16,7 +16,7 @@ const badgeTones: Record<Tone, string> = {
 
 export function Badge({ children, tone = 'neutral', className = '' }: { children: ReactNode; tone?: Tone; className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${badgeTones[tone]} ${className}`}>
+    <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${badgeTones[tone]} ${className}`}>
       {children}
     </span>
   )
@@ -71,6 +71,7 @@ export function MetricCard({
   sub,
   accent = false,
   badge,
+  textValue = false,
 }: {
   label: string
   value: ReactNode
@@ -79,6 +80,8 @@ export function MetricCard({
   sub?: ReactNode
   accent?: boolean
   badge?: ReactNode
+  /** The value is words ("Not yet"), not a number: show it in the display font. */
+  textValue?: boolean
 }) {
   return (
     <Card className={`p-4 ${accent ? 'ring-2 ring-navy/20' : ''}`}>
@@ -86,7 +89,13 @@ export function MetricCard({
         <Eyebrow className="text-muted">{label}</Eyebrow>
         {badge}
       </div>
-      <div className="font-mono text-[1.55rem] font-medium leading-none tracking-tight text-ink">{value}</div>
+      <div
+        className={`leading-none tracking-tight text-ink ${
+          textValue ? 'font-display text-[1.4rem] font-semibold' : 'font-mono text-[1.55rem] font-medium'
+        }`}
+      >
+        {value}
+      </div>
       {delta && <div className={`mt-1.5 text-xs font-semibold ${deltaTones[deltaTone]}`}>{delta}</div>}
       {sub && <div className="mt-1 text-xs text-muted">{sub}</div>}
     </Card>
@@ -98,14 +107,21 @@ export function Segmented<T extends string>({
   value,
   onChange,
   label,
+  fullWidth = false,
 }: {
   options: { value: T; label: ReactNode }[]
   value: T
   onChange: (value: T) => void
   label: string
+  fullWidth?: boolean
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex flex-wrap gap-1 rounded-2xl bg-line-soft p-1">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={`gap-1 rounded-2xl bg-line-soft p-1 ${fullWidth ? 'grid' : 'inline-flex flex-wrap'}`}
+      style={fullWidth ? { gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` } : undefined}
+    >
       {options.map((o) => (
         <button
           key={o.value}
@@ -113,7 +129,7 @@ export function Segmented<T extends string>({
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+          className={`rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors ${
             value === o.value ? 'bg-surface text-navy shadow-sm' : 'text-muted hover:text-ink'
           }`}
         >

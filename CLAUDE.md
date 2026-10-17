@@ -16,8 +16,9 @@ The motivating example (Design Challenge): a salon with 4 workers at ~100 custom
 
 - Done (outside this repo): project plan, design challenge, gap analysis, BPMN to-be process (v2), tech stack research, clickable prototype, design document (17 Oct 2026).
 - **Web PoC in progress** (started 17 Oct 2026), built against `docs/architecture.md`. See README for how to run it.
-  - Done: repo layout, scenario engine (all components, hire/price/marketing, three cases, drivers) with reference tests; API with Identity cookie auth, `OwnerScope` ownership guard, business + baseline endpoints, baseline summary; EF Core schema for all tables + initial migration; Docker Compose; CI; web app with sign-in, business setup, baseline form (sample values marked) and baseline dashboard.
-  - Next: scenario + change endpoints (map `changes`/`estimates` rows to engine changes), results endpoint, scenario builder and three-case comparison view with Recharts, save plan.
+  - Done: scenario engine (hire with ramp-up, price as % demand change, marketing; three cases; drivers) with reference tests; API with Identity cookie auth, `OwnerScope` guard, business/baseline/scenario endpoints, results and live `simulate` endpoint; EF Core schema + migration; Docker Compose; CI.
+  - Web app (redesigned after the Figma Make prototype, logo in `web/public/brand/`): public landing page, sign-in, 5-step setup wizard, baseline dashboard with business map, decision builder with live three-case preview, outcome page (charts, waterfall, cash warning, month table), plans comparison, assumptions page. Design rationale: `docs/ux-design-research.md`.
+  - Next: usability test with salon owners; account deletion endpoint; adviser read-only sharing (later).
 - Next research step: verify the calculation model with hand-worked reference cases, which become the engine's unit tests.
 
 ## Tech stack (decided)
@@ -86,4 +87,5 @@ Open question: the research may show it is better to build the **hire decision f
 - `docs/architecture.md` – architecture decisions, C4 views, components, data model, security
 - `docs/calculation-model.md` – inputs, formulas and indicators of the scenario engine
 - `docs/process-bpmn.md` – the to-be decision process and how it maps to screens and endpoints
+- `docs/ux-design-research.md` – UI techniques researched for the web app, the visual system, and references
 - `docs/bpmn/Business_Twin_BPMN_v2.bpmn` – BPMN source file

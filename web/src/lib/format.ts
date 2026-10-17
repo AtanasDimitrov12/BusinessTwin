@@ -11,6 +11,7 @@ const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' 
 const euroWhole = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
 const count = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 })
 const countPrecise = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+const hours = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 })
 const percent = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 })
 
 const fmt = (f: Intl.NumberFormat, value: string) => f.format(value.trim() as DecimalString)
@@ -34,6 +35,8 @@ export const formatCountPrecise = (value: string) => fmt(countPrecise, value)
 /** +12 / −12, for differences in visits */
 export const formatCountDelta = (value: string) =>
   `${isNegative(value) ? '−' : isPositive(value) ? '+' : ''}${fmt(count, abs(value))}`
+/** 1.25 (hours, up to two decimals) */
+export const formatHours = (value: string) => fmt(hours, value)
 /** A fraction from the API (0.83) as 83% */
 export const formatPercent = (value: string) => fmt(percent, value)
 /** A percentage the owner entered (−5) as −5% */

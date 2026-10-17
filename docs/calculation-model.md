@@ -23,8 +23,8 @@ Each field has a source label: `entered` or `estimated` (and `sample` until repl
 
 | Type | Parameters | Uncertain (three values) |
 |---|---|---|
-| Hire | start month, working hours, full employer cost per month | expected customers per month for the new worker, share of them that are new |
-| Price | new price, start month | change in demand after the price change |
+| Hire | start month, working hours, full employer cost per month, ramp-up months | customers per month for the new worker at full speed, share of them that are new (%) |
+| Price | new price, start month | change in visits after the price change (% of baseline visits) |
 | Marketing | campaign cost (per month), start month | expected new customers |
 
 Uncertain fields get a pessimistic, expected and optimistic value. Employer costs are entered by the owner as the full cost; the Dutch 26–40% on top of gross salary range is only guidance.
@@ -34,7 +34,7 @@ Uncertain fields get a pessimistic, expected and optimistic value. Employer cost
 | Quantity | Calculation |
 |---|---|
 | Capacity (slots) | productive staff hours ÷ average service time |
-| Demand (visits) | baseline visits + new customers from a hire (expected customers × share that are new) + new customers from marketing ± demand change after a price change |
+| Demand (visits) | baseline visits + new customers from a hire (customers × share that are new × ramp factor) + new customers from marketing + baseline visits × demand change % after a price change |
 | Services delivered | min(demand, capacity); the difference is unserved demand or unused capacity |
 | Utilisation | services delivered ÷ capacity |
 | Revenue | services delivered × average price |
@@ -69,7 +69,9 @@ Made while building `BusinessTwin.Engine`, covered by `ReferenceCaseTests`:
 
 - Months are numbered from 1; a change applies from its start month onward. Horizon is 1 to 36 months, and every change must start within it.
 - Capacity is pooled: total staff hours (baseline + hires) ÷ service time. Moved customers therefore change nothing in the totals; only the new share of a hire's customers adds demand.
-- The price change's demand effect is entered in **visits per month** (negative for a drop). If several price changes are stacked, the latest active one sets both the price and the demand effect.
+- The price change's demand effect is entered as a **percentage of baseline visits** (−5 = 5% fewer visits), as in the prototype; owners think in percentages more easily than in visits. If several price changes are stacked, the latest active one sets both the price and the demand effect.
+- **Hire ramp-up**: wages and hours start in the start month, but the worker's customers grow in equal steps over the ramp-up months (ramp factor 1/n, 2/n … 1; 1 month = full from the start). This models the design challenge, where a new stylist sees fewer customers at first. Reference case: `Hire_ramp_up_grows_new_customers_and_reaches_break_even`.
+- The share of a hire's customers that is new is entered as a percentage in the API and converted to a fraction for the engine.
 - Demand is never below zero.
 - Utilisation is 0 when capacity is 0.
 - Driver split (summed over the horizon, adds up exactly to the total difference in monthly result):

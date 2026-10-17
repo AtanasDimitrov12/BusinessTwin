@@ -101,6 +101,14 @@ Decisions made while setting up the code, with their reason.
 | Migrations run on start-up only when `Database:MigrateOnStartup` is true (development) | Convenient locally; production applies migrations deliberately |
 | Connection string only from configuration (env var `ConnectionStrings__Default`, user-secrets locally, `.env` for Compose) | No secrets in the repo. Production connection strings must use `SSL Mode=Require` (encrypted API ↔ DB link) |
 | `react-router-dom` added for routing in the SPA | Not in the original stack list; it is the conventional choice and the app has several screens |
+| Scenario endpoints: CRUD on `/api/scenarios`, `GET /api/scenarios/{id}/results`, and `POST /api/scenarios/simulate` (runs unsaved changes, nothing stored) | The builder shows a live preview while the owner types, without saving drafts and without calculating in the browser (debounced, ~450 ms) |
+| Results DTO includes every derived figure the screens need: totals, scenario − baseline differences, per-month differences, waterfall bar positions | The browser never subtracts or adds money; it only formats strings and draws |
+| Charts: decimal strings are converted to numbers **only for chart geometry** (`toPlot`); tooltips and labels show the API's exact strings | Recharts needs numbers to position bars; the displayed values stay exact |
+| Changes stored flat: certain parameters in `changes.parameters` (jsonb), uncertain ones as `estimates` rows (`customersPerMonth`, `newCustomerSharePercent`, `demandChangePercent`, `newCustomersPerMonth`) | As designed; one `ChangeDto` with nullable type-specific fields keeps OpenAPI and TS types simple |
+| Frontend styling: Tailwind CSS v4 with design tokens in `web/src/index.css`, palette and type from the Figma Make prototype, navy from the logo; light theme only | Same visual language as the prototype the owner tested; tokens keep colours consistent across UI and charts |
+| Fonts self-hosted via `@fontsource`; icons from `lucide-react` | No requests to Google Fonts (GDPR, see `ux-design-research.md`) |
+| Public landing page at `/`, sign-in at `/login` and `/register`, owner area under `/app` (lazy-loaded) | Explains the product before sign-up; the landing page does not download the charting library |
+| Landing-page example figures are real engine output for a labelled sample salon, pasted in as text | No invented marketing numbers; nothing is calculated in the browser |
 
 ## Open design questions
 
