@@ -63,6 +63,25 @@ For each scenario the Driver Explainer splits the difference with the baseline i
 
 The clickable prototype uses a salon serving 400 customers with 480 available slots (83% utilisation). The new stylist has 50 appointments in month 1, of which 20 are new and 30 move from colleagues. The hire pays for itself in month 5 (monthly result catches up with the baseline), but the business is still €3,060 behind the baseline in total after month 6. Use proper hand-worked reference cases for tests rather than these figures, since the full prototype inputs are not recorded here.
 
+## Implementation choices (engine v1)
+
+Made while building `BusinessTwin.Engine`, covered by `ReferenceCaseTests`:
+
+- Months are numbered from 1; a change applies from its start month onward. Horizon is 1 to 36 months, and every change must start within it.
+- Capacity is pooled: total staff hours (baseline + hires) ÷ service time. Moved customers therefore change nothing in the totals; only the new share of a hire's customers adds demand.
+- The price change's demand effect is entered in **visits per month** (negative for a drop). If several price changes are stacked, the latest active one sets both the price and the demand effect.
+- Demand is never below zero.
+- Utilisation is 0 when capacity is 0.
+- Driver split (summed over the horizon, adds up exactly to the total difference in monthly result):
+  - extra visits contribution = Σ (served in scenario − served in baseline) × baseline contribution per visit
+  - price effect = Σ served in scenario × (scenario price − baseline price)
+  - added wage costs = − Σ employer cost of active hires
+  - marketing costs = − Σ cost of active campaigns
+  - Revenue lost to unserved demand (Σ unserved × price) is reported as extra information and is not part of the sum.
+- Break-even new visits = added monthly fixed cost of all changes ÷ (final scenario price − cost per service); empty when there is no added fixed cost.
+- Break-even month and cumulative gap are counted from the earliest change's start month.
+- No rounding inside the engine.
+
 ## Simplifications in v1 (open questions)
 
 - Revenue and costs are paid in the month they occur; no taxes.

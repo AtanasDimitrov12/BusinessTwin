@@ -15,7 +15,9 @@ The motivating example (Design Challenge): a salon with 4 workers at ~100 custom
 ## Status
 
 - Done (outside this repo): project plan, design challenge, gap analysis, BPMN to-be process (v2), tech stack research, clickable prototype, design document (17 Oct 2026).
-- **Not built yet: the web PoC. This repo starts empty.** Build it against the design in `docs/architecture.md`.
+- **Web PoC in progress** (started 17 Oct 2026), built against `docs/architecture.md`. See README for how to run it.
+  - Done: repo layout, scenario engine (all components, hire/price/marketing, three cases, drivers) with reference tests; API with Identity cookie auth, `OwnerScope` ownership guard, business + baseline endpoints, baseline summary; EF Core schema for all tables + initial migration; Docker Compose; CI; web app with sign-in, business setup, baseline form (sample values marked) and baseline dashboard.
+  - Next: scenario + change endpoints (map `changes`/`estimates` rows to engine changes), results endpoint, scenario builder and three-case comparison view with Recharts, save plan.
 - Next research step: verify the calculation model with hand-worked reference cases, which become the engine's unit tests.
 
 ## Tech stack (decided)
@@ -37,7 +39,7 @@ Runner-up backend was NestJS; it is not being used.
 ```
 web/                     React + TS SPA (Vite)
 api/
-  BusinessTwin.sln
+  BusinessTwin.slnx
   BusinessTwin.Api/      ASP.NET Core Web API: endpoints, auth, validation, EF Core
   BusinessTwin.Engine/   Scenario engine class library: pure C#, NO web or DB code
   BusinessTwin.Engine.Tests/  Unit tests against hand-worked reference cases

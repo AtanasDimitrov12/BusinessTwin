@@ -82,6 +82,26 @@ Mapped to OWASP Top 10:2025:
 
 Privacy: collect only the figures the model needs, fictional/anonymised data in tests, owner can delete their business with all scenarios, and the UI states that results are estimates, not financial advice.
 
+## Implementation decisions (PoC build, 17 Oct 2026)
+
+Decisions made while setting up the code, with their reason.
+
+| Decision | Why |
+|---|---|
+| .NET 10 (LTS), solution file `BusinessTwin.slnx` | Current LTS release; `.slnx` is the SDK's default solution format |
+| Decimals travel as JSON **strings** (`"1234.50"`), via `DecimalStringConverter`; OpenAPI describes them as `string`, format `decimal` | JSON numbers become binary floats in JavaScript. Strings keep money exact, and the generated TS type (`string`) stops accidental arithmetic. The web app formats them with `Intl.NumberFormat`, which formats numeric strings exactly |
+| Engine values are exact, with no rounding inside the engine | Rounding is a display concern; rounding in between would let cents drift over months × cases |
+| OpenAPI document written to `api/openapi/openapi.json` on every build; web types generated with `openapi-typescript`, calls via `openapi-fetch` | Contract-first without running the API; CI fails when either file is stale |
+| Auth: ASP.NET Core Identity API endpoints under `/api/auth`, cookie mode (`login?useCookies=true`), cookie `bt_session` HttpOnly, SameSite=Strict, Secure outside development | No custom password code; SameSite=Strict plus JSON-only endpoints covers CSRF for a same-origin SPA |
+| In development Vite proxies `/api` to the API | Same origin, so the cookie stays first-party and CORS is not needed. CORS is only enabled when `Cors:AllowedOrigins` is set |
+| Ownership guard = `OwnerScope` service; controllers read owner data only through its pre-filtered queries | One place enforces the ownership rule; another owner's data returns 404 |
+| Snake_case tables and columns (`EFCore.NamingConventions`), Identity tables renamed (`users`, `roles`, `user_claims` …) | Matches the data model names and PostgreSQL conventions |
+| Change parameters (`changes.parameters`) and baseline source labels (`baselines.input_sources`) stored as `jsonb` | As designed: new change types need no new table |
+| Money columns `numeric(14,2)`; quantities, service time and estimates `numeric(12,4)` | Exact storage; estimates include shares such as 0.35 |
+| Migrations run on start-up only when `Database:MigrateOnStartup` is true (development) | Convenient locally; production applies migrations deliberately |
+| Connection string only from configuration (env var `ConnectionStrings__Default`, user-secrets locally, `.env` for Compose) | No secrets in the repo. Production connection strings must use `SSL Mode=Require` (encrypted API ↔ DB link) |
+| `react-router-dom` added for routing in the SPA | Not in the original stack list; it is the conventional choice and the app has several screens |
+
 ## Open design questions
 
 - Build hire first, then price and marketing? Follow research and usability-test evidence.
