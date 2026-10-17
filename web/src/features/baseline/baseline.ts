@@ -21,7 +21,11 @@ export function useSaveBaseline() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: BaselineInput) => unwrap(await api.PUT('/api/baseline', { body })),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['baseline'] }).then(() =>
-      queryClient.invalidateQueries({ queryKey: ['business'] })),
+    onSuccess: async () => {
+      // A new baseline changes every plan's results too.
+      await queryClient.invalidateQueries({ queryKey: ['baseline'] })
+      await queryClient.invalidateQueries({ queryKey: ['business'] })
+      await queryClient.invalidateQueries({ queryKey: ['scenarios'] })
+    },
   })
 }

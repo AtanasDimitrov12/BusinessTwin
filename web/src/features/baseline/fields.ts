@@ -1,24 +1,35 @@
 import type { BaselineInput } from '../../api/client'
+import { formatCount, formatCountPrecise, formatEuro } from '../../lib/format'
 
 export type BaselineField = Exclude<keyof BaselineInput, 'sources'>
+export type WizardStep = 'customers' | 'time' | 'costs'
 
 export interface FieldDefinition {
   name: BaselineField
+  step: WizardStep
   label: string
-  unit: string
   hint: string
-  /** Fictional sample salon, shown as "sample" until the owner replaces it. */
+  kind: 'money' | 'count' | 'hours'
+  prefix?: string
+  suffix?: string
+  /** Fictional sample salon, marked "sample" until the owner replaces it. */
   sample: string
   allowNegative?: boolean
 }
 
 export const baselineFields: FieldDefinition[] = [
-  { name: 'visitsPerMonth', label: 'Customers per month', unit: 'visits', hint: 'All appointments in a normal month.', sample: '400' },
-  { name: 'averagePrice', label: 'Average price', unit: '€ per visit', hint: 'Sales divided by visits.', sample: '40.00' },
-  { name: 'costPerService', label: 'Cost per service', unit: '€ per visit', hint: 'Products and other costs per visit.', sample: '5.00' },
-  { name: 'staffHoursPerMonth', label: 'Staff hours', unit: 'hours per month', hint: 'Hours the team can spend on customers.', sample: '480' },
-  { name: 'serviceTimeHours', label: 'Service time', unit: 'hours per visit', hint: 'Average time one visit takes.', sample: '1.00' },
-  { name: 'wagesPerMonth', label: 'Wages', unit: '€ per month', hint: 'Including employer costs.', sample: '8000.00' },
-  { name: 'otherFixedCostsPerMonth', label: 'Other fixed costs', unit: '€ per month', hint: 'Rent, utilities, software, insurance.', sample: '3000.00' },
-  { name: 'cashOnHand', label: 'Cash on hand', unit: '€', hint: 'Money in the bank today.', sample: '2000.00', allowNegative: true },
+  { name: 'visitsPerMonth', step: 'customers', label: 'Customers per month', hint: 'All appointments in a normal month. Your booking system shows this.', kind: 'count', suffix: 'visits', sample: '420' },
+  { name: 'averagePrice', step: 'customers', label: 'Average price per visit', hint: 'Monthly sales divided by the number of visits.', kind: 'money', prefix: '€', sample: '42.00' },
+  { name: 'costPerService', step: 'customers', label: 'Cost per visit', hint: 'Products, supplies and card fees used for one visit.', kind: 'money', prefix: '€', sample: '6.00' },
+  { name: 'staffHoursPerMonth', step: 'time', label: 'Staff hours with customers', hint: 'Hours your whole team can spend on customers in a month, owner included.', kind: 'hours', suffix: 'h / month', sample: '560' },
+  { name: 'serviceTimeHours', step: 'time', label: 'Time per visit', hint: 'Average length of one appointment, e.g. 1.25 for 75 minutes.', kind: 'hours', suffix: 'hours', sample: '1.25' },
+  { name: 'wagesPerMonth', step: 'costs', label: 'Wages', hint: 'All wages per month, including employer costs.', kind: 'money', prefix: '€', suffix: '/ month', sample: '9000.00' },
+  { name: 'otherFixedCostsPerMonth', step: 'costs', label: 'Other fixed costs', hint: 'Rent, energy, software, insurance: costs that stay the same each month.', kind: 'money', prefix: '€', suffix: '/ month', sample: '3500.00' },
+  { name: 'cashOnHand', step: 'costs', label: 'Cash in the bank today', hint: 'Used to check whether cash could run short in the coming months.', kind: 'money', prefix: '€', sample: '6000.00', allowNegative: true },
 ]
+
+export function formatField(f: FieldDefinition, value: string): string {
+  if (f.kind === 'money') return formatEuro(value)
+  if (f.kind === 'hours') return `${formatCountPrecise(value)} ${f.suffix === 'hours' ? 'h' : 'h / month'}`
+  return formatCount(value)
+}

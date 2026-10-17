@@ -133,7 +133,8 @@ public class ReferenceCaseTests
     [Fact]
     public void Price_change_applies_from_its_start_month()
     {
-        var price = new PriceChange(StartMonth: 2, NewPrice: 44m, DemandChangePerMonth: Estimate.Certain(-20m));
+        // −5% of 400 baseline visits = −20 visits.
+        var price = new PriceChange(StartMonth: 2, NewPrice: 44m, DemandChangePercent: Estimate.Certain(-5m));
         var expected = ScenarioEngine.Simulate(new ScenarioInput(Salon, [price], 2)).For(Case.Expected);
 
         // Month 1 unchanged. Month 2: 380 visits × (44 − 5) = 14,820 − 11,000 = 3,820 → +820.
@@ -155,7 +156,8 @@ public class ReferenceCaseTests
         {
             Hire,
             new MarketingChange(2, 400m, new Estimate(10m, 40m, 90m)),
-            new PriceChange(3, 42.5m, new Estimate(-30m, -10m, 0m)),
+            new HireChange(4, 80m, 2_400m, new Estimate(20m, 40m, 60m), new Estimate(0.25m, 0.5m, 0.75m), RampUpMonths: 3),
+            new PriceChange(3, 42.5m, new Estimate(-7.5m, -2.5m, 0m)),
         };
         var result = ScenarioEngine.Simulate(new ScenarioInput(Salon, changes, 12));
 
@@ -165,6 +167,21 @@ public class ReferenceCaseTests
             Assert.Equal(actualGap, c.Drivers.TotalDifference);
             Assert.Equal(actualGap, c.Drivers.CumulativeGap);
         }
+    }
+
+    [Fact]
+    public void Hire_ramp_up_grows_new_customers_and_reaches_break_even()
+    {
+        // 125 customers at full speed, 80% new → 100 new visits, reached in 4 equal steps: 25, 50, 75, 100.
+        var hire = Hire with { CustomersPerMonth = Estimate.Certain(125m), NewCustomerShare = Estimate.Certain(0.8m), RampUpMonths = 4 };
+        var expected = ScenarioEngine.Simulate(new ScenarioInput(Salon, [hire], 5)).For(Case.Expected);
+
+        Assert.Equal([425m, 450m, 475m, 500m, 500m], expected.Months.Select(m => m.Demand));
+        // Gap per month: new visits × 35 − 3,500 → −2,625, −1,750, −875, 0, 0.
+        Assert.Equal([-2_625m, -4_375m, -5_250m, -5_250m, -5_250m], expected.CumulativeGapByMonth);
+        // Monthly result catches up with the baseline in month 4, but the business is still €5,250 behind in total.
+        Assert.Equal(4, expected.Drivers.BreakEvenMonth);
+        Assert.Equal(-5_250m, expected.Drivers.CumulativeGap);
     }
 
     [Theory]

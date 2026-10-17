@@ -44,5 +44,7 @@ public static class ScenarioEngine
             throw new ArgumentOutOfRangeException(nameof(input), "Service time must be greater than zero.");
         if (input.Changes.Any(c => c.StartMonth < 1 || c.StartMonth > input.HorizonMonths))
             throw new ArgumentOutOfRangeException(nameof(input), "Every change must start within the horizon.");
+        if (input.Changes.OfType<HireChange>().Any(h => h.RampUpMonths < 1))
+            throw new ArgumentOutOfRangeException(nameof(input), "Ramp-up must be at least one month.");
     }
 }

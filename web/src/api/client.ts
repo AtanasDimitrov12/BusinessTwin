@@ -13,6 +13,16 @@ export type BaselineDto = Schemas['BaselineDto']
 export type BaselineInput = Schemas['BaselineInput']
 export type BaselineSummaryDto = Schemas['BaselineSummaryDto']
 export type SourceLabel = Schemas['SourceLabel']
+export type ChangeDto = Schemas['ChangeDto']
+export type ChangeType = Schemas['ChangeType']
+export type EstimateDto = Schemas['EstimateDto']
+export type ScenarioDto = Schemas['ScenarioDto']
+export type SaveScenarioRequest = Schemas['SaveScenarioRequest']
+export type SimulationResultDto = Schemas['SimulationResultDto']
+export type CaseResultDto = Schemas['CaseResultDto']
+export type CaseKey = Schemas['Case']
+export type MonthResultDto = Schemas['MonthResultDto']
+export type WaterfallStepDto = Schemas['WaterfallStepDto']
 
 export class ApiError extends Error {
   readonly status: number
@@ -30,6 +40,13 @@ export function unwrap<T>(result: { data?: T; error?: unknown; response: Respons
     throw new ApiError(result.response.status, problemMessage(result.error) ?? result.response.statusText)
   }
   return result.data as T
+}
+
+/** Like unwrap, but a 404 is an error too. */
+export function must<T>(result: { data?: T; error?: unknown; response: Response }): T {
+  const data = unwrap(result)
+  if (data === null) throw new ApiError(404, 'Not found.')
+  return data
 }
 
 function problemMessage(error: unknown): string | undefined {

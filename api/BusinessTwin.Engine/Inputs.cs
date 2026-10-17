@@ -40,21 +40,32 @@ public abstract record Change(int StartMonth)
 }
 
 /// <summary>
-/// Hire a worker. Adds capacity (hours) and a fixed cost. Only the share of the worker's
-/// customers that is new adds demand; moved customers shift work between staff.
+/// Hire a worker. Adds capacity (hours) and a fixed cost from the start month. Only the share of the
+/// worker's customers that is new adds demand; moved customers shift work between staff.
+/// The worker's customers grow in equal steps over <see cref="RampUpMonths"/> (1 = full from the start).
 /// </summary>
 public sealed record HireChange(
     int StartMonth,
     decimal HoursPerMonth,
     decimal EmployerCostPerMonth,
     Estimate CustomersPerMonth,
-    Estimate NewCustomerShare) : Change(StartMonth);
+    Estimate NewCustomerShare,
+    int RampUpMonths = 1) : Change(StartMonth)
+{
+    /// <summary>Share of the full customer base reached in a month: 1/n, 2/n … 1.</summary>
+    public decimal RampFactor(int month)
+    {
+        if (!IsActiveIn(month)) return 0m;
+        var monthsActive = month - StartMonth + 1;
+        return RampUpMonths <= 1 ? 1m : Math.Min(1m, (decimal)monthsActive / RampUpMonths);
+    }
+}
 
-/// <summary>Change the average price. Demand change is in visits per month (negative for a drop).</summary>
+/// <summary>Change the average price. Demand change is a percentage of baseline visits (−10 = 10% fewer visits).</summary>
 public sealed record PriceChange(
     int StartMonth,
     decimal NewPrice,
-    Estimate DemandChangePerMonth) : Change(StartMonth);
+    Estimate DemandChangePercent) : Change(StartMonth);
 
 /// <summary>Spend more on marketing. Adds demand and a monthly cost, no capacity.</summary>
 public sealed record MarketingChange(

@@ -24,8 +24,9 @@ public sealed class DecimalStringConverter : JsonConverter<decimal>
         throw new JsonException("Expected a decimal number such as \"1234.50\".");
     }
 
+    // Dividing by 1.000…0 removes trailing zeros (16000.000000 → 16000) without changing the value.
     public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options) =>
-        writer.WriteStringValue(value.ToString(CultureInfo.InvariantCulture));
+        writer.WriteStringValue((value / 1.0000000000000000000000000000m).ToString(CultureInfo.InvariantCulture));
 }
 
 /// <summary>Describes decimals in the OpenAPI document as strings, matching <see cref="DecimalStringConverter"/>.</summary>
@@ -35,12 +36,18 @@ public sealed class DecimalAsStringSchemaTransformer : IOpenApiSchemaTransformer
     {
         var type = context.JsonTypeInfo.Type;
         if (type == typeof(decimal) || type == typeof(decimal?))
-        {
-            schema.Type = type == typeof(decimal?) ? JsonSchemaType.String | JsonSchemaType.Null : JsonSchemaType.String;
-            schema.Format = "decimal";
-            schema.Pattern = @"^-?\d+(\.\d+)?$";
-        }
+            Describe(schema, nullable: type == typeof(decimal?));
+        else if (typeof(IEnumerable<decimal>).IsAssignableFrom(type))
+            schema.Items = Describe(new OpenApiSchema(), nullable: false); // lists of decimals otherwise lose their item type
         return Task.CompletedTask;
+    }
+
+    private static OpenApiSchema Describe(OpenApiSchema schema, bool nullable)
+    {
+        schema.Type = nullable ? JsonSchemaType.String | JsonSchemaType.Null : JsonSchemaType.String;
+        schema.Format = "decimal";
+        schema.Pattern = @"^-?\d+(\.\d+)?$";
+        return schema;
     }
 }
 

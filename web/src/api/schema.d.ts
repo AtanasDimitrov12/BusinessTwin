@@ -678,6 +678,239 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ScenarioDto"][];
+                        "application/json": components["schemas"]["ScenarioDto"][];
+                        "text/json": components["schemas"]["ScenarioDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveScenarioRequest"];
+                    "text/json": components["schemas"]["SaveScenarioRequest"];
+                    "application/*+json": components["schemas"]["SaveScenarioRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ScenarioDto"];
+                        "application/json": components["schemas"]["ScenarioDto"];
+                        "text/json": components["schemas"]["ScenarioDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ScenarioDto"];
+                        "application/json": components["schemas"]["ScenarioDto"];
+                        "text/json": components["schemas"]["ScenarioDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SaveScenarioRequest"];
+                    "text/json": components["schemas"]["SaveScenarioRequest"];
+                    "application/*+json": components["schemas"]["SaveScenarioRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ScenarioDto"];
+                        "application/json": components["schemas"]["ScenarioDto"];
+                        "text/json": components["schemas"]["ScenarioDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SimulationResultDto"];
+                        "application/json": components["schemas"]["SimulationResultDto"];
+                        "text/json": components["schemas"]["SimulationResultDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SimulateRequest"];
+                    "text/json": components["schemas"]["SimulateRequest"];
+                    "application/*+json": components["schemas"]["SimulateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SimulationResultDto"];
+                        "application/json": components["schemas"]["SimulationResultDto"];
+                        "text/json": components["schemas"]["SimulationResultDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -766,6 +999,68 @@ export interface components {
             staffCount: number;
             hasBaseline: boolean;
         };
+        /** @enum {unknown} */
+        Case: "pessimistic" | "expected" | "optimistic";
+        CaseResultDto: {
+            case: components["schemas"]["Case"];
+            months: components["schemas"]["MonthResultDto"][];
+            resultDifferenceByMonth: string[];
+            cumulativeGapByMonth: string[];
+            shortfallMonths: number[];
+            summary: components["schemas"]["RunSummaryDto"];
+            difference: components["schemas"]["SummaryDifferenceDto"];
+            drivers: components["schemas"]["DriversDto"];
+            waterfall: components["schemas"]["WaterfallStepDto"][];
+        };
+        ChangeDto: {
+            type: components["schemas"]["ChangeType"];
+            /** Format: int32 */
+            startMonth: number;
+            /** Format: decimal */
+            hoursPerMonth?: null | string;
+            /** Format: decimal */
+            employerCostPerMonth?: null | string;
+            /** Format: int32 */
+            rampUpMonths?: null | number;
+            customersPerMonth?: null | components["schemas"]["EstimateDto"];
+            newCustomerSharePercent?: null | components["schemas"]["EstimateDto"];
+            /** Format: decimal */
+            newPrice?: null | string;
+            demandChangePercent?: null | components["schemas"]["EstimateDto"];
+            /** Format: decimal */
+            costPerMonth?: null | string;
+            newCustomersPerMonth?: null | components["schemas"]["EstimateDto"];
+        };
+        /** @enum {unknown} */
+        ChangeType: "hire" | "price" | "marketing";
+        DriversDto: {
+            /** Format: decimal */
+            extraVisitsContribution: string;
+            /** Format: decimal */
+            priceEffect: string;
+            /** Format: decimal */
+            addedWageCosts: string;
+            /** Format: decimal */
+            marketingCosts: string;
+            /** Format: decimal */
+            totalDifference: string;
+            /** Format: decimal */
+            revenueLostToUnservedDemand: string;
+            /** Format: decimal */
+            breakEvenNewVisitsPerMonth: null | string;
+            /** Format: int32 */
+            breakEvenMonth: null | number;
+            /** Format: decimal */
+            cumulativeGap: string;
+        };
+        EstimateDto: {
+            /** Format: decimal */
+            pessimistic: string;
+            /** Format: decimal */
+            expected: string;
+            /** Format: decimal */
+            optimistic: string;
+        };
         ForgotPasswordRequest: {
             email: string;
         };
@@ -795,6 +1090,37 @@ export interface components {
             twoFactorCode?: null | string;
             twoFactorRecoveryCode?: null | string;
         };
+        MonthResultDto: {
+            /** Format: int32 */
+            month: number;
+            /** Format: decimal */
+            demand: string;
+            /** Format: decimal */
+            capacity: string;
+            /** Format: decimal */
+            servicesDelivered: string;
+            /** Format: decimal */
+            unservedDemand: string;
+            /** Format: decimal */
+            unusedCapacity: string;
+            /** Format: decimal */
+            utilisation: string;
+            /** Format: decimal */
+            averagePrice: string;
+            /** Format: decimal */
+            revenue: string;
+            /** Format: decimal */
+            variableCosts: string;
+            /** Format: decimal */
+            contribution: string;
+            /** Format: decimal */
+            fixedCosts: string;
+            /** Format: decimal */
+            monthlyResult: string;
+            /** Format: decimal */
+            cashAtEnd: string;
+            cashShortfall: boolean;
+        };
         RefreshRequest: {
             refreshToken: string;
         };
@@ -810,13 +1136,81 @@ export interface components {
             resetCode: string;
             newPassword: string;
         };
+        RunSummaryDto: {
+            /** Format: decimal */
+            totalServed: string;
+            /** Format: decimal */
+            totalUnserved: string;
+            /** Format: decimal */
+            totalRevenue: string;
+            /** Format: decimal */
+            totalFixedCosts: string;
+            /** Format: decimal */
+            totalResult: string;
+            /** Format: decimal */
+            averageMonthlyResult: string;
+            /** Format: decimal */
+            endCash: string;
+            /** Format: decimal */
+            lowestCash: string;
+            /** Format: int32 */
+            lowestCashMonth: number;
+            /** Format: decimal */
+            lastMonthUtilisation: string;
+        };
         SaveBusinessRequest: {
             name: string;
             /** Format: int32 */
             staffCount: number;
         };
+        SaveScenarioRequest: {
+            name: string;
+            /** Format: int32 */
+            horizonMonths: number;
+            changes: components["schemas"]["ChangeDto"][];
+            status?: components["schemas"]["ScenarioStatus"];
+        };
+        ScenarioDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: int32 */
+            horizonMonths: number;
+            status: components["schemas"]["ScenarioStatus"];
+            /** Format: date-time */
+            createdAt: string;
+            changes: components["schemas"]["ChangeDto"][];
+        };
+        /** @enum {unknown} */
+        ScenarioStatus: "draft" | "saved";
+        SimulateRequest: {
+            /** Format: int32 */
+            horizonMonths: number;
+            changes: components["schemas"]["ChangeDto"][];
+        };
+        SimulationResultDto: {
+            /** Format: int32 */
+            horizonMonths: number;
+            baseline: components["schemas"]["MonthResultDto"][];
+            baselineSummary: components["schemas"]["RunSummaryDto"];
+            cases: components["schemas"]["CaseResultDto"][];
+        };
         /** @enum {unknown} */
         SourceLabel: "entered" | "estimated" | "sample";
+        SummaryDifferenceDto: {
+            /** Format: decimal */
+            totalServed: string;
+            /** Format: decimal */
+            totalRevenue: string;
+            /** Format: decimal */
+            totalFixedCosts: string;
+            /** Format: decimal */
+            totalResult: string;
+            /** Format: decimal */
+            averageMonthlyResult: string;
+            /** Format: decimal */
+            endCash: string;
+        };
         TwoFactorRequest: {
             enable?: null | boolean;
             twoFactorCode?: null | string;
@@ -831,6 +1225,15 @@ export interface components {
             recoveryCodes?: null | string[];
             isTwoFactorEnabled: boolean;
             isMachineRemembered: boolean;
+        };
+        WaterfallStepDto: {
+            key: string;
+            /** Format: decimal */
+            amount: string;
+            /** Format: decimal */
+            low: string;
+            /** Format: decimal */
+            high: string;
         };
     };
     responses: never;

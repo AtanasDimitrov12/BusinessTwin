@@ -20,7 +20,7 @@ internal static class CaseBuilder
         var price = active.OfType<PriceChange>().OrderBy(p => p.StartMonth).LastOrDefault();
 
         return new MonthPlan(
-            Demand: DemandModel.Demand(baseline, hires, marketing, price, @case),
+            Demand: DemandModel.Demand(baseline, hires, marketing, price, @case, month),
             StaffHours: baseline.StaffHoursPerMonth + hires.Sum(h => h.HoursPerMonth),
             AveragePrice: price?.NewPrice ?? baseline.AveragePrice,
             Wages: baseline.WagesPerMonth + hires.Sum(h => h.EmployerCostPerMonth),
