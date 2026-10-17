@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+/*
+ * Business Twin design tokens. Palette and type follow the Figma Make prototype:
+ * warm paper background, navy for structure, amber for "what changes", green/red only for good/bad.
+ * Light theme only. Text colours meet WCAG 2.2 AA contrast on canvas and surface.
+ */
+@theme {
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+
+  --color-canvas: #f7f5f1;
+  --color-surface: #ffffff;
+  --color-ink: #1c1a17;
+  --color-muted: #66615b;
+  --color-faint: #8f8981;
+  --color-line: #e8e3dc;
+  --color-line-soft: #f0ede8;
+
+  --color-navy: #012856; /* brand navy, from the logo */
+  --color-navy-dark: #001c3f;
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #e3eaf5;
+  --color-navy-200: #c5d5ec;
+
+  --color-amber: #c8652a;
+  --color-amber-dark: #8b4513;
+  --color-amber-50: #fef3e8;
+  --color-amber-200: #f0c9a0;
+
+  --color-good: #2d7a4f;
+  --color-good-dark: #1f6640;
+  --color-good-50: #e6f7ee;
+  --color-good-200: #a8dabc;
+
+  --color-bad: #b8392a;
+  --color-bad-50: #fef2f2;
+  --color-bad-200: #f5c5c0;
+
+  --shadow-card: 0 1px 2px rgb(28 26 23 / 0.04), 0 4px 16px rgb(28 26 23 / 0.04);
+  --shadow-lift: 0 2px 4px rgb(28 26 23 / 0.05), 0 16px 40px rgb(27 61 110 / 0.12);
+
+  --animate-rise: rise 0.5s ease-out both;
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  :root { color-scheme: light; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection { background: var(--color-amber-200); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

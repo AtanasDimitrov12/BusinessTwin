@@ -82,6 +82,34 @@ Mapped to OWASP Top 10:2025:
 
 Privacy: collect only the figures the model needs, fictional/anonymised data in tests, owner can delete their business with all scenarios, and the UI states that results are estimates, not financial advice.
 
+## Implementation decisions (PoC build, 17 Oct 2026)
+
+Decisions made while setting up the code, with their reason.
+
+| Decision | Why |
+|---|---|
+| .NET 10 (LTS), solution file `BusinessTwin.slnx` | Current LTS release; `.slnx` is the SDK's default solution format |
+| Decimals travel as JSON **strings** (`"1234.50"`), via `DecimalStringConverter`; OpenAPI describes them as `string`, format `decimal` | JSON numbers become binary floats in JavaScript. Strings keep money exact, and the generated TS type (`string`) stops accidental arithmetic. The web app formats them with `Intl.NumberFormat`, which formats numeric strings exactly |
+| Engine values are exact, with no rounding inside the engine | Rounding is a display concern; rounding in between would let cents drift over months × cases |
+| OpenAPI document written to `api/openapi/openapi.json` on every build; web types generated with `openapi-typescript`, calls via `openapi-fetch` | Contract-first without running the API; CI fails when either file is stale |
+| Auth: ASP.NET Core Identity API endpoints under `/api/auth`, cookie mode (`login?useCookies=true`), cookie `bt_session` HttpOnly, SameSite=Strict, Secure outside development | No custom password code; SameSite=Strict plus JSON-only endpoints covers CSRF for a same-origin SPA |
+| In development Vite proxies `/api` to the API | Same origin, so the cookie stays first-party and CORS is not needed. CORS is only enabled when `Cors:AllowedOrigins` is set |
+| Ownership guard = `OwnerScope` service; controllers read owner data only through its pre-filtered queries | One place enforces the ownership rule; another owner's data returns 404 |
+| Snake_case tables and columns (`EFCore.NamingConventions`), Identity tables renamed (`users`, `roles`, `user_claims` …) | Matches the data model names and PostgreSQL conventions |
+| Change parameters (`changes.parameters`) and baseline source labels (`baselines.input_sources`) stored as `jsonb` | As designed: new change types need no new table |
+| Money columns `numeric(14,2)`; quantities, service time and estimates `numeric(12,4)` | Exact storage; estimates include shares such as 0.35 |
+| Migrations run on start-up only when `Database:MigrateOnStartup` is true (development) | Convenient locally; production applies migrations deliberately |
+| Connection string only from configuration (env var `ConnectionStrings__Default`, user-secrets locally, `.env` for Compose) | No secrets in the repo. Production connection strings must use `SSL Mode=Require` (encrypted API ↔ DB link) |
+| `react-router-dom` added for routing in the SPA | Not in the original stack list; it is the conventional choice and the app has several screens |
+| Scenario endpoints: CRUD on `/api/scenarios`, `GET /api/scenarios/{id}/results`, and `POST /api/scenarios/simulate` (runs unsaved changes, nothing stored) | The builder shows a live preview while the owner types, without saving drafts and without calculating in the browser (debounced, ~450 ms) |
+| Results DTO includes every derived figure the screens need: totals, scenario − baseline differences, per-month differences, waterfall bar positions | The browser never subtracts or adds money; it only formats strings and draws |
+| Charts: decimal strings are converted to numbers **only for chart geometry** (`toPlot`); tooltips and labels show the API's exact strings | Recharts needs numbers to position bars; the displayed values stay exact |
+| Changes stored flat: certain parameters in `changes.parameters` (jsonb), uncertain ones as `estimates` rows (`customersPerMonth`, `newCustomerSharePercent`, `demandChangePercent`, `newCustomersPerMonth`) | As designed; one `ChangeDto` with nullable type-specific fields keeps OpenAPI and TS types simple |
+| Frontend styling: Tailwind CSS v4 with design tokens in `web/src/index.css`, palette and type from the Figma Make prototype, navy from the logo; light theme only | Same visual language as the prototype the owner tested; tokens keep colours consistent across UI and charts |
+| Fonts self-hosted via `@fontsource`; icons from `lucide-react` | No requests to Google Fonts (GDPR, see `ux-design-research.md`) |
+| Public landing page at `/`, sign-in at `/login` and `/register`, owner area under `/app` (lazy-loaded) | Explains the product before sign-up; the landing page does not download the charting library |
+| Landing-page example figures are real engine output for a labelled sample salon, pasted in as text | No invented marketing numbers; nothing is calculated in the browser |
+
 ## Open design questions
 
 - Build hire first, then price and marketing? Follow research and usability-test evidence.
