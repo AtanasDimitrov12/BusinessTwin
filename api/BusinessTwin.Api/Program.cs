@@ -45,6 +45,7 @@ void ConfigureJson(JsonSerializerOptions json)
 builder.Services.AddControllers().AddJsonOptions(o => ConfigureJson(o.JsonSerializerOptions));
 builder.Services.ConfigureHttpJsonOptions(o => ConfigureJson(o.SerializerOptions));
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<InvalidScenarioHandler>();
 
 // OpenAPI: the web app generates its TypeScript types from this document (also written at build time to api/openapi/).
 builder.Services.AddOpenApi(options => options.AddSchemaTransformer<DecimalAsStringSchemaTransformer>());
@@ -81,6 +82,20 @@ var auth = app.MapGroup("/api/auth").WithTags("Auth");
 auth.MapIdentityApi<AppUser>();
 auth.MapPost("/logout", async (SignInManager<AppUser> signIn) =>
 {
+    await signIn.SignOutAsync();
+    return Results.NoContent();
+}).RequireAuthorization();
+
+// Deletes the account; the business, baseline and all scenarios go with it (cascade on businesses.owner_id).
+auth.MapDelete("/account", async (OwnerScope owner, UserManager<AppUser> users, SignInManager<AppUser> signIn) =>
+{
+    var user = await users.FindByIdAsync(owner.UserId);
+    if (user is null) return Results.NotFound();
+
+    var result = await users.DeleteAsync(user);
+    if (!result.Succeeded)
+        return Results.Problem(string.Join(" ", result.Errors.Select(e => e.Description)));
+
     await signIn.SignOutAsync();
     return Results.NoContent();
 }).RequireAuthorization();

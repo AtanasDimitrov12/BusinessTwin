@@ -39,12 +39,18 @@ public static class ScenarioEngine
     private static void Validate(ScenarioInput input)
     {
         if (input.HorizonMonths is < 1 or > MaxHorizonMonths)
-            throw new ArgumentOutOfRangeException(nameof(input), $"Horizon must be 1 to {MaxHorizonMonths} months.");
+            throw new InvalidScenarioException($"Horizon must be 1 to {MaxHorizonMonths} months.");
         if (input.Baseline.ServiceTimeHours <= 0m)
-            throw new ArgumentOutOfRangeException(nameof(input), "Service time must be greater than zero.");
+            throw new InvalidScenarioException("Service time must be greater than zero.");
         if (input.Changes.Any(c => c.StartMonth < 1 || c.StartMonth > input.HorizonMonths))
-            throw new ArgumentOutOfRangeException(nameof(input), "Every change must start within the horizon.");
+            throw new InvalidScenarioException("Every change must start within the horizon.");
         if (input.Changes.OfType<HireChange>().Any(h => h.RampUpMonths < 1))
-            throw new ArgumentOutOfRangeException(nameof(input), "Ramp-up must be at least one month.");
+            throw new InvalidScenarioException("Ramp-up must be at least one month.");
     }
 }
+
+/// <summary>
+/// The input breaks a rule of the model. The API validates the same rules first; if one still slips
+/// through, it answers 400 with this message instead of a 500.
+/// </summary>
+public sealed class InvalidScenarioException(string message) : Exception(message);

@@ -1,7 +1,7 @@
-import { Home, Info, Lightbulb, LogOut, Menu, Settings, SquareStack, X } from 'lucide-react'
+import { Home, Info, Lightbulb, LogOut, Menu, Settings, SquareStack, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useSignOut } from '../features/auth/auth'
+import { useDeleteAccount, useSignOut } from '../features/auth/auth'
 import { useBusiness } from '../features/business/business'
 import { useScenarios } from '../features/scenarios/scenarios'
 import { Logo } from './ui/Logo'
@@ -88,6 +88,14 @@ function SidebarNav({ onNavigate }: { onNavigate: () => void }) {
 function SidebarFooter() {
   const navigate = useNavigate()
   const signOut = useSignOut()
+  const deleteAccount = useDeleteAccount()
+  const onDeleteAccount = () => {
+    if (!window.confirm('Delete your account, your salon figures and every plan? This cannot be undone.')) return
+    deleteAccount.mutate(undefined, {
+      onSuccess: () => navigate('/'),
+      onError: (e) => window.alert(e.message),
+    })
+  }
   return (
     <div className="space-y-1 border-t border-line p-3">
       <NavLink to="/app/setup" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted hover:bg-canvas hover:text-ink">
@@ -99,6 +107,14 @@ function SidebarFooter() {
         className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted hover:bg-canvas hover:text-ink"
       >
         <LogOut size={16} aria-hidden /> Sign out
+      </button>
+      <button
+        type="button"
+        onClick={onDeleteAccount}
+        disabled={deleteAccount.isPending}
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted hover:bg-bad-50 hover:text-bad"
+      >
+        <Trash2 size={16} aria-hidden /> Delete account
       </button>
     </div>
   )
