@@ -13,18 +13,28 @@ import { SourceBadge } from '../../components/ui/SourceBadge'
 import { SourcePicker } from '../../components/ui/SourcePicker'
 import { useSaveBusiness } from '../business/business'
 import { useSaveBaseline } from './baseline'
-import { baselineFields, formatField, type BaselineField, type WizardStep } from './fields'
+import { parseTypedNumber } from '../../lib/numberInput'
+import { baselineFields, formatField, type BaselineField, type FieldDefinition, type WizardStep } from './fields'
 
-// Decimal values stay strings end to end. A comma is accepted as decimal separator and normalised to a dot.
-const decimal = z.string().trim().regex(/^\d+([.,]\d{1,4})?$/, 'Enter a number, e.g. 40.50.')
-const signedDecimal = z.string().trim().regex(/^-?\d+([.,]\d{1,4})?$/, 'Enter a number, e.g. 2000 or -500.')
+// Decimal values stay strings end to end. parseTypedNumber accepts a decimal comma, rejects thousands
+// separators ("9.000" is nine thousand in Dutch, not nine) and normalises to a dot for the API.
+const rulesOf = (f: FieldDefinition) => ({ allowNegative: !!f.allowNegative, ...f.rules })
+const typedNumber = (f: FieldDefinition) =>
+  z.string().superRefine((v, ctx) => {
+    const r = parseTypedNumber(v, rulesOf(f))
+    if (!r.ok) ctx.addIssue({ code: 'custom', message: r.error })
+  })
+const normalise = (f: FieldDefinition, v: string) => {
+  const r = parseTypedNumber(v, rulesOf(f))
+  return r.ok ? r.value : v
+}
 const source = z.enum(['entered', 'estimated', 'sample'])
 
 const schema = z.object({
   name: z.string().trim().min(1, 'Enter the name of your salon.').max(100),
   staffCount: z.string().regex(/^\d{1,2}$/, 'Use a whole number.').refine((v) => v !== '0' && v !== '00', 'At least 1.'),
   values: z.object(
-    Object.fromEntries(baselineFields.map((f) => [f.name, f.allowNegative ? signedDecimal : decimal])) as Record<BaselineField, typeof decimal>,
+    Object.fromEntries(baselineFields.map((f) => [f.name, typedNumber(f)])) as Record<BaselineField, ReturnType<typeof typedNumber>>,
   ),
   sources: z.object(Object.fromEntries(baselineFields.map((f) => [f.name, source])) as Record<BaselineField, typeof source>),
 })
@@ -70,7 +80,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
 
   const onSubmit = form.handleSubmit(async (v) => {
     await saveBusiness.mutateAsync({ name: v.name, staffCount: Number(v.staffCount) })
-    const normalised = Object.fromEntries(baselineFields.map((f) => [f.name, v.values[f.name].replace(',', '.')])) as Record<BaselineField, string>
+    const normalised = Object.fromEntries(baselineFields.map((f) => [f.name, normalise(f, v.values[f.name])])) as Record<BaselineField, string>
     await saveBaseline.mutateAsync({ ...normalised, sources: v.sources })
     navigate('/app')
   })
@@ -140,7 +150,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                 hint={f.hint}
                 prefix={f.prefix}
                 suffix={f.suffix}
-                inputMode="decimal"
+                inputMode={f.allowNegative ? 'text' : 'decimal'}
                 error={errors.values?.[f.name]?.message}
                 aside={
                   <SourcePicker
@@ -166,7 +176,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                   <ReviewRow
                     key={f.name}
                     label={f.label}
-                    value={signedDecimal.safeParse(values[f.name]).success ? formatField(f, values[f.name].trim().replace(',', '.')) : values[f.name]}
+                    value={parseTypedNumber(values[f.name], rulesOf(f)).ok ? formatField(f, normalise(f, values[f.name])) : values[f.name]}
                     badge={<SourceBadge source={sources[f.name]} />}
                   />
                 ))}

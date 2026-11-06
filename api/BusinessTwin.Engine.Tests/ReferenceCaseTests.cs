@@ -184,6 +184,34 @@ public class ReferenceCaseTests
         Assert.Equal(-5_250m, expected.Drivers.CumulativeGap);
     }
 
+    [Fact]
+    public void First_months_equal_the_opening_months_of_the_full_run()
+    {
+        // A 12-month plan: hire from month 1, a price change from month 9. Compared over 6 months, the price change
+        // has not started yet, so it is left out, and every month must match months 1–6 of the full run exactly.
+        var price = new PriceChange(StartMonth: 9, NewPrice: 44m, DemandChangePercent: new Estimate(-10m, -5m, 0m));
+        var full = new ScenarioInput(Salon, [Hire, price], 12);
+
+        var window = full.FirstMonths(6);
+        Assert.Equal(6, window.HorizonMonths);
+        Assert.Equal([Hire], window.Changes);
+
+        var whole = ScenarioEngine.Simulate(full);
+        var first = ScenarioEngine.Simulate(window);
+        Assert.Equal(whole.Baseline.Take(6), first.Baseline);
+        foreach (var @case in Enum.GetValues<Case>())
+        {
+            Assert.Equal(whole.For(@case).Months.Take(6), first.For(@case).Months);
+            Assert.Equal(whole.For(@case).CumulativeGapByMonth.Take(6), first.For(@case).CumulativeGapByMonth);
+        }
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(13)]
+    public void First_months_outside_the_horizon_are_rejected(int months) =>
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ScenarioInput(Salon, [Hire], 12).FirstMonths(months));
+
     [Theory]
     [InlineData(0)]
     [InlineData(ScenarioEngine.MaxHorizonMonths + 1)]

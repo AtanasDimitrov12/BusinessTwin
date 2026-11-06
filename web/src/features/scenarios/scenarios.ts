@@ -26,11 +26,14 @@ export function useScenarioResults(id: string | undefined) {
   })
 }
 
-export function useAllScenarioResults(ids: string[]) {
+/** Results of several plans. `months` limits every run to its first months, for a like-for-like comparison. */
+export function useAllScenarioResults(ids: string[], months?: number) {
   return useQueries({
     queries: ids.map((id) => ({
-      queryKey: ['scenarios', id, 'results'],
-      queryFn: async () => must(await api.GET('/api/scenarios/{id}/results', { params: { path: { id } } })),
+      queryKey: ['scenarios', id, 'results', months ?? 'full'],
+      queryFn: async () =>
+        must(await api.GET('/api/scenarios/{id}/results', { params: { path: { id }, query: months ? { months } : {} } })),
+      placeholderData: keepPreviousData,
     })),
   })
 }

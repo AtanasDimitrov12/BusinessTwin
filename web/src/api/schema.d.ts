@@ -838,7 +838,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    months?: number;
+                };
                 header?: never;
                 path: {
                     id: string;

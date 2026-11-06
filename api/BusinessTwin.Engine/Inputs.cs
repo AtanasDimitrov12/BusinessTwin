@@ -73,4 +73,17 @@ public sealed record MarketingChange(
     decimal CostPerMonth,
     Estimate NewCustomersPerMonth) : Change(StartMonth);
 
-public sealed record ScenarioInput(Baseline Baseline, IReadOnlyList<Change> Changes, int HorizonMonths);
+public sealed record ScenarioInput(Baseline Baseline, IReadOnlyList<Change> Changes, int HorizonMonths)
+{
+    /// <summary>
+    /// The same scenario over its first <paramref name="months"/> months, so plans of different lengths can be compared
+    /// over a common period. Changes that start later have no effect in that window and are left out. Because every
+    /// month depends only on the months before it, the result equals the opening months of the full run.
+    /// </summary>
+    public ScenarioInput FirstMonths(int months)
+    {
+        if (months < 1 || months > HorizonMonths)
+            throw new ArgumentOutOfRangeException(nameof(months), $"Months must be 1 to {HorizonMonths}.");
+        return this with { HorizonMonths = months, Changes = Changes.Where(c => c.StartMonth <= months).ToList() };
+    }
+}

@@ -1,5 +1,5 @@
 import { Home, Info, Lightbulb, LogOut, Menu, Settings, SquareStack, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useSignOut } from '../features/auth/auth'
 import { useBusiness } from '../features/business/business'
@@ -17,12 +17,20 @@ export function AppShell() {
   const [open, setOpen] = useState(false)
   const business = useBusiness()
 
+  // Escape closes the mobile menu, like any other overlay.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
     <div className="min-h-dvh bg-canvas lg:flex">
       {/* Mobile top bar */}
       <div className="material sticky top-0 z-30 flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 lg:hidden">
         <Logo to="/app" />
-        <button type="button" onClick={() => setOpen(true)} className="rounded-full p-2 text-ink transition-[background-color,translate,scale] duration-150 ease-out hover:bg-black/[0.05] active:scale-[0.95]" aria-label="Open menu">
+        <button type="button" onClick={() => setOpen(true)} className="rounded-full p-2 text-ink transition-[background-color,translate,scale] duration-150 ease-out hover:bg-black/[0.05] active:scale-[0.95]" aria-label="Open menu" aria-expanded={open}>
           <Menu size={20} />
         </button>
       </div>
@@ -34,8 +42,9 @@ export function AppShell() {
         aria-hidden
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-50 material flex w-64 flex-col border-r border-black/[0.06] transition-transform duration-300 ease-drawer lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 lg:transition-none ${
-          open ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 material flex w-64 flex-col border-r border-black/[0.06] transition-[translate,visibility] duration-300 ease-drawer lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 lg:transition-none ${
+          // Closed on small screens: hidden after the slide, so its links leave the Tab order and screen readers.
+          open ? 'translate-x-0' : '-translate-x-full max-lg:invisible'
         }`}
       >
         <div className="flex items-center justify-between px-5 pb-4 pt-5">

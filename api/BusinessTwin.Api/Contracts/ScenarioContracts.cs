@@ -28,28 +28,46 @@ public record ChangeDto(
     decimal? CostPerMonth = null,
     EstimateDto? NewCustomersPerMonth = null) : IValidatableObject
 {
+    // Messages reach the owner as written, so they use the labels on screen, not property names.
+    private static readonly Dictionary<string, string> Labels = new()
+    {
+        [nameof(StartMonth)] = "Start month",
+        [nameof(HoursPerMonth)] = "Working hours",
+        [nameof(EmployerCostPerMonth)] = "Full monthly cost",
+        [nameof(RampUpMonths)] = "Time to build a client base",
+        [nameof(CustomersPerMonth)] = "Customers per month",
+        [nameof(NewCustomerSharePercent)] = "Share that is new to your salon",
+        [nameof(NewPrice)] = "New average price",
+        [nameof(DemandChangePercent)] = "Change in visits",
+        [nameof(CostPerMonth)] = "Campaign cost",
+        [nameof(NewCustomersPerMonth)] = "New customers per month",
+    };
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         var errors = new List<ValidationResult>();
+        var change = Type switch { ChangeType.Hire => "Hire", ChangeType.Price => "Price change", _ => "Marketing" };
+        void Add(string message, string member) => errors.Add(new($"{change}: {message}", [member]));
         void Require(object? value, string name)
         {
-            if (value is null) errors.Add(new($"{name} is required for a {Type} change.", [name]));
+            if (value is null) Add($"{Labels[name]} is missing.", name);
         }
-        void Range(decimal? value, decimal min, decimal max, string name)
+        void Range(decimal? value, decimal min, decimal max, string name, string? which = null)
         {
-            if (value is { } v && (v < min || v > max)) errors.Add(new($"{name} must be between {min} and {max}.", [name]));
+            if (value is { } v && (v < min || v > max))
+                Add($"{Labels[name]}{(which is null ? "" : $" ({which})")} must be between {min:0.##} and {max:0.##}.", name);
         }
         void Estimate(EstimateDto? e, decimal min, decimal max, string name)
         {
             if (e is null) return;
-            Range(e.Pessimistic, min, max, $"{name}.Pessimistic");
-            Range(e.Expected, min, max, $"{name}.Expected");
-            Range(e.Optimistic, min, max, $"{name}.Optimistic");
+            Range(e.Pessimistic, min, max, name, "pessimistic");
+            Range(e.Expected, min, max, name, "expected");
+            Range(e.Optimistic, min, max, name, "optimistic");
             if (e.Pessimistic > e.Expected || e.Expected > e.Optimistic)
-                errors.Add(new($"{name}: pessimistic ≤ expected ≤ optimistic.", [name]));
+                Add($"{Labels[name]}: the pessimistic guess must not be higher than the expected one, and the expected not higher than the optimistic one.", name);
         }
 
-        if (StartMonth < 1) errors.Add(new("StartMonth must be at least 1.", [nameof(StartMonth)]));
+        if (StartMonth < 1) Add("Start month must be at least 1.", nameof(StartMonth));
 
         switch (Type)
         {

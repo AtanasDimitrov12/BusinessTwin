@@ -792,6 +792,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "months",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "responses": {

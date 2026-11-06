@@ -79,15 +79,25 @@ public class ScenariosController(AppDbContext db, OwnerScope owner) : Controller
         return NoContent();
     }
 
-    /// <summary>Month-by-month results of a saved scenario for the three cases, compared with the baseline.</summary>
+    /// <summary>
+    /// Month-by-month results of a saved scenario for the three cases, compared with the baseline.
+    /// <paramref name="months"/> limits the run to the plan's first months, so plans of different lengths
+    /// can be compared over a common period (1 to the plan's own horizon; default: the whole horizon).
+    /// </summary>
     [HttpGet("{id:guid}/results")]
-    public async Task<ActionResult<SimulationResultDto>> Results(Guid id, CancellationToken ct)
+    public async Task<ActionResult<SimulationResultDto>> Results(Guid id, [FromQuery] int? months, CancellationToken ct)
     {
         var scenario = await LoadAsync(id, tracking: false, ct);
         if (scenario is null) return NotFound();
+        if (months is < 1 || months > scenario.HorizonMonths)
+        {
+            ModelState.AddModelError(nameof(months), $"Compare over 1 to {scenario.HorizonMonths} months for this plan.");
+            return ValidationProblem(ModelState);
+        }
 
         var changes = scenario.Changes.Select(EngineMapping.ToDto).Select(EngineMapping.ToEngine).ToList();
-        var result = ScenarioEngine.Simulate(new ScenarioInput(EngineMapping.ToEngine(scenario.Baseline!), changes, scenario.HorizonMonths));
+        var input = new ScenarioInput(EngineMapping.ToEngine(scenario.Baseline!), changes, scenario.HorizonMonths);
+        var result = ScenarioEngine.Simulate(months is { } m ? input.FirstMonths(m) : input);
         return ResultMapping.ToDto(result);
     }
 

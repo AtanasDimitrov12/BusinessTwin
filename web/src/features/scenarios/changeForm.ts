@@ -1,5 +1,6 @@
 import { Megaphone, Tag, UserPlus, type LucideIcon } from 'lucide-react'
 import type { ChangeDto, ChangeType, EstimateDto, ScenarioDto } from '../../api/client'
+import { parseTypedNumber } from '../../lib/numberInput'
 
 // Form values keep every number as a string, exactly as typed. They are sent to the API unchanged
 // (comma → dot), so decimals never pass through JavaScript arithmetic.
@@ -96,7 +97,12 @@ export function defaultChange(type: ChangeType, baselinePrice?: string): ChangeF
   }
 }
 
-const dec = (s: string) => s.trim().replace(',', '.')
+// Normalised by the shared parser (decimal comma, typographic minus). Incomplete forms never reach the API,
+// so an unparseable value is passed through unchanged here and flagged on the field instead.
+const dec = (s: string) => {
+  const r = parseTypedNumber(s, { allowNegative: true })
+  return r.ok ? r.value : s.trim()
+}
 const est = (e: EstimateForm): EstimateDto => ({
   pessimistic: dec(e.pessimistic),
   expected: dec(e.expected),
@@ -155,8 +161,7 @@ export const fromScenarioDto = (s: ScenarioDto): ScenarioForm => ({
 })
 
 /** Format check only. Ranges and pessimistic ≤ expected ≤ optimistic are validated by the API. */
-const numberPattern = /^-?\d+([.,]\d+)?$/
-const filled = (s: string) => numberPattern.test(s.trim())
+const filled = (s: string) => parseTypedNumber(s, { allowNegative: true }).ok
 const estFilled = (e: EstimateForm) => filled(e.pessimistic) && filled(e.expected) && filled(e.optimistic)
 
 export function isComplete(c: ChangeForm): boolean {

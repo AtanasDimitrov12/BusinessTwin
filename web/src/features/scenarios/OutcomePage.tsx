@@ -64,6 +64,8 @@ export function OutcomePage() {
         </div>
       </div>
 
+      <ErrorNote error={remove.error} />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Segmented
           label="Case"

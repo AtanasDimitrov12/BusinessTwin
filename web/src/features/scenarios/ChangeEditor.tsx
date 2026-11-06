@@ -4,6 +4,7 @@ import { Field } from '../../components/ui/Field'
 import { InfoBox } from '../../components/ui/primitives'
 import { changeMeta, type ChangeForm, type HireForm, type MarketingForm, type PriceForm } from './changeForm'
 import { EstimateRow } from './EstimateRow'
+import { typedNumberError } from '../../lib/numberInput'
 
 export function ChangeEditor({
   change,
@@ -65,6 +66,7 @@ function HireFields({ change, set }: { change: HireForm; set: (patch: Partial<Hi
           inputMode="decimal"
           value={change.hoursPerMonth}
           onChange={(e) => set({ hoursPerMonth: e.target.value })}
+          error={typedNumberError(change.hoursPerMonth)}
         />
         <Field
           label="Full monthly cost"
@@ -73,6 +75,7 @@ function HireFields({ change, set }: { change: HireForm; set: (patch: Partial<Hi
           inputMode="decimal"
           value={change.employerCostPerMonth}
           onChange={(e) => set({ employerCostPerMonth: e.target.value })}
+          error={typedNumberError(change.employerCostPerMonth)}
         />
       </div>
       <Select
@@ -110,11 +113,13 @@ function PriceFields({ change, set }: { change: PriceForm; set: (patch: Partial<
         inputMode="decimal"
         value={change.newPrice}
         onChange={(e) => set({ newPrice: e.target.value })}
+        error={typedNumberError(change.newPrice)}
       />
       <EstimateRow
         label="Change in visits"
         hint="How many more or fewer visits you expect, as a % of today. Use a minus for fewer, e.g. −5."
         unit="%"
+        signed
         value={change.demandChangePercent}
         onChange={(demandChangePercent) => set({ demandChangePercent })}
       />
@@ -133,6 +138,7 @@ function MarketingFields({ change, set }: { change: MarketingForm; set: (patch: 
         inputMode="decimal"
         value={change.costPerMonth}
         onChange={(e) => set({ costPerMonth: e.target.value })}
+        error={typedNumberError(change.costPerMonth)}
       />
       <EstimateRow
         label="New customers per month"

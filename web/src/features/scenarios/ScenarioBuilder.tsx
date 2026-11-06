@@ -182,7 +182,7 @@ function LivePreview({
 }) {
   const result = simulation.data
   if (!complete && !result)
-    return <Card className="p-8 text-center text-sm text-muted">Fill in every field to see the result.</Card>
+    return <Card className="p-8 text-center text-sm text-muted">Fill in every field to see the result. Fields marked in red need a correction.</Card>
   if (simulation.isPending) return <Spinner label="Calculating…" />
 
   return (

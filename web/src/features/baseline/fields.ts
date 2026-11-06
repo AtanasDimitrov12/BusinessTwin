@@ -15,6 +15,8 @@ export interface FieldDefinition {
   /** Fictional sample salon, marked "sample" until the owner replaces it. */
   sample: string
   allowNegative?: boolean
+  /** Input rules beyond the default (two decimals, thousands separators rejected). */
+  rules?: { maxDecimals: number; small: boolean }
 }
 
 export const baselineFields: FieldDefinition[] = [
@@ -22,7 +24,7 @@ export const baselineFields: FieldDefinition[] = [
   { name: 'averagePrice', step: 'customers', label: 'Average price per visit', hint: 'Monthly sales divided by the number of visits.', kind: 'money', prefix: '€', sample: '42.00' },
   { name: 'costPerService', step: 'customers', label: 'Cost per visit', hint: 'Products, supplies and card fees used for one visit.', kind: 'money', prefix: '€', sample: '6.00' },
   { name: 'staffHoursPerMonth', step: 'time', label: 'Staff hours with customers', hint: 'Hours your whole team can spend on customers in a month, owner included.', kind: 'hours', suffix: 'h / month', sample: '560' },
-  { name: 'serviceTimeHours', step: 'time', label: 'Time per visit', hint: 'Average length of one appointment, e.g. 1.25 for 75 minutes.', kind: 'hours', suffix: 'hours', sample: '1.25' },
+  { name: 'serviceTimeHours', step: 'time', label: 'Time per visit', hint: 'Average length of one appointment, e.g. 1.25 for 75 minutes.', kind: 'hours', suffix: 'hours', sample: '1.25', rules: { maxDecimals: 4, small: true } },
   { name: 'wagesPerMonth', step: 'costs', label: 'Wages', hint: 'All wages per month, including employer costs.', kind: 'money', prefix: '€', suffix: '/ month', sample: '9000.00' },
   { name: 'otherFixedCostsPerMonth', step: 'costs', label: 'Other fixed costs', hint: 'Rent, energy, software, insurance: costs that stay the same each month.', kind: 'money', prefix: '€', suffix: '/ month', sample: '3500.00' },
   { name: 'cashOnHand', step: 'costs', label: 'Cash in the bank today', hint: 'Used to check whether cash could run short in the coming months.', kind: 'money', prefix: '€', sample: '6000.00', allowNegative: true },
