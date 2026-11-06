@@ -12,7 +12,6 @@ import {
   Lock,
   Scale,
   ShieldCheck,
-  Sparkles,
   Tags,
   Trash2,
   Users,
