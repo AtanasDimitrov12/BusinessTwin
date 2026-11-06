@@ -254,6 +254,18 @@
 }
 .tooltip[data-instant] { transition-duration: 0ms; }
 
+/* Popovers (Base UI): grow out of the trigger (--transform-origin), 200ms strong ease-out in, a quicker 150ms out. */
+.popover {
+  transform-origin: var(--transform-origin);
+  transition: opacity 200ms var(--ease-out), scale 200ms var(--ease-out);
+}
+.popover[data-starting-style],
+.popover[data-ending-style] {
+  opacity: 0;
+  scale: 0.96;
+}
+.popover[data-ending-style] { transition-duration: 150ms; }
+
 /* Materials: translucent chrome that content scrolls under (apple-design §12).
    Solid when the visitor asks for less transparency or more contrast. */
 @utility material {

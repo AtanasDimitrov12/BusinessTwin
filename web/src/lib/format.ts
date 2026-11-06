@@ -45,3 +45,28 @@ export const formatPercentPoints = (value: string) =>
 
 /** Chart geometry only: bar heights and line positions. Labels always use the original string. */
 export const toPlot = (value: string) => Number(value)
+
+/**
+ * Orders two decimal strings exactly (−1, 0, 1), for sorting. It compares the digits as text, so no money passes
+ * through binary floating point: "0.1" and "0.10" are equal, "-5" is below "-4.99".
+ */
+export function compareDecimal(a: string, b: string): number {
+  const parse = (v: string) => {
+    const t = v.trim()
+    const negative = isNegative(t)
+    const [int, frac = ''] = abs(t).split('.')
+    return { negative, int: int.replace(/^0+(?=\d)/, ''), frac: frac.replace(/0+$/, '') }
+  }
+  const x = parse(a)
+  const y = parse(b)
+  if (x.negative !== y.negative) return x.negative ? -1 : 1
+  const magnitude = () => {
+    if (x.int.length !== y.int.length) return x.int.length < y.int.length ? -1 : 1
+    if (x.int !== y.int) return x.int < y.int ? -1 : 1
+    const len = Math.max(x.frac.length, y.frac.length)
+    const fx = x.frac.padEnd(len, '0')
+    const fy = y.frac.padEnd(len, '0')
+    return fx === fy ? 0 : fx < fy ? -1 : 1
+  }
+  return x.negative ? -magnitude() : magnitude()
+}
