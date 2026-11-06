@@ -113,7 +113,7 @@ function PriceFields({ change, set }: { change: PriceForm; set: (patch: Partial<
       />
       <EstimateRow
         label="Change in visits"
-        hint="How many more or fewer visits you expect, as a % of today. Use a minus for fewer, e.g. −5."
+        hint="How many more or fewer visits you expect, as a % of today's visits. Use a minus for fewer, e.g. −5. A later price change replaces this one."
         unit="%"
         value={change.demandChangePercent}
         onChange={(demandChangePercent) => set({ demandChangePercent })}

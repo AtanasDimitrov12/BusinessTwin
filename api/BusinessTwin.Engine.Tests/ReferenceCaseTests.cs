@@ -150,6 +150,23 @@ public class ReferenceCaseTests
     }
 
     [Fact]
+    public void Stacked_price_changes_latest_replaces_earlier_and_is_relative_to_baseline()
+    {
+        var first = new PriceChange(StartMonth: 1, NewPrice: 44m, DemandChangePercent: Estimate.Certain(-5m));
+        var second = new PriceChange(StartMonth: 2, NewPrice: 48m, DemandChangePercent: Estimate.Certain(-10m));
+        var expected = ScenarioEngine.Simulate(new ScenarioInput(Salon, [first, second], 2)).For(Case.Expected);
+
+        // Month 1: first change only. 400 − 5% = 380 visits × (44 − 5) = 14,820 − 11,000 = 3,820.
+        Assert.Equal(380m, expected.Months[0].Demand);
+        Assert.Equal(3_820m, expected.Months[0].MonthlyResult);
+        // Month 2: the second change replaces the first. −10% of the 400 baseline visits = 360,
+        // not −10% of 380. 360 × (48 − 5) = 15,480 − 11,000 = 4,480.
+        Assert.Equal(360m, expected.Months[1].Demand);
+        Assert.Equal(48m, expected.Months[1].AveragePrice);
+        Assert.Equal(4_480m, expected.Months[1].MonthlyResult);
+    }
+
+    [Fact]
     public void Driver_effects_add_up_to_the_total_difference_in_every_case()
     {
         var changes = new Change[]
@@ -189,6 +206,6 @@ public class ReferenceCaseTests
     [InlineData(ScenarioEngine.MaxHorizonMonths + 1)]
     public void Horizon_outside_range_is_rejected(int horizon)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => ScenarioEngine.Simulate(new ScenarioInput(Salon, [], horizon)));
+        Assert.Throws<InvalidScenarioException>(() => ScenarioEngine.Simulate(new ScenarioInput(Salon, [], horizon)));
     }
 }

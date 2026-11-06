@@ -62,8 +62,33 @@
   ::selection { background: var(--color-amber-200); }
 }
 
+/* Scroll reveals on the landing page (see lib/useReveal.ts). Animations, not transitions, so they
+   do not interfere with hover transitions on the same elements. */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes reveal-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+[data-reveal]:not([data-inview]),
+[data-reveal-children]:not([data-inview]) > * { opacity: 0; }
+[data-reveal][data-inview],
+[data-reveal-children][data-inview] > * { animation: reveal-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+[data-reveal-bars] .reveal-bar { transform-origin: left; }
+[data-reveal-bars]:not([data-inview]) .reveal-bar { transform: scaleX(0); }
+[data-reveal-bars][data-inview] .reveal-bar { animation: reveal-grow-x 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* Stagger: one item after another. */
+[data-reveal-children] > :nth-child(2), [data-reveal-bars] > :nth-child(2) .reveal-bar { animation-delay: 90ms; }
+[data-reveal-children] > :nth-child(3), [data-reveal-bars] > :nth-child(3) .reveal-bar { animation-delay: 180ms; }
+[data-reveal-children] > :nth-child(4), [data-reveal-bars] > :nth-child(4) .reveal-bar { animation-delay: 270ms; }
+[data-reveal-children] > :nth-child(5), [data-reveal-bars] > :nth-child(5) .reveal-bar { animation-delay: 360ms; }
+[data-reveal-children] > :nth-child(6), [data-reveal-bars] > :nth-child(6) .reveal-bar { animation-delay: 450ms; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  [data-reveal-children] > *, [data-reveal-bars] .reveal-bar { animation-delay: 0ms !important; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

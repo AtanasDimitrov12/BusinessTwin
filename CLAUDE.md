@@ -18,7 +18,9 @@ The motivating example (Design Challenge): a salon with 4 workers at ~100 custom
 - **Web PoC in progress** (started 17 Oct 2026), built against `docs/architecture.md`. See README for how to run it.
   - Done: scenario engine (hire with ramp-up, price as % demand change, marketing; three cases; drivers) with reference tests; API with Identity cookie auth, `OwnerScope` guard, business/baseline/scenario endpoints, results and live `simulate` endpoint; EF Core schema + migration; Docker Compose; CI.
   - Web app (redesigned after the Figma Make prototype, logo in `web/public/brand/`): public landing page, sign-in, 5-step setup wizard, baseline dashboard with business map, decision builder with live three-case preview, outcome page (charts, waterfall, cash warning, month table), plans comparison, assumptions page. Design rationale: `docs/ux-design-research.md`.
-  - Next: usability test with salon owners; account deletion endpoint; adviser read-only sharing (later).
+  - Account deletion: `DELETE /api/auth/account` (cascades to all owner data) with a sidebar action in the web app.
+  - Next: usability test with salon owners; adviser read-only sharing (later).
+  - Before changing change types, engine rules, the schema or DTOs, read *Maintenance notes* in `docs/architecture.md`.
 - Next research step: verify the calculation model with hand-worked reference cases, which become the engine's unit tests.
 
 ## Tech stack (decided)

@@ -80,7 +80,7 @@ Mapped to OWASP Top 10:2025:
 - Injection – EF Core parameterised queries; every request validated before the engine.
 - Security misconfiguration – HTTPS only, CORS limited to the app's own domain, secrets in environment variables.
 
-Privacy: collect only the figures the model needs, fictional/anonymised data in tests, owner can delete their business with all scenarios, and the UI states that results are estimates, not financial advice.
+Privacy: collect only the figures the model needs, fictional/anonymised data in tests, owner can delete their business with all scenarios, or their whole account, and the UI states that results are estimates, not financial advice.
 
 ## Implementation decisions (PoC build, 17 Oct 2026)
 
@@ -108,7 +108,17 @@ Decisions made while setting up the code, with their reason.
 | Frontend styling: Tailwind CSS v4 with design tokens in `web/src/index.css`, palette and type from the Figma Make prototype, navy from the logo; light theme only | Same visual language as the prototype the owner tested; tokens keep colours consistent across UI and charts |
 | Fonts self-hosted via `@fontsource`; icons from `lucide-react` | No requests to Google Fonts (GDPR, see `ux-design-research.md`) |
 | Public landing page at `/`, sign-in at `/login` and `/register`, owner area under `/app` (lazy-loaded) | Explains the product before sign-up; the landing page does not download the charting library |
+| Validation happens twice: the API (DTO attributes, `ChangeDto.Validate`, `HorizonProblem`) and the engine (`ScenarioEngine.Validate`). The engine throws `InvalidScenarioException`, which `InvalidScenarioHandler` turns into a 400 problem response (23 Oct 2026) | The engine stays safe on its own, and an input that slips past the API is the owner's error (400), not a server error (500). A new engine rule must also be added on the API side so the owner gets a field-level message |
+| `DELETE /api/auth/account` deletes the Identity user; the business, baseline, scenarios, changes and estimates go with it by database cascade (23 Oct 2026) | Privacy: the owner can remove all their data, including the account itself. Deleting only the business (`DELETE /api/business`) keeps the account |
+| `rampUpMonths` is stored in `changes.parameters` (decimal map) and converted back to `int` when read | Keeps one jsonb map per change; the value is always written from an `int`, so the conversion is exact |
 | Landing-page example figures are real engine output for a labelled sample salon, pasted in as text | No invented marketing numbers; nothing is calculated in the browser |
+
+## Maintenance notes
+
+- **New change type**: engine `Inputs.cs` (new record) → `CaseBuilder` / `DemandModel` (and `DriverExplainer` if it has its own driver) → reference tests; then the `ChangeType` enum, `ChangeDto` fields and validation, and both directions of `EngineMapping`. No DB migration is needed: certain parameters go in `changes.parameters` (jsonb), uncertain ones in `estimates`.
+- **New engine rule**: add it in `ScenarioEngine.Validate` and on the API side (DTO or controller), see the validation decision above.
+- **DB schema change**: edit the entities or `AppDbContext`, then from `api/` run `dotnet ef migrations add <Name> -p BusinessTwin.Api -o Data/Migrations`. In development it is applied on start-up (`Database:MigrateOnStartup`).
+- **DTO change**: building the API rewrites `api/openapi/openapi.json`. Run `npm run gen:api` in `web/` afterwards, or the frontend drifts from the API (CI fails on a stale file).
 
 ## Open design questions
 
