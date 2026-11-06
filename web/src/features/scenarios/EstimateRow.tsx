@@ -3,7 +3,7 @@ import type { EstimateForm } from './changeForm'
 
 const cases = [
   { key: 'pessimistic', label: 'Pessimistic', bar: 'bg-bad' },
-  { key: 'expected', label: 'Expected', bar: 'bg-navy' },
+  { key: 'expected', label: 'Expected', bar: 'bg-accent' },
   { key: 'optimistic', label: 'Optimistic', bar: 'bg-good' },
 ] as const
 
@@ -28,9 +28,9 @@ export function EstimateRow({
       {hint && <p className="text-xs leading-relaxed text-muted">{hint}</p>}
       <div className="grid grid-cols-3 gap-2">
         {cases.map((c) => (
-          <div key={c.key} className="overflow-hidden rounded-xl border border-line bg-surface focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/15">
+          <div key={c.key} className="overflow-hidden rounded-xl border border-line bg-surface focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
             <div className={`h-1 ${c.bar}`} aria-hidden />
-            <label htmlFor={`${id}-${c.key}`} className="block px-2.5 pt-1.5 text-[10px] font-bold uppercase tracking-wider text-muted">
+            <label htmlFor={`${id}-${c.key}`} className="block px-2.5 pt-1.5 text-xs font-semibold text-muted">
               {c.label}
             </label>
             <div className="flex items-baseline px-2.5 pb-1.5">

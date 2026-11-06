@@ -48,6 +48,32 @@ export function LandingPage() {
   )
 }
 
+/** Appears once the visitor has scrolled past the hero. Smooth scrolling comes from index.css (off for reduced motion). */
+function BackToTop() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return (
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0 })}
+      aria-label="Back to top"
+      tabIndex={visible ? 0 : -1}
+      aria-hidden={!visible}
+      className={`fixed bottom-6 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white shadow-lift transition-[opacity,translate,scale,background-color] duration-200 ease-out hover:bg-accent/90 active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-6 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+    >
+      <ArrowUp size={20} aria-hidden />
+    </button>
+  )
+}
+
 function Container({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 }
@@ -68,10 +94,10 @@ function SiteNav() {
       <Container className="flex h-16 items-center justify-between gap-4">
         <Logo />
         <nav className="hidden items-center gap-7 text-sm font-medium text-muted md:flex" aria-label="Page sections">
-          <a href="#how" className="hover:text-ink">How it works</a>
-          <a href="#decisions" className="hover:text-ink">Decisions</a>
-          <a href="#why" className="hover:text-ink">Why it's different</a>
-          <a href="#faq" className="hover:text-ink">FAQ</a>
+          <a href="#how" className="transition-colors hover:text-ink">How it works</a>
+          <a href="#decisions" className="transition-colors hover:text-ink">Decisions</a>
+          <a href="#why" className="transition-colors hover:text-ink">Why it's different</a>
+          <a href="#faq" className="transition-colors hover:text-ink">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
           <ButtonLink to="/login" variant="ghost" size="sm">Sign in</ButtonLink>
@@ -89,9 +115,9 @@ function Hero() {
         aria-hidden
         className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full bg-amber-50 blur-3xl"
       />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-navy-50 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-accent-50 blur-3xl" />
       <Container className="relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1.05fr_1fr]">
-        <div className="animate-rise">
+        <div className="animate-rise-slow">
           <Badge tone="amber" className="mb-6">
             <Sparkles size={12} /> For salons and barbershops with 3–10 staff
           </Badge>
@@ -138,23 +164,23 @@ function HeroVisual() {
     { m: 6, v: '−€446', h: 22 },
   ]
   return (
-    <div className="relative mb-10 mt-8 animate-rise [animation-delay:120ms] lg:mb-0" aria-label="Example result for a sample salon">
+    <div className="relative mb-10 mt-8 animate-rise-slow [animation-delay:80ms] lg:mb-0" aria-label="Example result for a sample salon">
       <div className="rounded-3xl border border-line bg-surface p-5 shadow-lift sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-2">
           <div>
             <div className="text-xs font-semibold text-muted">Sample salon</div>
             <div className="font-display text-lg font-semibold">Hire a stylist + local campaign</div>
           </div>
-          <Badge tone="navy">12 months</Badge>
+          <Badge tone="accent">12 months</Badge>
         </div>
         <div className="rounded-2xl border border-bad-200 bg-bad-50 p-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">Expected case</div>
+          <div className="text-xs font-semibold text-muted">Expected case</div>
           <div className="mt-1 font-mono text-3xl text-bad">−€8,467</div>
           <div className="text-xs font-semibold text-bad">less over the year than not doing it</div>
           <div className="mt-3">
             <div className="relative h-2 rounded-full bg-white">
-              <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-bad via-navy to-good opacity-75" />
-              <div className="absolute -top-1 left-[64%] size-4 -translate-x-1/2 rounded-full border-2 border-white bg-navy shadow" />
+              <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-bad via-accent to-good opacity-75" />
+              <div className="absolute -top-1 left-[64%] size-4 -translate-x-1/2 rounded-full border-2 border-white bg-accent shadow" />
             </div>
             <div className="mt-1.5 flex justify-between font-mono text-[10px] text-muted">
               <span>Pessimistic −€33,102</span>
@@ -182,13 +208,13 @@ function HeroVisual() {
         </p>
       </div>
       <div className="absolute -bottom-12 -left-3 rotate-[-2deg] rounded-2xl border border-line bg-surface px-4 py-2.5 shadow-lift sm:-left-8">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-muted">To break even</div>
-        <div className="text-base font-semibold text-navy">
+        <div className="text-xs font-semibold text-muted">To break even</div>
+        <div className="text-base font-semibold text-accent">
           <span className="font-mono">100</span> new visits a month
         </div>
       </div>
       <div className="absolute -top-9 right-4 rotate-[2deg] rounded-2xl border border-good-200 bg-surface px-4 py-2.5 shadow-lift sm:-right-4">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-muted">Optimistic case</div>
+        <div className="text-xs font-semibold text-muted">Optimistic case</div>
         <div className="text-base font-semibold text-good-dark">Catches up in month 3</div>
       </div>
     </div>
@@ -213,7 +239,7 @@ function FactStrip() {
 function Fact({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <div className="font-display text-4xl font-semibold text-navy">{value}</div>
+      <div className="font-display text-4xl font-semibold text-accent">{value}</div>
       <div className="mx-auto mt-1 max-w-[16rem] text-sm text-muted">{label}</div>
     </div>
   )
@@ -244,7 +270,7 @@ function Problem() {
           ))}
         </div>
         <p className="mt-8 max-w-2xl text-lg">
-          <strong className="font-semibold text-navy">Business Twin connects them</strong>: one model of your salon where demand, staff time, costs and
+          <strong className="font-semibold text-accent">Business Twin connects them</strong>: one model of your salon where demand, staff time, costs and
           cash move together when you change something.
         </p>
       </Container>
@@ -281,12 +307,12 @@ function HowItWorks() {
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
           {[
             ['Pessimistic', '20%', 'bg-bad'],
-            ['Expected', '35%', 'bg-navy'],
+            ['Expected', '35%', 'bg-accent'],
             ['Optimistic', '50%', 'bg-good'],
           ].map(([l, v, c]) => (
             <div key={l} className="overflow-hidden rounded-lg border border-line bg-surface">
               <div className={`h-1 ${c}`} />
-              <div className="px-2 pt-1.5 text-[9px] font-bold uppercase tracking-wider text-muted">{l}</div>
+              <div className="px-2 pt-1.5 text-[9px] font-semibold text-muted">{l}</div>
               <div className="pb-2 font-mono text-base">{v}</div>
             </div>
           ))}
@@ -300,7 +326,7 @@ function HowItWorks() {
       visual: (
         <div className="flex h-24 items-end gap-3 px-2">
           {[
-            ['Today', 'h-[55%]', 'bg-navy'],
+            ['Today', 'h-[55%]', 'bg-accent'],
             ['Pess.', 'h-[35%]', 'bg-bad'],
             ['Exp.', 'h-[68%]', 'bg-good'],
             ['Opt.', 'h-[90%]', 'bg-good'],
@@ -321,7 +347,7 @@ function HowItWorks() {
         <ol className="grid gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
             <li key={s.title} className="flex flex-col rounded-3xl border border-line bg-canvas p-6">
-              <span className="flex size-9 items-center justify-center rounded-full bg-navy font-mono text-sm text-white">{i + 1}</span>
+              <span className="flex size-9 items-center justify-center rounded-full bg-accent font-mono text-sm text-white">{i + 1}</span>
               <h3 className="mt-4 font-display text-xl font-semibold">{s.title}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{s.text}</p>
               <div className="mt-6 rounded-2xl bg-line-soft/70 p-4">{s.visual}</div>
@@ -360,11 +386,11 @@ function Decisions() {
           {(Object.keys(questions) as (keyof typeof questions)[]).map((k) => {
             const m = changeMeta[k]
             return (
-              <article key={k} className="group rounded-3xl border border-line bg-surface p-6 shadow-card transition hover:-translate-y-1 hover:shadow-lift">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-navy group-hover:text-white">
+              <article key={k} className="group rounded-3xl border border-line bg-surface p-6 shadow-card transition-[translate,scale,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-1 hover:shadow-lift">
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
                   <m.icon size={22} aria-hidden />
                 </span>
-                <div className="mt-5 text-xs font-bold uppercase tracking-wider text-muted">{m.title}</div>
+                <div className="mt-5 text-xs font-semibold text-muted">{m.title}</div>
                 <h3 className="mt-1 font-display text-xl font-semibold leading-snug">“{questions[k].q}”</h3>
                 <ul className="mt-5 space-y-2 border-t border-line pt-5 text-sm text-muted">
                   {questions[k].asks.map((a) => (
@@ -392,7 +418,7 @@ function Features() {
           sub="Not a finance tool with a salon skin: staff time, new versus moved customers and cash are part of the model from the start."
         />
         <div className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-6">
-          <Tile className="md:col-span-4 md:row-span-2 bg-navy text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
+          <Tile className="md:col-span-4 md:row-span-2 bg-accent text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
             <div className="mt-8 flex h-40 items-end gap-4">
               {[
                 ['Without', '50%', 'bg-white/30'],
@@ -441,7 +467,7 @@ function Tile({
   children?: ReactNode
 }) {
   return (
-    <div className={`rounded-3xl border p-6 ${dark ? 'border-navy' : 'border-line bg-canvas'} ${className}`}>
+    <div className={`rounded-3xl border p-6 ${dark ? 'border-accent' : 'border-line bg-canvas'} ${className}`}>
       {Icon && <Icon size={22} className="text-amber" aria-hidden />}
       <h3 className={`font-display font-semibold ${dark ? 'text-2xl md:text-3xl' : 'mt-3 text-lg'}`}>{title}</h3>
       <p className={`mt-2 text-sm leading-relaxed ${dark ? 'max-w-lg text-white/75' : 'text-muted'}`}>{text}</p>
@@ -518,7 +544,7 @@ function Trust() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((i) => (
             <div key={i.title} className="text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-navy-50 text-navy">
+              <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-accent-50 text-accent">
                 <i.icon size={22} aria-hidden />
               </span>
               <h3 className="mt-4 font-semibold">{i.title}</h3>
@@ -567,7 +593,7 @@ function Faq() {
             <details key={f.q} className="group px-6 py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
                 {f.q}
-                <ChevronDown size={18} className="shrink-0 text-muted transition-transform group-open:rotate-180" aria-hidden />
+                <ChevronDown size={18} className="shrink-0 text-muted transition-transform duration-200 ease-out group-open:rotate-180" aria-hidden />
               </summary>
               <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
             </details>
@@ -581,7 +607,7 @@ function Faq() {
 function FinalCta() {
   return (
     <section className="px-4 pb-20 sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-navy px-6 py-16 text-center text-white sm:px-12">
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-accent px-6 py-16 text-center text-white sm:px-12">
         <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-amber/30 blur-3xl" />
         <h2 className="relative mx-auto max-w-2xl font-display text-3xl font-semibold leading-tight md:text-4xl">
           Your next decision deserves more than a gut feeling.

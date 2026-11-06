@@ -10,6 +10,7 @@ import { Field } from '../../components/ui/Field'
 import { Logo } from '../../components/ui/Logo'
 import { Card, ErrorNote, Eyebrow, InfoBox } from '../../components/ui/primitives'
 import { SourceBadge } from '../../components/ui/SourceBadge'
+import { SourcePicker } from '../../components/ui/SourcePicker'
 import { useSaveBusiness } from '../business/business'
 import { useSaveBaseline } from './baseline'
 import { baselineFields, formatField, type BaselineField, type WizardStep } from './fields'
@@ -75,7 +76,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
   })
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-dvh bg-canvas">
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-3 sm:px-6">
           <Logo to={baseline ? '/app' : '/'} />
@@ -87,11 +88,11 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                   onClick={() => i < step && setStep(i)}
                   disabled={i > step}
                   aria-current={i === step ? 'step' : undefined}
-                  className={`flex items-center gap-1.5 text-xs font-medium ${i === step ? 'text-navy' : i < step ? 'text-muted hover:text-navy' : 'text-faint'}`}
+                  className={`flex items-center gap-1.5 text-xs font-medium ${i === step ? 'text-accent' : i < step ? 'text-muted hover:text-accent' : 'text-faint'}`}
                 >
                   <span
                     className={`flex size-6 items-center justify-center rounded-full border text-[11px] font-bold ${
-                      i === step ? 'border-navy bg-navy text-white' : i < step ? 'border-good-200 bg-good-50 text-good' : 'border-line bg-surface'
+                      i === step ? 'border-accent bg-accent text-white' : i < step ? 'border-good-200 bg-good-50 text-good' : 'border-line bg-surface'
                     }`}
                   >
                     {i < step ? <Check size={12} /> : i + 1}
@@ -123,7 +124,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                 error={errors.staffCount?.message}
               />
               {!baseline && (
-                <InfoBox tone="navy">
+                <InfoBox tone="accent">
                   The next steps start with a <strong>sample salon</strong>. Replace each value with your own; until then it stays marked as a sample.
                 </InfoBox>
               )}
@@ -142,18 +143,11 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                 inputMode="decimal"
                 error={errors.values?.[f.name]?.message}
                 aside={
-                  sources[f.name] === 'sample' ? (
-                    <SourceBadge source="sample" />
-                  ) : (
-                    <select
-                      aria-label={`How sure are you about ${f.label}?`}
-                      className="rounded-lg border border-line bg-surface px-2 py-1 text-xs text-muted"
-                      {...form.register(`sources.${f.name}`)}
-                    >
-                      <option value="entered">I know this</option>
-                      <option value="estimated">My estimate</option>
-                    </select>
-                  )
+                  <SourcePicker
+                    label={`How sure are you about ${f.label}?`}
+                    value={sources[f.name]}
+                    onChange={(v) => form.setValue(`sources.${f.name}`, v, { shouldDirty: true })}
+                  />
                 }
                 {...form.register(`values.${f.name}`, {
                   onChange: () => {

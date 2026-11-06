@@ -18,7 +18,7 @@ export function Field({ label, hint, prefix, suffix, error, aside, className = '
 
   return (
     <div className={`space-y-1 ${className}`}>
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
         <label htmlFor={id} className="block text-sm font-semibold text-ink">
           {label}
         </label>
@@ -35,7 +35,7 @@ export function Field({ label, hint, prefix, suffix, error, aside, className = '
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
-          className={`w-full min-w-0 border bg-surface px-3 py-2.5 text-sm text-ink transition focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/15 ${radius} ${
+          className={`w-full min-w-0 border bg-surface px-3 py-2.5 text-sm text-ink transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 ${radius} ${
             error ? 'border-bad' : 'border-line'
           }`}
           {...input}

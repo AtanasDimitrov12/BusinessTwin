@@ -18,18 +18,23 @@ export function AppShell() {
   const business = useBusiness()
 
   return (
-    <div className="min-h-screen bg-canvas lg:flex">
+    <div className="min-h-dvh bg-canvas lg:flex">
       {/* Mobile top bar */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-surface px-4 py-3 lg:hidden">
         <Logo to="/app" />
-        <button type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-muted hover:bg-line-soft" aria-label="Open menu">
+        <button type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-muted transition-[background-color,translate,scale] duration-150 ease-out hover:bg-line-soft active:scale-[0.95]" aria-label="Open menu">
           <Menu size={20} />
         </button>
       </div>
 
-      {open && <div className="fixed inset-0 z-40 bg-ink/30 lg:hidden" onClick={() => setOpen(false)} aria-hidden />}
+      {/* Always mounted so it can fade; it only takes clicks while the menu is open. */}
+      <div
+        className={`fixed inset-0 z-40 bg-ink/30 transition-opacity duration-300 ease-drawer lg:hidden ${open ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-line bg-surface transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-line bg-surface transition-transform duration-300 ease-drawer lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0 lg:transition-none ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -38,7 +43,7 @@ export function AppShell() {
             <Logo to="/app" />
             <div className="mt-2 truncate pl-0.5 text-xs text-muted">{business.data?.name}</div>
           </div>
-          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-muted lg:hidden" aria-label="Close menu">
+          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-muted transition-transform duration-150 ease-out active:scale-[0.95] lg:hidden" aria-label="Close menu">
             <X size={18} />
           </button>
         </div>
@@ -61,7 +66,7 @@ export function AppShell() {
 function SidebarNav({ onNavigate }: { onNavigate: () => void }) {
   const plans = useScenarios()
   return (
-    <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Main">
+    <nav className="flex-1 space-y-1 overflow-y-auto overscroll-contain p-3" aria-label="Main">
       {nav.map((item) => (
         <NavLink
           key={item.to}
@@ -70,7 +75,7 @@ function SidebarNav({ onNavigate }: { onNavigate: () => void }) {
           onClick={onNavigate}
           className={({ isActive }) =>
             `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-              isActive ? 'bg-navy-50 font-semibold text-navy' : 'text-muted hover:bg-canvas hover:text-ink'
+              isActive ? 'bg-accent-50 font-semibold text-accent' : 'text-muted hover:bg-canvas hover:text-ink'
             }`
           }
         >

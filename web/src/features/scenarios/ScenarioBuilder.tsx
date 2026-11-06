@@ -151,15 +151,15 @@ function DecisionPicker({ onPick }: { onPick: (type: ChangeType) => void }) {
               key={t}
               type="button"
               onClick={() => onPick(t)}
-              className="group flex flex-col items-start rounded-2xl border border-line bg-surface p-6 text-left shadow-card transition hover:-translate-y-0.5 hover:border-navy hover:shadow-lift"
+              className="group flex flex-col items-start rounded-2xl border border-line bg-surface p-6 text-left shadow-card transition-[translate,scale,border-color,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-0.5 hover:border-accent hover:shadow-lift active:scale-[0.98]"
             >
-              <span className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-navy group-hover:text-white">
+              <span className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
                 <Icon size={22} aria-hidden />
               </span>
               <span className="font-display text-lg font-semibold">{m.title}</span>
               <span className="mt-1 text-sm leading-relaxed text-muted">{m.description}</span>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-navy">
-                Start <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
+                Start <ArrowRight size={14} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
               </span>
             </button>
           )
@@ -189,7 +189,7 @@ function LivePreview({
     <div className="space-y-4" aria-live="polite" aria-busy={simulation.isFetching}>
       {simulation.error && <ErrorNote error={simulation.error} />}
       {result && (
-        <div className={simulation.isFetching || simulation.isError ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+        <div className={`transition-opacity duration-200 ${simulation.isFetching || simulation.isError ? 'opacity-60 delay-200' : ''}`}>
           <div className="space-y-4">
             <ResultHeadline result={result} caseKey="expected" />
             <KeyFacts result={caseOf(result, 'expected')} horizonMonths={result.horizonMonths} />
@@ -218,7 +218,7 @@ function PreviewMap({ result, types, horizonMonths }: { result: NonNullable<Retu
       <BusinessMap
         nodes={mapNodes(last, delta)}
         highlighted={highlightedFor(types)}
-        resultTone={isNegative(last.monthlyResult) ? 'bad' : isNegative(delta) ? 'navy' : 'good'}
+        resultTone={isNegative(last.monthlyResult) ? 'bad' : isNegative(delta) ? 'accent' : 'good'}
         capacityLimited={!isZero(last.unservedDemand)}
       />
     </Card>

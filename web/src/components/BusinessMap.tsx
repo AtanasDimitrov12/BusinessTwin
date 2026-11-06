@@ -27,12 +27,12 @@ const labels: Record<MapKey, string> = {
 export function BusinessMap({
   nodes,
   highlighted = [],
-  resultTone = 'navy',
+  resultTone = 'accent',
   capacityLimited = false,
 }: {
   nodes: Record<MapKey, MapNode>
   highlighted?: MapKey[]
-  resultTone?: 'navy' | 'good' | 'bad'
+  resultTone?: 'accent' | 'good' | 'bad'
   capacityLimited?: boolean
 }) {
   const node = (k: MapKey, kind: 'input' | 'derived' | 'result') => (
@@ -70,29 +70,29 @@ function Node({
   kind,
   highlighted,
   tone,
-}: MapNode & { label: string; kind: 'input' | 'derived' | 'result'; highlighted: boolean; tone: 'navy' | 'good' | 'bad' }) {
-  const resultBg = { navy: 'bg-navy border-navy', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
+}: MapNode & { label: string; kind: 'input' | 'derived' | 'result'; highlighted: boolean; tone: 'accent' | 'good' | 'bad' }) {
+  const resultBg = { accent: 'bg-accent border-accent', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
   const style =
     kind === 'result'
       ? `${resultBg} text-white shadow-lift`
       : highlighted
         ? 'border-amber bg-amber-50 ring-2 ring-amber/25'
         : kind === 'derived'
-          ? 'border-navy-200 bg-navy-50'
+          ? 'border-accent-200 bg-accent-50'
           : 'border-line bg-surface'
 
   return (
     <div className={`relative rounded-xl border px-3 py-2.5 text-center transition-colors ${style}`}>
       {highlighted && kind !== 'result' && <span className="absolute inset-y-3 left-0 w-1 rounded-r bg-amber" aria-hidden />}
       <div
-        className={`text-[10px] font-bold uppercase tracking-[0.1em] ${
+        className={`text-xs font-semibold ${
           kind === 'result' ? 'text-white/75' : highlighted ? 'text-amber-dark' : 'text-muted'
         }`}
       >
         {label}
         {highlighted && kind !== 'result' && <span className="sr-only"> (changed by this decision)</span>}
       </div>
-      <div className={`font-mono text-lg font-medium sm:text-xl ${kind === 'result' ? 'text-white' : 'text-navy'}`}>{value}</div>
+      <div className={`font-mono text-lg font-medium sm:text-xl ${kind === 'result' ? 'text-white' : 'text-accent'}`}>{value}</div>
       <div className={`text-[11px] ${kind === 'result' ? 'text-white/75' : 'text-muted'}`}>{sub}</div>
     </div>
   )
@@ -100,7 +100,7 @@ function Node({
 
 function Connector({ label, warn = false }: { label?: string; warn?: boolean }) {
   return (
-    <div className={`flex items-center justify-center gap-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${warn ? 'text-bad' : 'text-faint'}`}>
+    <div className={`flex items-center justify-center gap-1.5 py-0.5 text-xs font-semibold ${warn ? 'text-bad' : 'text-faint'}`}>
       <ArrowDown size={14} aria-hidden />
       {label && <span>{label}</span>}
     </div>

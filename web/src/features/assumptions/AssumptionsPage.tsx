@@ -110,7 +110,7 @@ function Table({ head, children }: { head: string[]; children: React.ReactNode }
         <thead className="border-b border-line bg-canvas">
           <tr>
             {head.map((h, i) => (
-              <th key={h} className={`p-3.5 text-[11px] font-bold uppercase tracking-wider text-muted ${i === 1 ? 'text-right' : 'text-left'}`}>
+              <th key={h} className={`p-3.5 text-xs font-semibold text-muted ${i === 1 ? 'text-right' : 'text-left'}`}>
                 {h}
               </th>
             ))}
@@ -126,7 +126,7 @@ function Row({ cells }: { cells: React.ReactNode[] }) {
   return (
     <tr>
       <td className="p-3.5">{cells[0]}</td>
-      <td className="p-3.5 text-right font-mono text-navy">{cells[1]}</td>
+      <td className="p-3.5 text-right font-mono text-accent">{cells[1]}</td>
       <td className="p-3.5">{cells[2]}</td>
     </tr>
   )

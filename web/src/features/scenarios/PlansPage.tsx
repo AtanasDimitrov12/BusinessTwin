@@ -107,10 +107,10 @@ function CompareTable({ plans, results }: { plans: ScenarioDto[]; results: (Simu
       <table className="w-full min-w-[560px] text-sm">
         <thead>
           <tr className="border-b border-line bg-canvas">
-            <th className="w-56 p-4 text-left text-[11px] font-bold uppercase tracking-wider text-muted">Measure</th>
+            <th className="w-56 p-4 text-left text-xs font-semibold text-muted">Measure</th>
             {plans.map((p) => (
               <th key={p.id} className="border-l border-line-soft p-4 text-left align-top">
-                <Link to={`/app/plans/${p.id}`} className="font-semibold text-ink hover:text-navy hover:underline">
+                <Link to={`/app/plans/${p.id}`} className="font-semibold text-ink hover:text-accent hover:underline">
                   {p.name}
                 </Link>
                 <div className="mt-1.5 flex flex-wrap gap-1">

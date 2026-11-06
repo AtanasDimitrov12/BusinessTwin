@@ -177,7 +177,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/15"
+        className="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

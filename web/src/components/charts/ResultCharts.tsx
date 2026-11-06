@@ -42,6 +42,7 @@ export function ImpactChart({ result }: { result: CaseResultDto }) {
           <YAxis tickFormatter={euroTick} width={56} {...axisProps} />
           <ReferenceLine y={0} stroke={c.ink} strokeOpacity={0.25} />
           <Tooltip
+            isAnimationActive={false}
             cursor={{ fill: c.grid, opacity: 0.5 }}
             content={(args: TooltipArgs<(typeof data)[number]>) => {
               const d = datum(args)
@@ -50,19 +51,19 @@ export function ImpactChart({ result }: { result: CaseResultDto }) {
                   active={args.active}
                   title={`Month ${d.month.slice(1)}`}
                   rows={[
-                    { label: 'This month vs baseline', value: formatEuroDelta(d.diffLabel), color: c.navy },
+                    { label: 'This month vs baseline', value: formatEuroDelta(d.diffLabel), color: c.accent },
                     { label: 'Running total', value: formatEuroDelta(d.cumLabel), color: c.amber },
                   ]}
                 />
               ) : null
             }}
           />
-          <Bar dataKey="diff" radius={[5, 5, 0, 0]} maxBarSize={44}>
+          <Bar isAnimationActive={false} dataKey="diff" radius={[5, 5, 0, 0]} maxBarSize={44}>
             {data.map((d) => (
               <Cell key={d.month} fill={isNegative(d.diffLabel) ? c.bad : c.good} fillOpacity={0.8} />
             ))}
           </Bar>
-          <Line type="monotone" dataKey="cum" stroke={c.amber} strokeWidth={2.5} dot={{ r: 3, fill: c.amber, strokeWidth: 0 }} />
+          <Line isAnimationActive={false} type="monotone" dataKey="cum" stroke={c.amber} strokeWidth={2.5} dot={{ r: 3, fill: c.amber, strokeWidth: 0 }} />
         </ComposedChart>
       </ResponsiveContainer>
       <Legend
@@ -99,6 +100,7 @@ export function CashChart({ baseline, result }: { baseline: MonthResultDto[]; re
             label={{ value: 'no cash left', position: 'insideBottomRight', fontSize: 10, fill: c.bad, fontWeight: 600 }}
           />
           <Tooltip
+            isAnimationActive={false}
             content={(args: TooltipArgs<(typeof data)[number]>) => {
               const d = datum(args)
               return d ? (
@@ -107,13 +109,13 @@ export function CashChart({ baseline, result }: { baseline: MonthResultDto[]; re
                   title={`End of month ${d.month.slice(1)}${d.shortfall ? ' · cash shortfall' : ''}`}
                   rows={[
                     { label: 'With the decision', value: formatEuroWhole(d.scenarioLabel), color: c.amber },
-                    { label: 'Without (baseline)', value: formatEuroWhole(d.baseLabel), color: c.navy },
+                    { label: 'Without (baseline)', value: formatEuroWhole(d.baseLabel), color: c.accent },
                   ]}
                 />
               ) : null
             }}
           />
-          <Line type="monotone" dataKey="base" stroke={c.navy} strokeWidth={2} strokeDasharray="6 4" dot={false} />
+          <Line isAnimationActive={false} type="monotone" dataKey="base" stroke={c.accent} strokeWidth={2} strokeDasharray="6 4" dot={false} />
           <Line
             type="monotone"
             dataKey="scenario"
@@ -134,7 +136,7 @@ export function CashChart({ baseline, result }: { baseline: MonthResultDto[]; re
       <Legend
         items={[
           { label: 'Cash with the decision', color: c.amber },
-          { label: 'Cash without it', color: c.navy, dashed: true },
+          { label: 'Cash without it', color: c.accent, dashed: true },
         ]}
       />
     </div>
@@ -156,7 +158,7 @@ export function CaseRangeChart({ result }: { result: SimulationResultDto }) {
       }
     }),
   ]
-  const fill = { base: c.navy, good: c.good, bad: c.bad }
+  const fill = { base: c.accent, good: c.good, bad: c.bad }
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={data} margin={{ top: 24, right: 8, bottom: 0, left: 4 }}>
@@ -166,6 +168,7 @@ export function CaseRangeChart({ result }: { result: SimulationResultDto }) {
         <ReferenceLine y={data[0].value} stroke={c.amber} strokeDasharray="5 3" strokeWidth={1.5} />
         <ReferenceLine y={0} stroke={c.ink} strokeOpacity={0.25} />
         <Tooltip
+          isAnimationActive={false}
           cursor={{ fill: c.grid, opacity: 0.5 }}
           content={(args: TooltipArgs<(typeof data)[number]>) => {
             const d = datum(args)
@@ -181,7 +184,7 @@ export function CaseRangeChart({ result }: { result: SimulationResultDto }) {
             ) : null
           }}
         />
-        <Bar dataKey="value" radius={[7, 7, 0, 0]} maxBarSize={72}>
+        <Bar isAnimationActive={false} dataKey="value" radius={[7, 7, 0, 0]} maxBarSize={72}>
           {data.map((d) => (
             <Cell key={d.name} fill={fill[d.tone]} />
           ))}
@@ -223,6 +226,7 @@ export function WaterfallChart({ steps }: { steps: WaterfallStepDto[] }) {
         <YAxis tickFormatter={euroTick} width={56} {...axisProps} />
         <ReferenceLine y={0} stroke={c.ink} strokeOpacity={0.25} />
         <Tooltip
+          isAnimationActive={false}
           cursor={{ fill: c.grid, opacity: 0.5 }}
           content={(args: TooltipArgs<(typeof data)[number]>) => {
             const d = datum(args)
@@ -235,9 +239,9 @@ export function WaterfallChart({ steps }: { steps: WaterfallStepDto[] }) {
             ) : null
           }}
         />
-        <Bar dataKey="range" radius={[5, 5, 5, 5]} maxBarSize={64}>
+        <Bar isAnimationActive={false} dataKey="range" radius={[5, 5, 5, 5]} maxBarSize={64}>
           {data.map((d) => (
-            <Cell key={d.name} fill={d.total ? (d.negative ? c.bad : c.navy) : d.negative ? c.bad : c.good} />
+            <Cell key={d.name} fill={d.total ? (d.negative ? c.bad : c.accent) : d.negative ? c.bad : c.good} />
           ))}
           <LabelList
             dataKey="amount"
@@ -271,6 +275,7 @@ export function CapacityChart({ result }: { result: CaseResultDto }) {
           <XAxis dataKey="month" {...axisProps} />
           <YAxis width={44} {...axisProps} />
           <Tooltip
+            isAnimationActive={false}
             content={(args: TooltipArgs<(typeof data)[number]>) => {
               const d = datum(args)
               return d ? (
@@ -279,22 +284,22 @@ export function CapacityChart({ result }: { result: CaseResultDto }) {
                   title={`Month ${d.labels.month}`}
                   rows={[
                     { label: 'Visits wanted', value: formatCount(d.labels.demand), color: c.amber },
-                    { label: 'Visits possible', value: formatCount(d.labels.capacity), color: c.navy },
+                    { label: 'Visits possible', value: formatCount(d.labels.capacity), color: c.accent },
                     { label: 'Visits served', value: formatCount(d.labels.servicesDelivered), color: c.good },
                   ]}
                 />
               ) : null
             }}
           />
-          <Line type="stepAfter" dataKey="capacity" stroke={c.navy} strokeWidth={2} strokeDasharray="6 4" dot={false} />
-          <Line type="monotone" dataKey="demand" stroke={c.amber} strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="served" stroke={c.good} strokeWidth={2.5} dot={false} />
+          <Line isAnimationActive={false} type="stepAfter" dataKey="capacity" stroke={c.accent} strokeWidth={2} strokeDasharray="6 4" dot={false} />
+          <Line isAnimationActive={false} type="monotone" dataKey="demand" stroke={c.amber} strokeWidth={2} dot={false} />
+          <Line isAnimationActive={false} type="monotone" dataKey="served" stroke={c.good} strokeWidth={2.5} dot={false} />
         </LineChart>
       </ResponsiveContainer>
       <Legend
         items={[
           { label: 'Visits wanted (demand)', color: c.amber },
-          { label: 'Visits possible (capacity)', color: c.navy, dashed: true },
+          { label: 'Visits possible (capacity)', color: c.accent, dashed: true },
           { label: 'Visits served', color: c.good },
         ]}
       />

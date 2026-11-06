@@ -32,7 +32,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
   })
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex min-h-dvh bg-canvas">
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-[3] lg:px-20">
         <div className="mx-auto w-full max-w-md">
           <Logo size={42} />
@@ -65,14 +65,14 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
             {mode === 'signIn' ? (
               <>
                 New here?{' '}
-                <Link to="/register" state={location.state} className="font-semibold text-navy hover:underline">
+                <Link to="/register" state={location.state} className="font-semibold text-accent hover:underline">
                   Create an account
                 </Link>
               </>
             ) : (
               <>
                 Already have an account?{' '}
-                <Link to="/login" state={location.state} className="font-semibold text-navy hover:underline">
+                <Link to="/login" state={location.state} className="font-semibold text-accent hover:underline">
                   Sign in
                 </Link>
               </>
@@ -103,8 +103,8 @@ const exampleNodes = [
 /** Right-hand panel from the prototype: how the numbers connect, for a sample salon. */
 function ExamplePanel() {
   return (
-    <div className="hidden min-w-[360px] flex-col justify-center bg-navy px-10 py-12 lg:flex lg:flex-[2]">
-      <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/50">Sample salon · a normal month</div>
+    <div className="hidden min-w-[360px] flex-col justify-center bg-accent px-10 py-12 lg:flex lg:flex-[2]">
+      <div className="text-xs font-semibold text-white/50">Sample salon · a normal month</div>
       <div className="mb-6 mt-1 text-sm text-white/75">How the numbers connect</div>
       <div className="space-y-1.5">
         {exampleNodes.map((n) => (
@@ -115,10 +115,10 @@ function ExamplePanel() {
             }`}
           >
             <div className="min-w-0">
-              <div className={`truncate text-[10px] font-bold uppercase tracking-[0.12em] ${n.kind === 'result' ? 'text-muted' : 'text-white/60'}`}>{n.label}</div>
+              <div className={`truncate text-xs font-semibold ${n.kind === 'result' ? 'text-muted' : 'text-white/60'}`}>{n.label}</div>
               <div className={`truncate text-[11px] ${n.kind === 'result' ? 'text-muted' : 'text-white/45'}`}>{n.sub}</div>
             </div>
-            <div className={`shrink-0 font-mono ${n.kind === 'result' ? 'text-xl text-navy' : 'text-base text-white'}`}>{n.value}</div>
+            <div className={`shrink-0 font-mono ${n.kind === 'result' ? 'text-xl text-accent' : 'text-base text-white'}`}>{n.value}</div>
           </div>
         ))}
       </div>

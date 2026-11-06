@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type Tone = 'neutral' | 'navy' | 'amber' | 'good' | 'bad'
+export type Tone = 'neutral' | 'accent' | 'amber' | 'good' | 'bad'
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`rounded-2xl border border-line bg-surface shadow-card ${className}`}>{children}</div>
@@ -8,7 +8,7 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 
 const badgeTones: Record<Tone, string> = {
   neutral: 'bg-line-soft text-muted',
-  navy: 'bg-navy-50 text-navy',
+  accent: 'bg-accent-50 text-accent',
   amber: 'bg-amber-50 text-amber-dark',
   good: 'bg-good-50 text-good-dark',
   bad: 'bg-bad-50 text-bad',
@@ -24,13 +24,13 @@ export function Badge({ children, tone = 'neutral', className = '' }: { children
 
 const infoTones: Record<Tone, string> = {
   neutral: 'bg-canvas border-line text-muted',
-  navy: 'bg-navy-50 border-navy-200 text-navy',
+  accent: 'bg-accent-50 border-accent-200 text-accent',
   amber: 'bg-amber-50 border-amber-200 text-amber-dark',
   good: 'bg-good-50 border-good-200 text-good-dark',
   bad: 'bg-bad-50 border-bad-200 text-bad',
 }
 
-export function InfoBox({ children, tone = 'navy', icon }: { children: ReactNode; tone?: Tone; icon?: ReactNode }) {
+export function InfoBox({ children, tone = 'accent', icon }: { children: ReactNode; tone?: Tone; icon?: ReactNode }) {
   return (
     <div className={`flex gap-3 rounded-xl border p-4 text-sm leading-relaxed ${infoTones[tone]}`}>
       {icon && <span className="mt-0.5 shrink-0">{icon}</span>}
@@ -40,7 +40,7 @@ export function InfoBox({ children, tone = 'navy', icon }: { children: ReactNode
 }
 
 export function Eyebrow({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`text-[11px] font-bold uppercase tracking-[0.14em] ${className}`}>{children}</div>
+  return <div className={`text-xs font-semibold ${className}`}>{children}</div>
 }
 
 export function PageHeader({ title, sub, actions }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode }) {
@@ -57,7 +57,7 @@ export function PageHeader({ title, sub, actions }: { title: ReactNode; sub?: Re
 
 const deltaTones: Record<Tone, string> = {
   neutral: 'text-muted',
-  navy: 'text-navy',
+  accent: 'text-accent',
   amber: 'text-amber-dark',
   good: 'text-good',
   bad: 'text-bad',
@@ -84,7 +84,7 @@ export function MetricCard({
   textValue?: boolean
 }) {
   return (
-    <Card className={`p-4 ${accent ? 'ring-2 ring-navy/20' : ''}`}>
+    <Card className={`p-4 ${accent ? 'ring-2 ring-accent/20' : ''}`}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <Eyebrow className="text-muted">{label}</Eyebrow>
         {badge}
@@ -129,8 +129,8 @@ export function Segmented<T extends string>({
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors ${
-            value === o.value ? 'bg-surface text-navy shadow-sm' : 'text-muted hover:text-ink'
+          className={`rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap transition-[color,background-color,box-shadow,translate,scale] duration-150 ease-out active:scale-[0.97] ${
+            value === o.value ? 'bg-surface text-accent shadow-sm' : 'text-muted hover:text-ink'
           }`}
         >
           {o.label}
@@ -143,7 +143,7 @@ export function Segmented<T extends string>({
 export function Spinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div role="status" className="flex items-center gap-3 p-6 text-sm text-muted">
-      <span className="size-4 animate-spin rounded-full border-2 border-navy-200 border-t-navy" aria-hidden />
+      <span className="size-4 animate-spin rounded-full [animation-duration:700ms] border-2 border-accent-200 border-t-accent" aria-hidden />
       {label}
     </div>
   )

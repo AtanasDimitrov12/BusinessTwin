@@ -15,7 +15,7 @@ export function ResultHeadline({ result, caseKey }: { result: SimulationResultDt
 
   return (
     <div className={`rounded-2xl border p-6 ${negative ? 'border-bad-200 bg-bad-50' : 'border-good-200 bg-good-50'}`}>
-      <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
+      <div className="text-xs font-semibold text-muted">
         {caseLabels[caseKey]} case · over {result.horizonMonths} months
       </div>
       <div className={`mt-2 font-mono text-4xl font-medium leading-none md:text-5xl ${negative ? 'text-bad' : 'text-good-dark'}`}>
