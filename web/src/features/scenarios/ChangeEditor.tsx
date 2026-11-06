@@ -23,14 +23,14 @@ export function ChangeEditor({
   const set = <T extends ChangeForm>(patch: Partial<T>) => onChange({ ...change, ...patch } as ChangeForm)
 
   return (
-    <section className="animate-rise rounded-2xl border border-line bg-surface p-5 shadow-card" aria-label={`Decision ${index + 1}: ${meta.title}`}>
+    <section className="animate-rise rounded-[var(--radius-card)] bg-surface p-6 shadow-card" aria-label={`Decision ${index + 1}: ${meta.title}`}>
       <header className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-amber-50 text-amber">
+          <span className="flex size-10 items-center justify-center rounded-full bg-amber-50 text-amber">
             <Icon size={20} aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-lg font-semibold leading-tight">{meta.title}</h2>
+            <h2 className="font-display text-xl font-bold leading-tight">{meta.title}</h2>
             <p className="text-xs text-muted">{meta.affects}</p>
           </div>
         </div>
@@ -177,7 +177,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15"
+        className="w-full rounded-[11px] border border-black/[0.12] bg-surface px-3.5 py-2.5 text-[15px] text-ink transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

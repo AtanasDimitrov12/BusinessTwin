@@ -1,21 +1,23 @@
-export type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'light'
+export type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'light' | 'glass'
 export type Size = 'sm' | 'md' | 'lg'
 
+// Pill buttons, Apple-style: solid blue for the one main action, tinted fills for the rest.
+// Feedback lives on the press (scale 0.97, 150ms strong ease-out); colour changes use plain ease.
 const base =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border font-semibold select-none transition-[color,background-color,border-color,translate,scale] duration-150 ease-out active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45 disabled:active:scale-100'
+  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-transparent font-medium tracking-[-0.01em] select-none transition-[color,background-color,border-color,box-shadow,translate,scale] duration-150 ease-out active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100'
 const sizes: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2.5 text-sm',
-  lg: 'px-6 py-3.5 text-base',
+  sm: 'px-3.5 py-1.5 text-[13px]',
+  md: 'px-5 py-2.5 text-[15px]',
+  lg: 'px-7 py-3.5 text-[17px]',
 }
 const variants: Record<Variant, string> = {
-  primary: 'bg-accent text-white border-accent hover:bg-accent-dark hover:border-accent-dark',
-  secondary: 'bg-surface text-accent border-accent hover:bg-accent-50',
-  ghost: 'bg-transparent text-muted border-transparent hover:bg-line-soft hover:text-ink',
-  danger: 'bg-surface text-bad border-line hover:border-bad',
-  light: 'bg-white text-accent border-white hover:bg-accent-50',
+  primary: 'bg-accent text-white hover:bg-accent-dark',
+  secondary: 'bg-accent/10 text-accent hover:bg-accent/15',
+  ghost: 'bg-transparent text-ink hover:bg-black/[0.05]',
+  danger: 'bg-bad/10 text-bad hover:bg-bad/15',
+  light: 'bg-white text-ink hover:bg-white/90',
+  glass: 'bg-white/10 text-white hover:bg-white/15', // on dark surfaces
 }
 
 export const buttonClass = (variant: Variant = 'primary', size: Size = 'md', extra = '') =>
   `${base} ${sizes[size]} ${variants[variant]} ${extra}`
-

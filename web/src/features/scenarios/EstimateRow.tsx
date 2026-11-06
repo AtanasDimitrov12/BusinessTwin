@@ -28,7 +28,7 @@ export function EstimateRow({
       {hint && <p className="text-xs leading-relaxed text-muted">{hint}</p>}
       <div className="grid grid-cols-3 gap-2">
         {cases.map((c) => (
-          <div key={c.key} className="overflow-hidden rounded-xl border border-line bg-surface focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
+          <div key={c.key} className="overflow-hidden rounded-[14px] border border-black/[0.12] bg-surface transition-[border-color,box-shadow] duration-150 focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/15">
             <div className={`h-1 ${c.bar}`} aria-hidden />
             <label htmlFor={`${id}-${c.key}`} className="block px-2.5 pt-1.5 text-xs font-semibold text-muted">
               {c.label}

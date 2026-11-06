@@ -1,46 +1,50 @@
 @import 'tailwindcss';
 
 /*
- * Business Twin design tokens. Palette and type follow the Figma Make prototype:
- * warm paper background, accent for structure, amber for "what changes", green/red only for good/bad.
+ * Business Twin design tokens: an Apple-style system (see .claude/skills/apple-design).
+ * Neutral greys carry the structure; colour is used sparingly and always means something:
+ * blue accent = what you can act on, amber = what a decision changes, green/red = better/worse.
+ * Type is the platform system font (SF Pro on Apple devices), Inter elsewhere; numbers use tabular figures.
  * Light theme only. Text colours meet WCAG 2.2 AA contrast on canvas and surface.
  */
 @theme {
-  --font-sans: 'Inter Variable', system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', Georgia, serif;
-  --font-mono: 'DM Mono', ui-monospace, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter Variable', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Variable', system-ui, sans-serif;
+  --font-mono: var(--font-sans); /* numbers: same face, tabular figures (see base layer) */
 
-  --color-canvas: #f7f5f1;
+  --color-canvas: #f5f5f7;
   --color-surface: #ffffff;
-  --color-ink: #1c1a17;
-  --color-muted: #66615b;
-  --color-faint: #8f8981;
-  --color-line: #e8e3dc;
-  --color-line-soft: #f0ede8;
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-faint: #86868b;
+  --color-line: #e3e3e8;
+  --color-line-soft: #ededf0;
 
-  --color-accent: #012856;
-  /* brand accent, from the logo */
-  --color-accent-dark: #001c3f;
-  --color-accent-50: #eef2f8;
-  --color-accent-100: #e3eaf5;
-  --color-accent-200: #c5d5ec;
+  --color-accent: #0066cc; /* action blue: links, primary buttons, selection */
+  --color-accent-dark: #0052a3;
+  --color-accent-50: #eef5fd;
+  --color-accent-100: #ddebfb;
+  --color-accent-200: #b4d3f5;
 
-  --color-amber: #c8652a;
-  --color-amber-dark: #8b4513;
-  --color-amber-50: #fef3e8;
-  --color-amber-200: #f0c9a0;
+  --color-amber: #b84c00;
+  --color-amber-dark: #8a3900;
+  --color-amber-50: #fff4e8;
+  --color-amber-200: #ffd3a8;
 
-  --color-good: #2d7a4f;
-  --color-good-dark: #1f6640;
-  --color-good-50: #e6f7ee;
-  --color-good-200: #a8dabc;
+  --color-good: #1f7a38;
+  --color-good-dark: #165c2a;
+  --color-good-50: #ebf7ee;
+  --color-good-200: #b4e2c1;
 
-  --color-bad: #b8392a;
-  --color-bad-50: #fef2f2;
-  --color-bad-200: #f5c5c0;
+  --color-bad: #d70015;
+  --color-bad-50: #fff1f1;
+  --color-bad-200: #ffc9cc;
 
-  --shadow-card: 0 1px 2px rgb(28 26 23 / 0.04), 0 4px 16px rgb(28 26 23 / 0.04);
-  --shadow-lift: 0 2px 4px rgb(28 26 23 / 0.05), 0 16px 40px rgb(27 61 110 / 0.12);
+  /* Depth instead of hard borders: a hairline plus a soft, wide shadow. Bigger surfaces read as thicker. */
+  --shadow-card: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 18px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 56px rgb(0 0 0 / 0.12);
+
+  --radius-card: 1.375rem;
 
   /* Motion tokens (Emil Kowalski's design-engineering rules, .claude/skills/emil-design-eng).
      Built-in CSS easings are too weak; enter/exit uses a strong ease-out, on-screen movement ease-in-out,
@@ -103,12 +107,19 @@
 
   body {
     @apply bg-canvas text-ink font-sans antialiased;
+    font-size: 1.0625rem; /* 17px, Apple's body size */
+    line-height: 1.47;
+    letter-spacing: -0.005em;
   }
+  /* Tracking is size-specific: large text tightens, small text stays near zero. Utilities override these. */
+  h1, h2, h3, .font-display { letter-spacing: -0.022em; }
+  h1 { letter-spacing: -0.028em; }
+  .text-xs, .text-sm { letter-spacing: 0.003em; } /* small text: slightly open, never tight */
+  .font-mono { font-variant-numeric: tabular-nums; letter-spacing: -0.015em; }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 3px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
     outline-offset: 2px;
-    border-radius: 6px;
   }
 
   ::selection {
@@ -221,4 +232,20 @@
   *::after {
     transition-property: color, background-color, border-color, opacity, box-shadow !important;
   }
+}
+/* Materials: translucent chrome that content scrolls under (apple-design §12).
+   Solid when the visitor asks for less transparency or more contrast. */
+@utility material {
+  background-color: rgb(255 255 255 / 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+@utility material-dark {
+  background-color: rgb(29 29 31 / 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .material { background-color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .material-dark { background-color: #1d1d1f; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

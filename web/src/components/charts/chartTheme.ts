@@ -1,13 +1,13 @@
 /** Chart colours, matching the design tokens in index.css. */
 export const chartColors = {
-  accent: '#012856',
-  accentSoft: '#c5d5ec',
-  amber: '#c8652a',
-  good: '#2d7a4f',
-  bad: '#b8392a',
-  grid: '#ede9e3',
-  axis: '#8f8981',
-  ink: '#1c1a17',
+  accent: '#0071e3',
+  accentSoft: '#b4d3f5',
+  amber: '#f56300',
+  good: '#28a745',
+  bad: '#e0262f',
+  grid: '#ececf0',
+  axis: '#86868b',
+  ink: '#1d1d1f',
 }
 
 export const axisProps = {

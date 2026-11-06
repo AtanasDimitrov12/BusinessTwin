@@ -106,7 +106,7 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
             ))}
 
             {form.changes.length < 10 && (
-              <div className="rounded-2xl border-2 border-dashed border-line p-4">
+              <div className="rounded-[var(--radius-card)] border-2 border-dashed border-black/[0.1] p-5">
                 <p className="mb-3 text-sm font-semibold text-muted">Combine with another change</p>
                 <div className="flex flex-wrap gap-2">
                   {(Object.keys(changeMeta) as ChangeType[]).map((t) => {
@@ -141,7 +141,7 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
 function DecisionPicker({ onPick }: { onPick: (type: ChangeType) => void }) {
   return (
     <div>
-      <h2 className="mb-4 font-display text-xl font-semibold">What are you thinking about?</h2>
+      <h2 className="mb-4 font-display text-2xl font-bold">What are you thinking about?</h2>
       <div className="grid gap-4 md:grid-cols-3">
         {(Object.keys(changeMeta) as ChangeType[]).map((t) => {
           const m = changeMeta[t]
@@ -151,12 +151,12 @@ function DecisionPicker({ onPick }: { onPick: (type: ChangeType) => void }) {
               key={t}
               type="button"
               onClick={() => onPick(t)}
-              className="group flex flex-col items-start rounded-2xl border border-line bg-surface p-6 text-left shadow-card transition-[translate,scale,border-color,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-0.5 hover:border-accent hover:shadow-lift active:scale-[0.98]"
+              className="group flex flex-col items-start rounded-[var(--radius-card)] bg-surface p-7 text-left shadow-card transition-[translate,scale,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-0.5 hover:shadow-lift active:scale-[0.98]"
             >
-              <span className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
+              <span className="mb-5 flex size-12 items-center justify-center rounded-full bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
                 <Icon size={22} aria-hidden />
               </span>
-              <span className="font-display text-lg font-semibold">{m.title}</span>
+              <span className="font-display text-xl font-bold">{m.title}</span>
               <span className="mt-1 text-sm leading-relaxed text-muted">{m.description}</span>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
                 Start <ArrowRight size={14} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
@@ -195,7 +195,7 @@ function LivePreview({
             <KeyFacts result={caseOf(result, 'expected')} horizonMonths={result.horizonMonths} />
             <CashWarning result={result} />
             <Card className="p-5">
-              <h3 className="font-display text-base font-semibold">Month by month (expected case)</h3>
+              <h3 className="font-display text-[17px] font-semibold">Month by month (expected case)</h3>
               <p className="mb-3 text-xs text-muted">Bars: how each month compares with today. Line: the running total.</p>
               <ImpactChart result={caseOf(result, 'expected')} />
             </Card>
@@ -213,7 +213,7 @@ function PreviewMap({ result, types, horizonMonths }: { result: NonNullable<Retu
   const delta = expected.resultDifferenceByMonth[expected.resultDifferenceByMonth.length - 1]
   return (
     <Card className="p-5">
-      <h3 className="font-display text-base font-semibold">Business map in month {horizonMonths}</h3>
+      <h3 className="font-display text-[17px] font-semibold">Business map in month {horizonMonths}</h3>
       <p className="mb-4 text-xs text-muted">Highlighted boxes are changed by this plan (expected case).</p>
       <BusinessMap
         nodes={mapNodes(last, delta)}

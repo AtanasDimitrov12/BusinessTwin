@@ -24,10 +24,15 @@ Several sources are practitioner or agency blogs with a commercial interest. The
 
 ## Visual system
 
-- **Palette** (from the prototype): warm paper background `#f7f5f1`, white surfaces. Navy for structure, taken from the logo (`#012856`). Amber `#c8652a` for "what this decision changes"; green and red only for better/worse. The logo's teal (`#00b598`) appears only in the logo for now.
-- **Type**: Fraunces (display headings), Inter (text), DM Mono (numbers), as in the prototype.
-- **Components**: cards with soft shadows, pill badges for source labels (entered / estimated / sample / calculated), a business-map flow diagram, three-case estimate inputs with a colour bar per case.
-- **Light theme only**, as requested; the earlier version followed the OS dark mode.
+Redesigned on 6 Nov 2026 to an Apple-style system, following the `apple-design` skill (Kowalski, 2026), which distils Apple's WWDC design talks. The earlier warm-paper look came from the Figma Make prototype; it was replaced because the owner wanted a calmer, more familiar interface.
+
+- **Palette**: neutral greys carry the structure (canvas `#f5f5f7`, white surfaces, ink `#1d1d1f`, muted `#6e6e73`). Colour is used sparingly and always means something: blue `#0066cc` for what you can act on (token `accent`, formerly `navy`), amber `#b84c00` for "what this decision changes", green and red only for better/worse. Large feature panels use near-black ink instead of brand navy. Text colours are chosen to pass WCAG AA on canvas and surface.
+- **Type**: the platform system font (SF Pro on Apple devices, Inter elsewhere), replacing Fraunces and DM Mono. Large headings are bold with negative tracking (−0.022 to −0.035em); small text stays slightly open; numbers use tabular figures.
+- **Depth, not borders**: cards are borderless with a hairline-plus-soft shadow (`--shadow-card`, `--shadow-lift`) and a 22 px radius.
+- **Materials**: the landing nav, mobile top bar, setup header, sidebar and chart tooltips are translucent (`material` utility: white at 72% with blur and saturation); they turn solid under `prefers-reduced-transparency` or `prefers-contrast: more`.
+- **Controls**: pill buttons (solid blue for the main action, tinted fills for the rest), iOS-style segmented controls, macOS-style sidebar selection.
+- **Components**: pill badges for source labels (entered / estimated / sample / calculated), a business-map flow diagram, three-case estimate inputs with a colour bar per case.
+- **Light theme only.**
 
 ## References
 

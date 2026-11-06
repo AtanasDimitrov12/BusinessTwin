@@ -18,7 +18,7 @@ export function ChartTooltip({
 }) {
   if (!active || rows.length === 0) return null
   return (
-    <div className="rounded-xl border border-line bg-surface px-3 py-2 text-xs shadow-lift">
+    <div className="material rounded-xl px-3 py-2 text-xs shadow-lift">
       {title && <div className="mb-1 font-semibold text-ink">{title}</div>}
       {rows.map((r) => (
         <div key={r.label} className="flex items-center justify-between gap-4">

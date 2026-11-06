@@ -97,7 +97,7 @@ export function AssumptionsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-8">
-      <h2 className="mb-3 font-display text-xl font-semibold">{title}</h2>
+      <h2 className="mb-3 font-display text-2xl font-bold">{title}</h2>
       {children}
     </section>
   )

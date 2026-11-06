@@ -71,18 +71,18 @@ function Node({
   highlighted,
   tone,
 }: MapNode & { label: string; kind: 'input' | 'derived' | 'result'; highlighted: boolean; tone: 'accent' | 'good' | 'bad' }) {
-  const resultBg = { accent: 'bg-accent border-accent', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
+  const resultBg = { accent: 'bg-ink border-ink', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
   const style =
     kind === 'result'
       ? `${resultBg} text-white shadow-lift`
       : highlighted
         ? 'border-amber bg-amber-50 ring-2 ring-amber/25'
         : kind === 'derived'
-          ? 'border-accent-200 bg-accent-50'
-          : 'border-line bg-surface'
+          ? 'border-transparent bg-accent-50'
+          : 'border-transparent bg-surface shadow-card'
 
   return (
-    <div className={`relative rounded-xl border px-3 py-2.5 text-center transition-colors ${style}`}>
+    <div className={`relative rounded-[16px] border px-3 py-3 text-center transition-colors ${style}`}>
       {highlighted && kind !== 'result' && <span className="absolute inset-y-3 left-0 w-1 rounded-r bg-amber" aria-hidden />}
       <div
         className={`text-xs font-semibold ${
@@ -92,7 +92,7 @@ function Node({
         {label}
         {highlighted && kind !== 'result' && <span className="sr-only"> (changed by this decision)</span>}
       </div>
-      <div className={`font-mono text-lg font-medium sm:text-xl ${kind === 'result' ? 'text-white' : 'text-accent'}`}>{value}</div>
+      <div className={`font-mono text-lg font-semibold sm:text-xl ${kind === 'result' ? 'text-white' : 'text-ink'}`}>{value}</div>
       <div className={`text-[11px] ${kind === 'result' ? 'text-white/75' : 'text-muted'}`}>{sub}</div>
     </div>
   )

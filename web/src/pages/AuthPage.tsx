@@ -32,14 +32,14 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
   })
 
   return (
-    <div className="flex min-h-dvh bg-canvas">
+    <div className="flex min-h-dvh bg-surface">
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-[3] lg:px-20">
         <div className="mx-auto w-full max-w-md">
           <Logo size={42} />
-          <h1 className="mt-12 font-display text-4xl font-semibold leading-tight">
+          <h1 className="mt-14 font-display text-[2.5rem] font-bold leading-[1.08] tracking-[-0.03em]">
             {mode === 'signIn' ? 'Welcome back' : 'Test your first decision'}
           </h1>
-          <p className="mt-3 text-muted">
+          <p className="mt-3 text-[17px] text-muted">
             {mode === 'signIn'
               ? 'Sign in to see your salon and saved plans.'
               : 'Create a free account. Setting up your salon takes about ten minutes, and you can start from a sample.'}
@@ -78,7 +78,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
               </>
             )}
           </p>
-          <p className="mt-10 border-t border-line pt-6 text-xs leading-relaxed text-muted">
+          <p className="mt-10 border-t border-black/[0.06] pt-6 text-xs leading-relaxed text-muted">
             <strong>What this is:</strong> a tool for exploring possible outcomes, not a forecast or financial advice. Your data is stored in the EU
             and you can delete it at any time.
           </p>
@@ -103,15 +103,15 @@ const exampleNodes = [
 /** Right-hand panel from the prototype: how the numbers connect, for a sample salon. */
 function ExamplePanel() {
   return (
-    <div className="hidden min-w-[360px] flex-col justify-center bg-accent px-10 py-12 lg:flex lg:flex-[2]">
+    <div className="hidden min-w-[360px] flex-col justify-center bg-ink px-10 py-12 lg:flex lg:flex-[2]">
       <div className="text-xs font-semibold text-white/50">Sample salon · a normal month</div>
       <div className="mb-6 mt-1 text-sm text-white/75">How the numbers connect</div>
       <div className="space-y-1.5">
         {exampleNodes.map((n) => (
           <div
             key={n.label}
-            className={`flex items-center justify-between gap-4 rounded-xl px-4 py-2.5 ${
-              n.kind === 'result' ? 'mt-2 bg-white shadow-lg' : n.kind === 'derived' ? 'border border-white/15 bg-white/10' : 'border border-white/10 bg-white/5'
+            className={`flex items-center justify-between gap-4 rounded-[14px] px-4 py-2.5 ${
+              n.kind === 'result' ? 'mt-2 bg-white shadow-lg' : n.kind === 'derived' ? 'bg-white/[0.12]' : 'bg-white/[0.06]'
             }`}
           >
             <div className="min-w-0">

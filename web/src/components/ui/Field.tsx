@@ -14,12 +14,12 @@ export function Field({ label, hint, prefix, suffix, error, aside, className = '
   const id = useId()
   const hintId = hint ? `${id}-hint` : undefined
   const errorId = error ? `${id}-error` : undefined
-  const radius = prefix && suffix ? '' : prefix ? 'rounded-r-xl' : suffix ? 'rounded-l-xl' : 'rounded-xl'
+  const radius = prefix && suffix ? '' : prefix ? 'rounded-r-[11px]' : suffix ? 'rounded-l-[11px]' : 'rounded-[11px]'
 
   return (
     <div className={`space-y-1 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
-        <label htmlFor={id} className="block text-sm font-semibold text-ink">
+        <label htmlFor={id} className="block text-sm font-medium text-ink">
           {label}
         </label>
         {aside}
@@ -35,8 +35,8 @@ export function Field({ label, hint, prefix, suffix, error, aside, className = '
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
-          className={`w-full min-w-0 border bg-surface px-3 py-2.5 text-sm text-ink transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 ${radius} ${
-            error ? 'border-bad' : 'border-line'
+          className={`w-full min-w-0 border bg-surface px-3.5 py-2.5 text-[15px] text-ink transition-[border-color,box-shadow] duration-150 placeholder:text-faint focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15 ${radius} ${
+            error ? 'border-bad' : 'border-black/[0.12]'
           }`}
           {...input}
         />
@@ -54,8 +54,8 @@ export function Field({ label, hint, prefix, suffix, error, aside, className = '
 function Affix({ side, children }: { side: 'left' | 'right'; children: ReactNode }) {
   return (
     <span
-      className={`flex items-center whitespace-nowrap border border-line bg-canvas px-3 text-sm font-medium text-muted ${
-        side === 'left' ? 'rounded-l-xl border-r-0' : 'rounded-r-xl border-l-0'
+      className={`flex items-center whitespace-nowrap border border-black/[0.12] bg-canvas px-3 text-[15px] text-muted ${
+        side === 'left' ? 'rounded-l-[11px] border-r-0' : 'rounded-r-[11px] border-l-0'
       }`}
     >
       {children}

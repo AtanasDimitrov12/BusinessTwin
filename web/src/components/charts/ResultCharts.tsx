@@ -192,7 +192,7 @@ export function CaseRangeChart({ result }: { result: SimulationResultDto }) {
             dataKey="label"
             position="top"
             formatter={(v: unknown) => formatEuroWhole(String(v))}
-            style={{ fontSize: 11, fontFamily: 'DM Mono', fill: c.ink }}
+            style={{ fontSize: 11, fontFamily: 'inherit', fontVariantNumeric: 'tabular-nums', fill: c.ink }}
           />
         </Bar>
       </BarChart>
@@ -250,7 +250,7 @@ export function WaterfallChart({ steps }: { steps: WaterfallStepDto[] }) {
               const s = String(v)
               return data.find((d) => d.amount === s)?.total ? formatEuroWhole(s) : formatEuroDelta(s)
             }}
-            style={{ fontSize: 10, fontFamily: 'DM Mono', fill: c.ink }}
+            style={{ fontSize: 10, fontFamily: 'inherit', fontVariantNumeric: 'tabular-nums', fill: c.ink }}
           />
         </Bar>
       </BarChart>

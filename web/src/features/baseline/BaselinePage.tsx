@@ -50,7 +50,7 @@ export function BaselinePage({ business, baseline }: { business: BusinessDto; ba
       {summary.data && <Overview baseline={baseline} summary={summary.data} planCount={plans.data?.length ?? 0} />}
 
       <Card className="mt-6 p-6">
-        <h2 className="font-display text-lg font-semibold">What you entered</h2>
+        <h2 className="font-display text-xl font-bold">What you entered</h2>
         <dl className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
           {baselineFields.map((f) => (
             <div key={f.name}>
@@ -87,7 +87,7 @@ function Overview({ baseline, summary: s, planCount }: { baseline: BaselineDto; 
 
       <div className="grid gap-6 lg:grid-cols-12">
         <Card className="p-6 lg:col-span-7">
-          <h2 className="font-display text-lg font-semibold">Business map</h2>
+          <h2 className="font-display text-xl font-bold">Business map</h2>
           <p className="mb-5 text-xs text-muted">How your numbers connect, from customers to the monthly result.</p>
           <BusinessMap
             capacityLimited={limited}
@@ -124,9 +124,9 @@ function Overview({ baseline, summary: s, planCount }: { baseline: BaselineDto; 
             </p>
           </Card>
 
-          <div className="rounded-2xl bg-accent p-6 text-white shadow-lift">
+          <div className="rounded-[var(--radius-card)] bg-ink p-7 text-white shadow-lift">
             <div className="text-xs font-semibold text-white/60">{limited ? 'Customers you cannot serve' : 'Free capacity'}</div>
-            <div className="mt-1 font-mono text-4xl font-medium">{formatCount(limited ? s.unservedDemand : s.unusedCapacity)}</div>
+            <div className="mt-1 font-mono text-5xl font-semibold">{formatCount(limited ? s.unservedDemand : s.unusedCapacity)}</div>
             <div className="mb-6 mt-1 text-sm text-white/70">
               {limited ? 'visits a month: your team is fully booked' : `visits a month unused (${formatPercent(s.utilisation)} booked)`}
             </div>

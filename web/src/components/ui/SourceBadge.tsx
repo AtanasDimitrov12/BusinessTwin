@@ -14,7 +14,7 @@ const meta: Record<Source, { label: string; tone: Tone; title: string }> = {
 export function SourceBadge({ source }: { source: Source }) {
   const m = meta[source]
   return (
-    <Badge tone={m.tone} className="text-xs">
+    <Badge tone={m.tone} className="px-2 py-px text-[11px]">
       <span title={m.title}>{m.label}</span>
     </Badge>
   )

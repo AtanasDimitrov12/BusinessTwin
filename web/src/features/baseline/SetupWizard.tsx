@@ -77,7 +77,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <header className="border-b border-line bg-surface">
+      <header className="material sticky top-0 z-30 border-b border-black/[0.06]">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-3 sm:px-6">
           <Logo to={baseline ? '/app' : '/'} />
           <ol className="ml-auto flex items-center gap-2 sm:gap-3" aria-label="Setup steps">
@@ -91,8 +91,8 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
                   className={`flex items-center gap-1.5 text-xs font-medium ${i === step ? 'text-accent' : i < step ? 'text-muted hover:text-accent' : 'text-faint'}`}
                 >
                   <span
-                    className={`flex size-6 items-center justify-center rounded-full border text-[11px] font-bold ${
-                      i === step ? 'border-accent bg-accent text-white' : i < step ? 'border-good-200 bg-good-50 text-good' : 'border-line bg-surface'
+                    className={`flex size-6 items-center justify-center rounded-full border text-[11px] font-semibold ${
+                      i === step ? 'border-accent bg-accent text-white' : i < step ? 'border-transparent bg-good-50 text-good' : 'border-black/[0.12] bg-surface'
                     }`}
                   >
                     {i < step ? <Check size={12} /> : i + 1}
@@ -105,12 +105,12 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
         </div>
       </header>
 
-      <main className="mx-auto max-w-xl px-4 py-10 sm:px-6 sm:py-14">
+      <main className="mx-auto max-w-xl px-4 py-12 sm:px-6 sm:py-16">
         <Eyebrow className="mb-2 text-amber">
           Step {step + 1} of {steps.length}
         </Eyebrow>
-        <h1 className="font-display text-3xl font-semibold leading-tight">{current.title}</h1>
-        <p className="mb-8 mt-2 text-muted">{current.intro}</p>
+        <h1 className="font-display text-[2.25rem] font-bold leading-[1.08] tracking-[-0.03em]">{current.title}</h1>
+        <p className="mb-9 mt-3 text-[17px] text-muted">{current.intro}</p>
 
         <form onSubmit={(e) => onSubmit(e).catch(() => {})} noValidate className="space-y-5">
           {current.key === 'salon' && (

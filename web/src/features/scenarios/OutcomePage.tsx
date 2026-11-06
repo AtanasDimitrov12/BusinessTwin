@@ -43,7 +43,7 @@ export function OutcomePage() {
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="font-display text-3xl font-semibold leading-tight md:text-[2.1rem]">{s.name}</h1>
+            <h1 className="font-display text-[2rem] font-bold leading-[1.08] md:text-[2.5rem]">{s.name}</h1>
             <div className="mt-2 flex flex-wrap gap-2">
               {s.changes.map((c, i) => (
                 <Badge key={i} tone="amber">
@@ -101,7 +101,7 @@ export function OutcomePage() {
       <MonthTable result={result} selected={selected} />
 
       <Card className="p-6">
-        <h2 className="font-display text-lg font-semibold">Your assumptions</h2>
+        <h2 className="font-display text-xl font-bold">Your assumptions</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted">
           {s.changes.map((c, i) => (
             <li key={i}>
@@ -123,7 +123,7 @@ export function OutcomePage() {
 function ChartCard({ title, sub, children }: { title: string; sub: string; children: React.ReactNode }) {
   return (
     <Card className="p-5">
-      <h2 className="font-display text-lg font-semibold">{title}</h2>
+      <h2 className="font-display text-xl font-bold">{title}</h2>
       <p className="mb-4 text-xs text-muted">{sub}</p>
       {children}
     </Card>
@@ -163,7 +163,7 @@ function MonthTable({ result, selected }: { result: SimulationResultDto; selecte
   return (
     <Card className="overflow-hidden">
       <details>
-        <summary className="cursor-pointer px-5 py-4 font-display text-lg font-semibold hover:bg-canvas">All months in a table</summary>
+        <summary className="cursor-pointer px-5 py-4 font-display text-xl font-bold hover:bg-black/[0.025]">All months in a table</summary>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-canvas text-left text-xs font-semibold text-muted">

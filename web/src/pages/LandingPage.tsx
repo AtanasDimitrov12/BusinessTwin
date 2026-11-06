@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowUp,
   BookOpen,
   Calculator,
   CalendarClock,
@@ -16,7 +17,7 @@ import {
   Trash2,
   Users,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { ButtonLink } from '../components/ui/Button'
 import { buttonClass } from '../components/ui/buttonClass'
 import { Logo } from '../components/ui/Logo'
@@ -44,6 +45,7 @@ export function LandingPage() {
         <FinalCta />
       </main>
       <SiteFooter />
+      <BackToTop />
     </div>
   )
 }
@@ -66,7 +68,7 @@ function BackToTop() {
       aria-label="Back to top"
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
-      className={`fixed bottom-6 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white shadow-lift transition-[opacity,translate,scale,background-color] duration-200 ease-out hover:bg-accent/90 active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-6 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
+      className={`fixed bottom-6 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-ink/85 text-white shadow-lift backdrop-blur transition-[opacity,translate,scale,background-color] duration-200 ease-out hover:bg-ink active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-6 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
         }`}
     >
       <ArrowUp size={20} aria-hidden />
@@ -80,20 +82,20 @@ function Container({ children, className = '' }: { children: ReactNode; classNam
 
 function SectionTitle({ eyebrow, title, sub, center = false }: { eyebrow: string; title: ReactNode; sub?: ReactNode; center?: boolean }) {
   return (
-    <div className={`mb-12 max-w-2xl ${center ? 'mx-auto text-center' : ''}`}>
-      <Eyebrow className="mb-3 text-amber">{eyebrow}</Eyebrow>
-      <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight md:text-[2.6rem]">{title}</h2>
-      {sub && <p className="mt-4 text-lg leading-relaxed text-muted">{sub}</p>}
+    <div className={`mb-14 max-w-3xl ${center ? 'mx-auto text-center' : ''}`}>
+      <Eyebrow className="mb-3 text-[17px] text-amber">{eyebrow}</Eyebrow>
+      <h2 className="font-display text-[2.25rem] font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">{title}</h2>
+      {sub && <p className="mt-5 text-xl leading-snug text-muted md:text-[21px]">{sub}</p>}
     </div>
   )
 }
 
 function SiteNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-canvas/85 backdrop-blur">
-      <Container className="flex h-16 items-center justify-between gap-4">
-        <Logo />
-        <nav className="hidden items-center gap-7 text-sm font-medium text-muted md:flex" aria-label="Page sections">
+    <header className="material sticky top-0 z-40 border-b border-black/[0.06]">
+      <Container className="flex h-14 items-center justify-between gap-4">
+        <Logo size={30} />
+        <nav className="hidden items-center gap-8 text-[13px] text-ink/80 md:flex" aria-label="Page sections">
           <a href="#how" className="transition-colors hover:text-ink">How it works</a>
           <a href="#decisions" className="transition-colors hover:text-ink">Decisions</a>
           <a href="#why" className="transition-colors hover:text-ink">Why it's different</a>
@@ -110,25 +112,22 @@ function SiteNav() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden bg-surface">
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full bg-amber-50 blur-3xl"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(60%_60%_at_50%_100%,var(--color-accent-50),transparent)]"
       />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-[-10%] h-[420px] w-[420px] rounded-full bg-accent-50 blur-3xl" />
-      <Container className="relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[1.05fr_1fr]">
-        <div className="animate-rise-slow">
-          <Badge tone="amber" className="mb-6">
-            <Sparkles size={12} /> For salons and barbershops with 3–10 staff
-          </Badge>
-          <h1 className="font-display text-[2.6rem] font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-[3.6rem]">
-            Before you decide, see what <em className="font-normal text-amber">might</em> happen.
+      <Container className="relative flex flex-col items-center pb-24 pt-20 text-center md:pt-28">
+        <div className="flex animate-rise-slow flex-col items-center">
+          <h1 className="max-w-4xl font-display text-[2.75rem] font-bold leading-[1.04] tracking-[-0.035em] sm:text-6xl lg:text-[5rem]">
+            Before you decide, see what{' '}
+            <span className="bg-gradient-to-r from-accent to-amber bg-clip-text text-transparent">might</span> happen.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+          <p className="mt-6 max-w-2xl text-xl leading-snug text-muted md:text-[21px]">
             Thinking of hiring a stylist, raising prices or spending more on marketing? Business Twin shows how it could change your customers, staff
             time, costs and cash, month by month, in a pessimistic, expected and optimistic case.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
             <ButtonLink to="/register" size="lg">
               Test your first decision <ArrowRight size={18} />
             </ButtonLink>
@@ -136,7 +135,7 @@ function Hero() {
               See how it works
             </a>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+          <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted">
             {['Free to try', 'Data stored in the EU', 'No accounting knowledge needed'].map((t) => (
               <li key={t} className="flex items-center gap-1.5">
                 <Check size={16} className="text-good" aria-hidden /> {t}
@@ -164,8 +163,8 @@ function HeroVisual() {
     { m: 6, v: '−€446', h: 22 },
   ]
   return (
-    <div className="relative mb-10 mt-8 animate-rise-slow [animation-delay:80ms] lg:mb-0" aria-label="Example result for a sample salon">
-      <div className="rounded-3xl border border-line bg-surface p-5 shadow-lift sm:p-6">
+    <div className="relative mt-16 w-full max-w-2xl animate-rise-slow text-left [animation-delay:80ms]" aria-label="Example result for a sample salon">
+      <div className="rounded-[28px] bg-surface p-5 shadow-lift sm:p-7">
         <div className="mb-4 flex items-center justify-between gap-2">
           <div>
             <div className="text-xs font-semibold text-muted">Sample salon</div>
@@ -173,9 +172,9 @@ function HeroVisual() {
           </div>
           <Badge tone="accent">12 months</Badge>
         </div>
-        <div className="rounded-2xl border border-bad-200 bg-bad-50 p-4">
+        <div className="rounded-[20px] bg-bad-50 p-5">
           <div className="text-xs font-semibold text-muted">Expected case</div>
-          <div className="mt-1 font-mono text-3xl text-bad">−€8,467</div>
+          <div className="mt-1 font-mono text-4xl font-semibold text-bad">−€8,467</div>
           <div className="text-xs font-semibold text-bad">less over the year than not doing it</div>
           <div className="mt-3">
             <div className="relative h-2 rounded-full bg-white">
@@ -190,7 +189,7 @@ function HeroVisual() {
         </div>
         <div className="mt-4">
           <div className="mb-2 text-xs font-semibold text-muted">Each month vs today (expected)</div>
-          <div className="flex h-20 items-start gap-2 border-t border-line pt-px">
+          <div className="flex h-20 items-start gap-2 border-t border-black/[0.08] pt-px">
             {months.map((b) => (
               <div key={b.m} className="flex h-full flex-1 items-start" title={`Month ${b.m}: ${b.v}`}>
                 <div className="w-full rounded-b-md bg-bad/75" style={{ height: `${b.h}%` }} />
@@ -207,13 +206,13 @@ function HeroVisual() {
           It only pays off if most of the new stylist’s customers are <strong>new</strong> to the salon. Worth knowing before you sign a contract.
         </p>
       </div>
-      <div className="absolute -bottom-12 -left-3 rotate-[-2deg] rounded-2xl border border-line bg-surface px-4 py-2.5 shadow-lift sm:-left-8">
+      <div className="material absolute -bottom-8 -left-2 rounded-2xl px-4 py-2.5 shadow-lift sm:-left-12">
         <div className="text-xs font-semibold text-muted">To break even</div>
         <div className="text-base font-semibold text-accent">
           <span className="font-mono">100</span> new visits a month
         </div>
       </div>
-      <div className="absolute -top-9 right-4 rotate-[2deg] rounded-2xl border border-good-200 bg-surface px-4 py-2.5 shadow-lift sm:-right-4">
+      <div className="material absolute -top-8 right-2 rounded-2xl px-4 py-2.5 shadow-lift sm:-right-12">
         <div className="text-xs font-semibold text-muted">Optimistic case</div>
         <div className="text-base font-semibold text-good-dark">Catches up in month 3</div>
       </div>
@@ -223,13 +222,13 @@ function HeroVisual() {
 
 function FactStrip() {
   return (
-    <section className="border-y border-line bg-surface">
-      <Container className="grid gap-8 py-10 text-center sm:grid-cols-3">
+    <section className="bg-canvas">
+      <Container className="grid gap-10 pb-6 pt-20 text-center sm:grid-cols-3">
         <Fact value="2,890" label="Dutch hair salons work with 3 to 10 FTE" />
         <Fact value="26–40%" label="employer costs on top of a gross salary in NL" />
         <Fact value="21 days" label="median cash buffer of personal-services firms (US data)" />
       </Container>
-      <Container className="pb-6 text-center text-[11px] text-faint">
+      <Container className="pb-4 text-center text-xs text-faint">
         Sources: Schippers &amp; Beulen (2025), Panteia; Multiplier (2026); Farrell &amp; Wheat (2016), JPMorgan Chase Institute.
       </Container>
     </section>
@@ -239,7 +238,7 @@ function FactStrip() {
 function Fact({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <div className="font-display text-4xl font-semibold text-accent">{value}</div>
+      <div className="font-display text-5xl font-bold tracking-[-0.035em] text-ink">{value}</div>
       <div className="mx-auto mt-1 max-w-[16rem] text-sm text-muted">{label}</div>
     </div>
   )
@@ -253,7 +252,7 @@ function Problem() {
     { icon: Calculator, title: 'Online calculators', text: 'answer one question, one at a time.' },
   ]
   return (
-    <section className="py-20 md:py-28">
+    <section className="py-24 md:py-32">
       <Container>
         <SectionTitle
           eyebrow="The problem"
@@ -262,14 +261,14 @@ function Problem() {
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tools.map((t) => (
-            <div key={t.title} className="rounded-2xl border border-line bg-surface p-5">
+            <div key={t.title} className="rounded-[22px] bg-surface p-6 shadow-card">
               <t.icon size={20} className="text-muted" aria-hidden />
               <div className="mt-3 font-semibold">{t.title}</div>
               <p className="mt-1 text-sm text-muted">{t.text}</p>
             </div>
           ))}
         </div>
-        <p className="mt-8 max-w-2xl text-lg">
+        <p className="mt-10 max-w-2xl text-xl leading-snug md:text-[21px]">
           <strong className="font-semibold text-accent">Business Twin connects them</strong>: one model of your salon where demand, staff time, costs and
           cash move together when you change something.
         </p>
@@ -290,7 +289,7 @@ function HowItWorks() {
             ['Average price', '€42.00', 'entered'],
             ['Time per visit', '1.25 h', 'estimated'],
           ].map(([l, v, s]) => (
-            <div key={l} className="flex items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 py-2">
+            <div key={l} className="flex items-center justify-between gap-2 rounded-xl bg-surface px-3 py-2 shadow-card">
               <span className="text-muted">{l}</span>
               <span className="flex items-center gap-2 font-mono">
                 {v} <SourceBadge source={s as 'entered' | 'estimated'} />
@@ -310,7 +309,7 @@ function HowItWorks() {
             ['Expected', '35%', 'bg-accent'],
             ['Optimistic', '50%', 'bg-good'],
           ].map(([l, v, c]) => (
-            <div key={l} className="overflow-hidden rounded-lg border border-line bg-surface">
+            <div key={l} className="overflow-hidden rounded-xl bg-surface shadow-card">
               <div className={`h-1 ${c}`} />
               <div className="px-2 pt-1.5 text-[9px] font-semibold text-muted">{l}</div>
               <div className="pb-2 font-mono text-base">{v}</div>
@@ -341,16 +340,16 @@ function HowItWorks() {
     },
   ]
   return (
-    <section id="how" className="scroll-mt-20 bg-surface py-20 md:py-28">
+    <section id="how" className="scroll-mt-20 bg-surface py-24 md:py-32">
       <Container>
         <SectionTitle eyebrow="How it works" title="Three steps from a hunch to a clear picture" center />
         <ol className="grid gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
-            <li key={s.title} className="flex flex-col rounded-3xl border border-line bg-canvas p-6">
-              <span className="flex size-9 items-center justify-center rounded-full bg-accent font-mono text-sm text-white">{i + 1}</span>
-              <h3 className="mt-4 font-display text-xl font-semibold">{s.title}</h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{s.text}</p>
-              <div className="mt-6 rounded-2xl bg-line-soft/70 p-4">{s.visual}</div>
+            <li key={s.title} className="flex flex-col rounded-[28px] bg-canvas p-7">
+              <span className="flex size-9 items-center justify-center rounded-full bg-ink font-mono text-sm font-semibold text-white">{i + 1}</span>
+              <h3 className="mt-5 font-display text-2xl font-bold">{s.title}</h3>
+              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">{s.text}</p>
+              <div className="mt-6 rounded-[20px] bg-black/[0.035] p-4">{s.visual}</div>
             </li>
           ))}
         </ol>
@@ -375,7 +374,7 @@ function Decisions() {
     },
   } as const
   return (
-    <section id="decisions" className="scroll-mt-20 py-20 md:py-28">
+    <section id="decisions" className="scroll-mt-20 py-24 md:py-32">
       <Container>
         <SectionTitle
           eyebrow="Decisions you can test"
@@ -386,13 +385,13 @@ function Decisions() {
           {(Object.keys(questions) as (keyof typeof questions)[]).map((k) => {
             const m = changeMeta[k]
             return (
-              <article key={k} className="group rounded-3xl border border-line bg-surface p-6 shadow-card transition-[translate,scale,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-1 hover:shadow-lift">
+              <article key={k} className="group rounded-[28px] bg-surface p-7 shadow-card transition-[translate,scale,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-1 hover:shadow-lift">
                 <span className="flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
                   <m.icon size={22} aria-hidden />
                 </span>
                 <div className="mt-5 text-xs font-semibold text-muted">{m.title}</div>
-                <h3 className="mt-1 font-display text-xl font-semibold leading-snug">“{questions[k].q}”</h3>
-                <ul className="mt-5 space-y-2 border-t border-line pt-5 text-sm text-muted">
+                <h3 className="mt-1 font-display text-2xl font-bold leading-tight">“{questions[k].q}”</h3>
+                <ul className="mt-5 space-y-2 border-t border-black/[0.06] pt-5 text-[15px] text-muted">
                   {questions[k].asks.map((a) => (
                     <li key={a} className="flex gap-2">
                       <Check size={16} className="mt-0.5 shrink-0 text-good" aria-hidden /> {a}
@@ -410,7 +409,7 @@ function Decisions() {
 
 function Features() {
   return (
-    <section id="why" className="scroll-mt-20 bg-surface py-20 md:py-28">
+    <section id="why" className="scroll-mt-20 bg-surface py-24 md:py-32">
       <Container>
         <SectionTitle
           eyebrow="Why it's different"
@@ -418,13 +417,13 @@ function Features() {
           sub="Not a finance tool with a salon skin: staff time, new versus moved customers and cash are part of the model from the start."
         />
         <div className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-6">
-          <Tile className="md:col-span-4 md:row-span-2 bg-accent text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
+          <Tile className="md:col-span-4 md:row-span-2 bg-ink text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
             <div className="mt-8 flex h-40 items-end gap-4">
               {[
                 ['Without', '50%', 'bg-white/30'],
-                ['Pessimistic', '28%', 'bg-[#e8826f]'],
+                ['Pessimistic', '28%', 'bg-[#ff6961]'],
                 ['Expected', '66%', 'bg-white'],
-                ['Optimistic', '92%', 'bg-[#8fd1aa]'],
+                ['Optimistic', '92%', 'bg-[#30d158]'],
               ].map(([l, h, c]) => (
                 <div key={l} className="flex h-full flex-1 flex-col justify-end text-center">
                   <div className={`rounded-t-lg ${c}`} style={{ height: h }} />
@@ -467,10 +466,10 @@ function Tile({
   children?: ReactNode
 }) {
   return (
-    <div className={`rounded-3xl border p-6 ${dark ? 'border-accent' : 'border-line bg-canvas'} ${className}`}>
+    <div className={`rounded-[28px] p-7 ${dark ? '' : 'bg-canvas'} ${className}`}>
       {Icon && <Icon size={22} className="text-amber" aria-hidden />}
-      <h3 className={`font-display font-semibold ${dark ? 'text-2xl md:text-3xl' : 'mt-3 text-lg'}`}>{title}</h3>
-      <p className={`mt-2 text-sm leading-relaxed ${dark ? 'max-w-lg text-white/75' : 'text-muted'}`}>{text}</p>
+      <h3 className={`font-display font-bold ${dark ? 'text-3xl md:text-[2.5rem] md:leading-[1.08]' : 'mt-3 text-xl'}`}>{title}</h3>
+      <p className={`mt-2 text-[15px] leading-relaxed ${dark ? 'max-w-lg text-white/75' : 'text-muted'}`}>{text}</p>
       {children}
     </div>
   )
@@ -478,11 +477,11 @@ function Tile({
 
 function Story() {
   return (
-    <section className="py-20 md:py-28">
+    <section className="py-24 md:py-32">
       <Container className="grid items-center gap-12 lg:grid-cols-2">
         <div>
           <Eyebrow className="mb-3 text-amber">The question that started it</Eyebrow>
-          <blockquote className="font-display text-2xl leading-snug md:text-3xl">
+          <blockquote className="font-display text-2xl font-semibold leading-snug tracking-[-0.025em] md:text-[2.25rem] md:leading-[1.15]">
             “Four stylists see about 100 customers each. I hire a fifth. Wages start in month one, but she sees maybe 50 customers at first, and
             some of those just move from colleagues. <span className="text-amber">Does it pay off, when, and does cash run short first?</span>”
           </blockquote>
@@ -493,7 +492,7 @@ function Story() {
             Try it with your salon <ArrowRight size={16} />
           </ButtonLink>
         </div>
-        <div className="rounded-3xl border border-line bg-surface p-6 shadow-card">
+        <div className="rounded-[28px] bg-surface p-7 shadow-lift">
           <div className="mb-4 flex items-center justify-between">
             <div className="font-semibold">Running total vs not hiring</div>
             <Badge tone="neutral">Sample salon</Badge>
@@ -513,7 +512,7 @@ function Story() {
             ].map(([m, v, w]) => (
               <li key={m as string} className="grid grid-cols-[4.5rem_1fr_5rem] items-center gap-3 text-sm">
                 <span className="text-muted">{m}</span>
-                <span className="h-2.5 rounded-full bg-line-soft">
+                <span className="h-2.5 rounded-full bg-black/[0.06]">
                   <span className="block h-full rounded-full bg-bad/70" style={{ width: `${w}%` }} />
                 </span>
                 <span className="text-right font-mono text-bad">{v}</span>
@@ -544,7 +543,7 @@ function Trust() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((i) => (
             <div key={i.title} className="text-center">
-              <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-accent-50 text-accent">
+              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent-50 text-accent">
                 <i.icon size={22} aria-hidden />
               </span>
               <h3 className="mt-4 font-semibold">{i.title}</h3>
@@ -585,17 +584,17 @@ function Faq() {
     },
   ]
   return (
-    <section id="faq" className="scroll-mt-20 py-20 md:py-28">
+    <section id="faq" className="scroll-mt-20 py-24 md:py-32">
       <Container className="max-w-3xl">
         <SectionTitle eyebrow="FAQ" title="Questions owners ask" center />
-        <div className="divide-y divide-line rounded-3xl border border-line bg-surface">
+        <div className="divide-y divide-black/[0.06] rounded-[28px] bg-surface shadow-card">
           {faqs.map((f) => (
             <details key={f.q} className="group px-6 py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
                 {f.q}
                 <ChevronDown size={18} className="shrink-0 text-muted transition-transform duration-200 ease-out group-open:rotate-180" aria-hidden />
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted">{f.a}</p>
             </details>
           ))}
         </div>
@@ -607,17 +606,18 @@ function Faq() {
 function FinalCta() {
   return (
     <section className="px-4 pb-20 sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-accent px-6 py-16 text-center text-white sm:px-12">
-        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-amber/30 blur-3xl" />
-        <h2 className="relative mx-auto max-w-2xl font-display text-3xl font-semibold leading-tight md:text-4xl">
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-ink px-6 py-20 text-center text-white sm:px-12">
+        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-amber/35 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 size-96 rounded-full bg-accent/40 blur-3xl" />
+        <h2 className="relative mx-auto max-w-3xl font-display text-4xl font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">
           Your next decision deserves more than a gut feeling.
         </h2>
-        <p className="relative mx-auto mt-4 max-w-xl text-white/75">Set up your salon in about ten minutes and test your first decision today.</p>
+        <p className="relative mx-auto mt-5 max-w-xl text-xl text-white/70">Set up your salon in about ten minutes and test your first decision today.</p>
         <div className="relative mt-8 flex flex-wrap justify-center gap-3">
           <ButtonLink to="/register" variant="light" size="lg">
             Start free <ArrowRight size={18} />
           </ButtonLink>
-          <ButtonLink to="/login" size="lg" className="border-white/30 bg-transparent hover:bg-white/10">
+          <ButtonLink to="/login" variant="glass" size="lg">
             Sign in
           </ButtonLink>
         </div>
@@ -628,7 +628,7 @@ function FinalCta() {
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-surface">
+    <footer className="border-t border-black/[0.06] bg-canvas">
       <Container className="grid gap-8 py-12 md:grid-cols-[2fr_1fr_1fr]">
         <div>
           <Logo />
@@ -653,7 +653,7 @@ function SiteFooter() {
           </ul>
         </div>
       </Container>
-      <Container className="border-t border-line py-6 text-xs text-muted">© 2026 Business Twin · Fontys ICT research project</Container>
+      <Container className="border-t border-black/[0.06] py-6 text-xs text-muted">© 2026 Business Twin · Fontys ICT research project</Container>
     </footer>
   )
 }

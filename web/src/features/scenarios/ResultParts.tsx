@@ -14,7 +14,7 @@ export function ResultHeadline({ result, caseKey }: { result: SimulationResultDt
   const opt = caseOf(result, 'optimistic').difference.totalResult
 
   return (
-    <div className={`rounded-2xl border p-6 ${negative ? 'border-bad-200 bg-bad-50' : 'border-good-200 bg-good-50'}`}>
+    <div className={`rounded-[var(--radius-card)] p-7 ${negative ? 'bg-bad-50' : 'bg-good-50'}`}>
       <div className="text-xs font-semibold text-muted">
         {caseLabels[caseKey]} case · over {result.horizonMonths} months
       </div>

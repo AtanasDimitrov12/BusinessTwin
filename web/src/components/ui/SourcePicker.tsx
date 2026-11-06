@@ -4,8 +4,8 @@ import { SourceBadge } from './SourceBadge'
 type Picked = 'entered' | 'estimated'
 
 const options = [
-  { value: 'entered', label: 'I know this', icon: CircleCheck, on: 'bg-accent text-white shadow-sm' },
-  { value: 'estimated', label: 'My estimate', icon: CircleDashed, on: 'bg-amber text-white shadow-sm' },
+  { value: 'entered', label: 'I know this', icon: CircleCheck, on: 'bg-surface text-accent shadow-[0_0_0_0.5px_rgb(0_0_0/0.04),0_2px_6px_rgb(0_0_0/0.12)]' },
+  { value: 'estimated', label: 'My estimate', icon: CircleDashed, on: 'bg-surface text-amber shadow-[0_0_0_0.5px_rgb(0_0_0/0.04),0_2px_6px_rgb(0_0_0/0.12)]' },
 ] as const
 
 /**
@@ -24,7 +24,7 @@ export function SourcePicker({
   if (value === 'sample') return <SourceBadge source="sample" />
 
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-full border border-line bg-canvas p-0.5">
+    <div role="radiogroup" aria-label={label} className="inline-flex rounded-full bg-black/[0.055] p-0.5">
         {options.map((o) => {
           const selected = value === o.value
           return (
@@ -34,8 +34,8 @@ export function SourcePicker({
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(o.value)}
-              className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
-                selected ? o.on : 'text-muted hover:bg-surface hover:text-ink'
+              className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium transition-[color,background-color,box-shadow] duration-150 ${
+                selected ? o.on : 'text-muted hover:text-ink'
               }`}
             >
               <o.icon size={13} aria-hidden />
