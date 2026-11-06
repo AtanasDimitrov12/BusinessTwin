@@ -20,6 +20,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { ButtonLink } from '../components/ui/Button'
 import { buttonClass } from '../components/ui/buttonClass'
 import { Logo } from '../components/ui/Logo'
+import { Tooltip } from '../components/ui/Tooltip'
 import { Badge, Eyebrow } from '../components/ui/primitives'
 import { SourceBadge } from '../components/ui/SourceBadge'
 import { changeMeta } from '../features/scenarios/changeForm'
@@ -62,6 +63,7 @@ function BackToTop() {
   }, [])
 
   return (
+    <Tooltip label="Back to top">
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0 })}
@@ -73,6 +75,7 @@ function BackToTop() {
     >
       <ArrowUp size={20} aria-hidden />
     </button>
+    </Tooltip>
   )
 }
 

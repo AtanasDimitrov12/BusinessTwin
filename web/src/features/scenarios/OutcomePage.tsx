@@ -5,6 +5,7 @@ import type { CaseKey, CaseResultDto, SimulationResultDto } from '../../api/clie
 import { CapacityChart, CaseRangeChart, CashChart, ImpactChart, WaterfallChart } from '../../components/charts/ResultCharts'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { Badge, Card, ErrorNote, Segmented, Spinner } from '../../components/ui/primitives'
+import { Tooltip } from '../../components/ui/Tooltip'
 import { caseLabels } from '../../lib/cases'
 import { formatCount, formatEuroDelta, formatEuroWhole, formatPercent, isNegative, isZero } from '../../lib/format'
 import { changeMeta, describeChange } from './changeForm'
@@ -57,9 +58,11 @@ export function OutcomePage() {
             <ButtonLink to={`/app/decide/${s.id}`} variant="secondary">
               <Pencil size={15} /> Adjust estimates
             </ButtonLink>
-            <Button variant="danger" onClick={() => onDelete().catch(() => {})} aria-label="Delete plan">
-              <Trash2 size={15} />
-            </Button>
+            <Tooltip label="Delete this plan">
+              <Button variant="danger" onClick={() => onDelete().catch(() => {})} disabled={remove.isPending} aria-label="Delete this plan">
+                <Trash2 size={15} aria-hidden />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </div>

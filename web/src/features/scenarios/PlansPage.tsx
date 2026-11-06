@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import type { CaseKey, ScenarioDto, SimulationResultDto } from '../../api/client'
 import { ButtonLink } from '../../components/ui/Button'
 import { Badge, Card, ErrorNote, InfoBox, PageHeader, Segmented, Spinner } from '../../components/ui/primitives'
+import { Tooltip } from '../../components/ui/Tooltip'
 import { caseLabels } from '../../lib/cases'
 import { formatCountDelta, formatEuroDelta, formatEuroWhole, formatPercent, isNegative } from '../../lib/format'
 import { changeMeta } from './changeForm'
@@ -157,9 +158,11 @@ function CompareTable({
             <span className={isNegative(s.lowestCash) ? 'text-bad' : ''}>{formatEuroWhole(s.lowestCash)}</span>
             <span className="font-sans text-xs text-muted">in month {s.lowestCashMonth}</span>
             {anyShort && (
-              <span title="Cash drops below zero in at least one case" className="text-bad">
-                <AlertTriangle size={14} aria-label="Cash shortfall in at least one case" />
-              </span>
+              <Tooltip label="Cash drops below zero in at least one case">
+                <span className="text-bad">
+                  <AlertTriangle size={14} role="img" aria-label="Cash drops below zero in at least one case" />
+                </span>
+              </Tooltip>
             )}
           </span>
         )

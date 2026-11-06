@@ -233,6 +233,27 @@
     transition-property: color, background-color, border-color, opacity, box-shadow !important;
   }
 }
+/* Tooltips (components/ui/Tooltip.tsx). `transform` places it beside the trigger; `scale` and `translate` animate the
+   entrance from the trigger's side, 125ms with the strong ease-out. Exit is instant: the tooltip simply unmounts. */
+.tooltip {
+  transform: translate(-50%, -100%);
+  transform-origin: bottom center;
+  transition: opacity 125ms var(--ease-out), scale 125ms var(--ease-out), translate 125ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 2px;
+  }
+}
+.tooltip[data-side='bottom'] {
+  transform: translate(-50%, 0);
+  transform-origin: top center;
+  @starting-style {
+    translate: 0 -2px;
+  }
+}
+.tooltip[data-instant] { transition-duration: 0ms; }
+
 /* Materials: translucent chrome that content scrolls under (apple-design §12).
    Solid when the visitor asks for less transparency or more contrast. */
 @utility material {

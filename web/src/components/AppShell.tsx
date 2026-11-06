@@ -5,6 +5,7 @@ import { useDeleteAccount, useSignOut } from '../features/auth/auth'
 import { useBusiness } from '../features/business/business'
 import { useScenarios } from '../features/scenarios/scenarios'
 import { Logo } from './ui/Logo'
+import { Tooltip } from './ui/Tooltip'
 
 const nav = [
   { to: '/app', label: 'My salon', icon: Home, end: true },
@@ -30,9 +31,11 @@ export function AppShell() {
       {/* Mobile top bar */}
       <div className="material sticky top-0 z-30 flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 lg:hidden">
         <Logo to="/app" />
-        <button type="button" onClick={() => setOpen(true)} className="rounded-full p-2 text-ink transition-[background-color,translate,scale] duration-150 ease-out hover:bg-black/[0.05] active:scale-[0.95]" aria-label="Open menu" aria-expanded={open}>
-          <Menu size={20} />
-        </button>
+        <Tooltip label="Open menu" side="bottom">
+          <button type="button" onClick={() => setOpen(true)} className="rounded-full p-2 text-ink transition-[background-color,translate,scale] duration-150 ease-out hover:bg-black/[0.05] active:scale-[0.95]" aria-label="Open menu" aria-expanded={open}>
+            <Menu size={20} aria-hidden />
+          </button>
+        </Tooltip>
       </div>
 
       {/* Always mounted so it can fade; it only takes clicks while the menu is open. */}
@@ -52,9 +55,11 @@ export function AppShell() {
             <Logo to="/app" />
             <div className="mt-2.5 truncate pl-0.5 text-[13px] font-medium text-muted">{business.data?.name}</div>
           </div>
-          <button type="button" onClick={() => setOpen(false)} className="rounded-full p-1.5 text-muted transition-transform duration-150 ease-out active:scale-[0.95] lg:hidden" aria-label="Close menu">
-            <X size={18} />
-          </button>
+          <Tooltip label="Close menu" side="bottom">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-full p-1.5 text-muted transition-[background-color,scale] duration-150 ease-out hover:bg-black/[0.05] active:scale-[0.95] lg:hidden" aria-label="Close menu">
+              <X size={18} aria-hidden />
+            </button>
+          </Tooltip>
         </div>
         <SidebarNav onNavigate={() => setOpen(false)} />
         <SidebarFooter />

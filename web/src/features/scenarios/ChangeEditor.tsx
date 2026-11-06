@@ -2,6 +2,7 @@ import { Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Field } from '../../components/ui/Field'
 import { InfoBox } from '../../components/ui/primitives'
+import { Tooltip } from '../../components/ui/Tooltip'
 import { changeMeta, type ChangeForm, type HireForm, type MarketingForm, type PriceForm } from './changeForm'
 import { EstimateRow } from './EstimateRow'
 import { typedNumberError } from '../../lib/numberInput'
@@ -35,14 +36,16 @@ export function ChangeEditor({
             <p className="text-xs text-muted">{meta.affects}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onRemove}
-          className="rounded-lg p-2 text-muted transition-colors hover:bg-bad-50 hover:text-bad"
-          aria-label={`Remove ${meta.title}`}
-        >
-          <Trash2 size={16} />
-        </button>
+        <Tooltip label="Remove this change">
+          <button
+            type="button"
+            onClick={onRemove}
+            className="rounded-full p-2 text-muted transition-[color,background-color,scale] duration-150 ease-out hover:bg-bad-50 hover:text-bad active:scale-[0.95]"
+            aria-label={`Remove this change: ${meta.title}`}
+          >
+            <Trash2 size={16} aria-hidden />
+          </button>
+        </Tooltip>
       </header>
 
       <div className="space-y-5">
