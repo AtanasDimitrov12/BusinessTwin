@@ -23,6 +23,7 @@ import { Logo } from '../components/ui/Logo'
 import { Badge, Eyebrow } from '../components/ui/primitives'
 import { SourceBadge } from '../components/ui/SourceBadge'
 import { changeMeta } from '../features/scenarios/changeForm'
+import { useReveal } from '../lib/useReveal'
 
 // Example figures on this page are real scenario-engine output for labelled sample salons, pasted in as text.
 // Nothing here is calculated in the browser.
@@ -80,8 +81,9 @@ function Container({ children, className = '' }: { children: ReactNode; classNam
 }
 
 function SectionTitle({ eyebrow, title, sub, center = false }: { eyebrow: string; title: ReactNode; sub?: ReactNode; center?: boolean }) {
+  const reveal = useReveal()
   return (
-    <div className={`mb-14 max-w-3xl ${center ? 'mx-auto text-center' : ''}`}>
+    <div {...reveal} data-reveal className={`mb-14 max-w-3xl ${center ? 'mx-auto text-center' : ''}`}>
       <Eyebrow className="mb-3 text-[17px] text-amber">{eyebrow}</Eyebrow>
       <h2 className="font-display text-[2.25rem] font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">{title}</h2>
       {sub && <p className="mt-5 text-xl leading-snug text-muted md:text-[21px]">{sub}</p>}
@@ -213,7 +215,7 @@ function HeroVisual() {
       </div>
       <div className="material absolute -top-8 right-2 rounded-2xl px-4 py-2.5 shadow-lift sm:-right-12">
         <div className="text-xs font-semibold text-muted">Optimistic case</div>
-        <div className="text-base font-semibold text-good-dark">Catches up in month 3</div>
+        <div className="text-base font-semibold text-good-dark">Monthly result catches up in month 3</div>
       </div>
     </div>
   )
@@ -250,6 +252,7 @@ function Problem() {
     { icon: FileSpreadsheet, title: 'A spreadsheet', text: 'needs you to build every formula yourself.' },
     { icon: Calculator, title: 'Online calculators', text: 'answer one question, one at a time.' },
   ]
+  const reveal = useReveal()
   return (
     <section className="py-24 md:py-32">
       <Container>
@@ -258,7 +261,7 @@ function Problem() {
           title="Your tools show the past. Your decisions are about the future."
           sub="For a salon of five, one hire changes the whole cost base. Yet no tool links customers, staff time and cash for the decision in front of you."
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div {...reveal} data-reveal-children className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tools.map((t) => (
             <div key={t.title} className="rounded-[22px] bg-surface p-6 shadow-card">
               <t.icon size={20} className="text-muted" aria-hidden />
@@ -338,11 +341,12 @@ function HowItWorks() {
       ),
     },
   ]
+  const reveal = useReveal()
   return (
     <section id="how" className="scroll-mt-20 bg-surface py-24 md:py-32">
       <Container>
         <SectionTitle eyebrow="How it works" title="Three steps from a hunch to a clear picture" center />
-        <ol className="grid gap-6 md:grid-cols-3">
+        <ol {...reveal} data-reveal-children className="grid gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
             <li key={s.title} className="flex flex-col rounded-[28px] bg-canvas p-7">
               <span className="flex size-9 items-center justify-center rounded-full bg-ink font-mono text-sm font-semibold text-white">{i + 1}</span>
@@ -372,6 +376,7 @@ function Decisions() {
       asks: ['Monthly campaign cost', 'New customers it might bring', 'Whether your team has time to serve them'],
     },
   } as const
+  const reveal = useReveal()
   return (
     <section id="decisions" className="scroll-mt-20 py-24 md:py-32">
       <Container>
@@ -380,7 +385,7 @@ function Decisions() {
           title="The three decisions that change a salon most"
           sub="Test one, or combine them, e.g. hire a stylist and run a campaign to fill the new chair."
         />
-        <div className="grid gap-6 md:grid-cols-3">
+        <div {...reveal} data-reveal-children className="grid gap-6 md:grid-cols-3">
           {(Object.keys(questions) as (keyof typeof questions)[]).map((k) => {
             const m = changeMeta[k]
             return (
@@ -407,6 +412,7 @@ function Decisions() {
 }
 
 function Features() {
+  const reveal = useReveal()
   return (
     <section id="why" className="scroll-mt-20 bg-surface py-24 md:py-32">
       <Container>
@@ -415,7 +421,7 @@ function Features() {
           title="Built around how a salon actually works"
           sub="Not a finance tool with a salon skin: staff time, new versus moved customers and cash are part of the model from the start."
         />
-        <div className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-6">
+        <div {...reveal} data-reveal-children className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-6">
           <Tile className="md:col-span-4 md:row-span-2 bg-ink text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
             <div className="mt-8 flex h-40 items-end gap-4">
               {[
@@ -475,10 +481,13 @@ function Tile({
 }
 
 function Story() {
+  const quote = useReveal()
+  const card = useReveal()
+  const bars = useReveal()
   return (
     <section className="py-24 md:py-32">
       <Container className="grid items-center gap-12 lg:grid-cols-2">
-        <div>
+        <div {...quote} data-reveal>
           <Eyebrow className="mb-3 text-amber">The question that started it</Eyebrow>
           <blockquote className="font-display text-2xl font-semibold leading-snug tracking-[-0.025em] md:text-[2.25rem] md:leading-[1.15]">
             “Four stylists see about 100 customers each. I hire a fifth. Wages start in month one, but she sees maybe 50 customers at first, and
@@ -491,7 +500,7 @@ function Story() {
             Try it with your salon <ArrowRight size={16} />
           </ButtonLink>
         </div>
-        <div className="rounded-[28px] bg-surface p-7 shadow-lift">
+        <div {...card} data-reveal className="rounded-[28px] bg-surface p-7 shadow-lift" style={{ animationDelay: '120ms' }}>
           <div className="mb-4 flex items-center justify-between">
             <div className="font-semibold">Running total vs not hiring</div>
             <Badge tone="neutral">Sample salon</Badge>
@@ -500,7 +509,7 @@ function Story() {
             4 stylists, 400 visits at €30. The new stylist costs €2,400 a month and grows to 150 appointments in five months; 60% are new to the
             salon.
           </p>
-          <ol className="space-y-2">
+          <ol {...bars} data-reveal-bars className="space-y-2">
             {[
               ['Month 1', '−€1,914', 40],
               ['Month 2', '−€3,342', 71],
@@ -512,7 +521,7 @@ function Story() {
               <li key={m as string} className="grid grid-cols-[4.5rem_1fr_5rem] items-center gap-3 text-sm">
                 <span className="text-muted">{m}</span>
                 <span className="h-2.5 rounded-full bg-black/[0.06]">
-                  <span className="block h-full rounded-full bg-bad/70" style={{ width: `${w}%` }} />
+                  <span className="reveal-bar block h-full rounded-full bg-bad/70" style={{ width: `${w}%` }} />
                 </span>
                 <span className="text-right font-mono text-bad">{v}</span>
               </li>
@@ -535,11 +544,12 @@ function Trust() {
     { icon: Trash2, title: 'Delete it any time', text: 'Remove your salon and every plan with one action.' },
     { icon: Scale, title: 'Estimates, not advice', text: 'Business Twin supports your judgement. It never tells you what to do.' },
   ]
+  const reveal = useReveal()
   return (
     <section className="bg-surface py-20 md:py-24">
       <Container>
         <SectionTitle eyebrow="Trust" title="Honest numbers, handled with care" center />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div {...reveal} data-reveal-children className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((i) => (
             <div key={i.title} className="text-center">
               <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent-50 text-accent">
@@ -603,9 +613,10 @@ function Faq() {
 }
 
 function FinalCta() {
+  const reveal = useReveal()
   return (
     <section className="px-4 pb-20 sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-ink px-6 py-20 text-center text-white sm:px-12">
+      <div {...reveal} data-reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-ink px-6 py-20 text-center text-white sm:px-12">
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-amber/35 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 size-96 rounded-full bg-accent/40 blur-3xl" />
         <h2 className="relative mx-auto max-w-3xl font-display text-4xl font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">

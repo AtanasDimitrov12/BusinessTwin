@@ -69,7 +69,8 @@ public static class EngineMapping
             c.Type, c.StartMonth,
             HoursPerMonth: Get("hoursPerMonth"),
             EmployerCostPerMonth: Get("employerCostPerMonth"),
-            RampUpMonths: Get("rampUpMonths") is { } r ? (int)r : null,
+            // Stored in the decimal parameters map; it is always written from an int, so the cast is exact.
+            RampUpMonths: Get("rampUpMonths") is { } r ? decimal.ToInt32(r) : null,
             CustomersPerMonth: Est("customersPerMonth"),
             NewCustomerSharePercent: Est("newCustomerSharePercent"),
             NewPrice: Get("newPrice"),

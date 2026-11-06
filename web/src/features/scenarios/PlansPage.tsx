@@ -141,7 +141,7 @@ function CompareTable({
       ),
     },
     {
-      label: 'Catches up with today',
+      label: 'Monthly result catches up',
       render: (r) => {
         const m = caseOf(r, caseKey).drivers.breakEvenMonth
         return <span className="font-sans">{m ? `Month ${m}` : <span className="text-muted">Not within {r.horizonMonths} months</span>}</span>

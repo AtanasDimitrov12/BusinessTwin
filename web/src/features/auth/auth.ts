@@ -46,6 +46,18 @@ export function useRegister() {
   })
 }
 
+/** Deletes the account with the salon, its figures and every plan. */
+export function useDeleteAccount() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const result = await api.DELETE('/api/auth/account')
+      if (!result.response.ok) throw new ApiError(result.response.status, 'Could not delete the account.')
+    },
+    onSuccess: () => queryClient.clear(),
+  })
+}
+
 export function useSignOut() {
   const queryClient = useQueryClient()
   return useMutation({

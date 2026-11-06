@@ -43,7 +43,7 @@ Uncertain fields get a pessimistic, expected and optimistic value. Employer cost
 | Monthly result | contribution − fixed costs |
 | Cash | cash at start of month + monthly result; **flag when below zero** |
 | Break-even new visits | added monthly fixed cost of a change ÷ contribution per visit |
-| Break-even month | first month where the scenario's monthly result ≥ the baseline's monthly result |
+| Break-even month | first month where the scenario's **monthly** result ≥ the baseline's monthly result (not cumulative: the cumulative gap can still be negative) |
 | Cumulative gap | running total of (scenario − baseline) monthly result since the change starts |
 
 A hire adds capacity (its hours) but no demand except its *new* customers; moved customers only shift work. Marketing adds demand but no capacity.
@@ -69,7 +69,7 @@ Made while building `BusinessTwin.Engine`, covered by `ReferenceCaseTests`:
 
 - Months are numbered from 1; a change applies from its start month onward. Horizon is 1 to 36 months, and every change must start within it.
 - Capacity is pooled: total staff hours (baseline + hires) ÷ service time. Moved customers therefore change nothing in the totals; only the new share of a hire's customers adds demand.
-- The price change's demand effect is entered as a **percentage of baseline visits** (−5 = 5% fewer visits), as in the prototype; owners think in percentages more easily than in visits. If several price changes are stacked, the latest active one sets both the price and the demand effect.
+- The price change's demand effect is entered as a **percentage of baseline visits** (−5 = 5% fewer visits), as in the prototype; owners think in percentages more easily than in visits. If several price changes are stacked, only the latest active one counts: it sets both the price and the demand effect, and its demand % is relative to baseline visits, not added on top of the earlier price change (reference case: `Stacked_price_changes_latest_replaces_earlier_and_is_relative_to_baseline`).
 - **Hire ramp-up**: wages and hours start in the start month, but the worker's customers grow in equal steps over the ramp-up months (ramp factor 1/n, 2/n … 1; 1 month = full from the start). This models the design challenge, where a new stylist sees fewer customers at first. Reference case: `Hire_ramp_up_grows_new_customers_and_reaches_break_even`.
 - The share of a hire's customers that is new is entered as a percentage in the API and converted to a fraction for the engine.
 - Demand is never below zero.
@@ -82,6 +82,7 @@ Made while building `BusinessTwin.Engine`, covered by `ReferenceCaseTests`:
   - Revenue lost to unserved demand (Σ unserved × price) is reported as extra information and is not part of the sum.
 - Break-even new visits = added monthly fixed cost of all changes ÷ (final scenario price − cost per service); empty when there is no added fixed cost.
 - Break-even month and cumulative gap are counted from the earliest change's start month.
+- Break-even month is **monthly, not cumulative**: it is the first month in which the scenario earns at least as much as the baseline in that month. The losses of the earlier months are not yet recovered then; whether they are shows in the cumulative gap. The UI calls it "monthly result catches up" for this reason.
 - No rounding inside the engine.
 
 ## Simplifications in v1 (open questions)

@@ -37,10 +37,10 @@ export function KeyFacts({ result, horizonMonths }: { result: CaseResultDto; hor
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <MetricCard
-        label="Catches up"
+        label="Monthly result catches up"
         value={d.breakEvenMonth ? `Month ${d.breakEvenMonth}` : 'Not yet'}
         textValue
-        sub={d.breakEvenMonth ? 'first month at least as good as today' : `not within ${horizonMonths} months`}
+        sub={d.breakEvenMonth ? 'first month earning at least what today earns; the total can still be behind' : `not within ${horizonMonths} months`}
       />
       <MetricCard
         label="Lowest cash"

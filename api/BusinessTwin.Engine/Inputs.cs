@@ -83,7 +83,7 @@ public sealed record ScenarioInput(Baseline Baseline, IReadOnlyList<Change> Chan
     public ScenarioInput FirstMonths(int months)
     {
         if (months < 1 || months > HorizonMonths)
-            throw new ArgumentOutOfRangeException(nameof(months), $"Months must be 1 to {HorizonMonths}.");
+            throw new InvalidScenarioException($"Months must be 1 to {HorizonMonths}.");
         return this with { HorizonMonths = months, Changes = Changes.Where(c => c.StartMonth <= months).ToList() };
     }
 }
