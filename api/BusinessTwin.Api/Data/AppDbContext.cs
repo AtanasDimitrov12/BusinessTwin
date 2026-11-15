@@ -18,6 +18,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<Scenario> Scenarios => Set<Scenario>();
     public DbSet<ScenarioChange> Changes => Set<ScenarioChange>();
     public DbSet<ChangeEstimate> Estimates => Set<ChangeEstimate>();
+    public DbSet<UserSession> Sessions => Set<UserSession>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -30,6 +31,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         builder.Entity<IdentityUserLogin<string>>().ToTable("user_logins");
         builder.Entity<IdentityUserRole<string>>().ToTable("user_roles");
         builder.Entity<IdentityUserToken<string>>().ToTable("user_tokens");
+
+        builder.Entity<UserSession>(e =>
+        {
+            e.ToTable("user_sessions");
+            e.HasIndex(x => x.Key).IsUnique();
+            e.HasIndex(x => x.UserId);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(x => x.Key).HasMaxLength(64);
+            e.Property(x => x.Device).HasMaxLength(60);
+        });
 
         builder.Entity<Business>(e =>
         {

@@ -5,6 +5,7 @@ import { useDeleteAccount, useSignOut } from '../features/auth/auth'
 import { useBusiness } from '../features/business/business'
 import { useScenarios } from '../features/scenarios/scenarios'
 import { Logo } from './ui/Logo'
+import { DevicesMenu } from './DevicesMenu'
 import { Tooltip } from './ui/Tooltip'
 
 const nav = [
@@ -120,6 +121,7 @@ function SidebarFooter() {
       <NavLink to="/app/setup" className="flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm text-muted transition-colors hover:bg-black/[0.035] hover:text-ink">
         <Settings size={16} aria-hidden /> Salon figures
       </NavLink>
+      <DevicesMenu />
       <button
         type="button"
         onClick={() => signOut.mutate(undefined, { onSuccess: () => navigate('/') })}

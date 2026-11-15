@@ -107,3 +107,24 @@ public class ChangeEstimate
     public decimal Expected { get; set; }
     public decimal Optimistic { get; set; }
 }
+
+/// <summary>
+/// One signed-in browser (table "user_sessions"). The session cookie only carries <see cref="Key"/>; the sign-in
+/// ticket lives here, so the owner can see their devices and sign one out. Deleted with the user.
+/// Privacy: only a coarse device label is kept (no IP address, no full user agent); expired rows are removed.
+/// </summary>
+public class UserSession
+{
+    /// <summary>Public id, shown to the owner's own browser to sign a device out.</summary>
+    public Guid Id { get; set; } = Guid.CreateVersion7();
+    /// <summary>Secret lookup key carried (encrypted) in the cookie. Never returned by the API.</summary>
+    public required string Key { get; set; }
+    public required string UserId { get; set; }
+    public AppUser? User { get; set; }
+    /// <summary>E.g. "Chrome on Windows".</summary>
+    public required string Device { get; set; }
+    public required byte[] Ticket { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset LastSeenAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? ExpiresAt { get; set; }
+}

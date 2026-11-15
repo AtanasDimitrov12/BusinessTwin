@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, ApiError } from '../../api/client'
+import { api, ApiError, must } from '../../api/client'
 
 export interface Credentials {
   email: string
@@ -65,5 +65,37 @@ export function useSignOut() {
       await api.POST('/api/auth/logout')
     },
     onSuccess: () => queryClient.clear(),
+  })
+}
+
+/** Browsers signed in to this account, this device first. */
+export function useSessions() {
+  return useQuery({
+    queryKey: ['sessions'],
+    queryFn: async () => must(await api.GET('/api/auth/sessions')),
+    staleTime: 60_000,
+  })
+}
+
+/** Signs one other device out; it has to sign in again on its next request. */
+export function useSignOutSession() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const result = await api.DELETE('/api/auth/sessions/{id}', { params: { path: { id } } })
+      if (!result.response.ok && result.response.status !== 404) throw new ApiError(result.response.status, 'Could not sign out that device.')
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['sessions'] }),
+  })
+}
+
+export function useSignOutOtherSessions() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const result = await api.POST('/api/auth/sessions/sign-out-others')
+      if (!result.response.ok) throw new ApiError(result.response.status, 'Could not sign out the other devices.')
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['sessions'] }),
   })
 }

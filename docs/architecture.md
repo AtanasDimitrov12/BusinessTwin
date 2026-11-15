@@ -69,6 +69,7 @@ Web ↔ API: REST over HTTPS, JSON, HTTP-only session cookie. API ↔ DB: EF Cor
 
 | `changes` | One change in a scenario: type (hire, price, marketing), start month, type-specific parameters as `jsonb` (new change types need no new table) |
 | `estimates` | Pessimistic, expected and optimistic value of each uncertain field of a change |
+| `user_sessions` | One signed-in browser: secret lookup key, user, coarse device label, serialised sign-in ticket, signed in / last seen / expires. Deleted with the user |
 
 Each table matches a step in the BPMN process. No results table: results are always recalculated.
 
@@ -79,11 +80,11 @@ Roles: `owner` (PoC); `adviser` planned, read-only on plans an owner explicitly 
 Mapped to OWASP Top 10:2025:
 
 - Broken access control – every query filtered by the signed-in owner's business.
-- Authentication failures – ASP.NET Core Identity, no custom password code; HTTP-only cookie.
+- Authentication failures – ASP.NET Core Identity, no custom password code; HTTP-only cookie. Sessions are kept server-side, so the owner sees every signed-in device and can sign one out, and deleting the account ends every session at once.
 - Injection – EF Core parameterised queries; every request validated before the engine.
 - Security misconfiguration – HTTPS only, CORS limited to the app's own domain, secrets in environment variables.
 
-Privacy: collect only the figures the model needs, fictional/anonymised data in tests, owner can delete their business with all scenarios, or their whole account, and the UI states that results are estimates, not financial advice.
+Privacy: collect only the figures the model needs (sessions keep a coarse device label such as "Safari on iPhone", no IP address or full user agent; expired sessions are deleted), fictional/anonymised data in tests, owner can delete their business with all scenarios, or their whole account, and the UI states that results are estimates, not financial advice.
 
 ## Implementation decisions (PoC build, 17 Oct 2026)
 
@@ -117,6 +118,7 @@ Decisions made while setting up the code, with their reason.
 | `rampUpMonths` is stored in `changes.parameters` (decimal map) and converted back to `int` when read | Keeps one jsonb map per change; the value is always written from an `int`, so the conversion is exact |
 | Landing-page example figures are real engine output for a labelled sample salon, pasted in as text | No invented marketing numbers; nothing is calculated in the browser |
 | **Edits from two devices: optimistic concurrency** (15 Nov 2026). `businesses`, `baselines` and `scenarios` have an integer `version`, configured as an EF Core concurrency token. DTOs return it; every save sends back the version the client loaded. `EditConflict.Claim` refuses a save whose version is not the stored one (409, problem `code: "edit-conflict"`) and otherwise bumps it, so EF writes the row with `WHERE version = loaded` and a save that races past the check fails too (`DbUpdateConcurrencyException`, turned into the same 409). Saving without a version when the row already exists (set-up finished on another device) is also a conflict. The web app then offers **Load the latest version** or **Keep my version** (`ConflictNote`); queries refetch on window focus | Before this, the last save silently won, and because a plan save replaces all its changes, a change added on one device could vanish. Alternatives rejected: last write wins (silent data loss); pessimistic edit locks (stuck locks when a phone sleeps or a tab closes, heartbeats needed); one session per account (owners use phone and laptop on purpose, and it does not cover two tabs); real-time sync with SignalR or CRDTs (far beyond the PoC budget). Optimistic concurrency fits rare conflicts between one owner's devices and is EF Core's standard approach (Microsoft, n.d.-a); 409 Conflict is the HTTP status for a request that conflicts with the current state of the resource (Fielding et al., 2022). An app-managed integer was chosen over PostgreSQL's `xmin` because it changes on every save even when no column changed, and it behaves the same on SQLite, so the API tests run without a database server |
+| **Signed-in devices: server-side sessions** (15 Nov 2026). The Identity cookie gets a `SessionStore` (`Infrastructure/SessionStore.cs`, an `ITicketStore`): the sign-in ticket is stored in `user_sessions` and the cookie only carries a random 256-bit key. `GET /api/auth/sessions` lists the owner's unexpired sessions (this device first, marked `isCurrent` through a `bt:session` claim added when the ticket is read), `DELETE /api/auth/sessions/{id}` signs one other device out, `POST /api/auth/sessions/sign-out-others` signs out all but this one. "Last seen" is written at most once a minute. The sidebar shows "Signed-in devices" with a count and a popover list | With tickets only inside cookies (the default) the server cannot know or end sessions (Microsoft, n.d.-c). Showing devices helps the owner understand edit conflicts ("changed on another device") and spot a session they do not recognise. "Signed in" is exact; "active now" means seen in the last five minutes, since live presence would need heartbeats or SignalR. Data minimisation (GDPR art. 5(1)(c); European Parliament & Council of the European Union, 2016): the device label is derived from the user agent and the user agent itself is not kept. Cost: one indexed lookup per request, negligible at PoC scale. Deleting a row ends that session on its next request; deleting the account cascades to all its sessions, which closes the gap where an old cookie stayed valid until it expired |
 | Plan save adds the replacement changes explicitly (`db.Changes.AddRange`) (15 Nov 2026) | Bug found by the new API tests: new change rows already carry a Guid v7 id, so EF Core took them for existing rows and sent `UPDATE`s, and editing a saved plan failed |
 | API tests (`BusinessTwin.Api.Tests`): the real app in memory (`WebApplicationFactory`) on in-memory SQLite (15 Nov 2026) | Tests auth, ownership and concurrency through HTTP without Docker or PostgreSQL (Microsoft, n.d.-b). PostgreSQL-specific behaviour (`numeric`, `jsonb`) is not covered by them |
 
@@ -134,7 +136,11 @@ Fielding, R., Nottingham, M., & Reschke, J. (Eds.). (2022). *HTTP semantics* (RF
 
 Microsoft. (n.d.-a). *Handling concurrency conflicts*. Microsoft Learn. Retrieved November 15, 2026, from https://learn.microsoft.com/en-us/ef/core/saving/concurrency
 
+European Parliament & Council of the European Union. (2016). *Regulation (EU) 2016/679 (General Data Protection Regulation)*. Official Journal of the European Union, L 119. https://eur-lex.europa.eu/eli/reg/2016/679/oj
+
 Microsoft. (n.d.-b). *Integration tests in ASP.NET Core*. Microsoft Learn. Retrieved November 15, 2026, from https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests
+
+Microsoft. (n.d.-c). *Use cookie authentication without ASP.NET Core Identity* (section "ITicketStore" / server-side session store). Microsoft Learn. Retrieved November 15, 2026, from https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie
 
 ## Open design questions
 

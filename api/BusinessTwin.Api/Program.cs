@@ -2,8 +2,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using BusinessTwin.Api.Data;
 using BusinessTwin.Api.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
     options.SlidingExpiration = true;
 });
+
+// Sign-in tickets live in the database (user_sessions), so the owner can see and sign out their devices.
+builder.Services.TryAddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<SessionStore>();
+builder.Services.AddOptions<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme)
+    .Configure<SessionStore>((options, store) => options.SessionStore = store);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<OwnerScope>();
