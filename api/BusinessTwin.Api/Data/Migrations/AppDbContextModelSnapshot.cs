@@ -146,6 +146,11 @@ namespace BusinessTwin.Api.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
                     b.Property<decimal>("VisitsPerMonth")
                         .HasColumnType("numeric(12,4)")
                         .HasColumnName("visits_per_month");
@@ -195,6 +200,11 @@ namespace BusinessTwin.Api.Data.Migrations
                     b.Property<int>("StaffCount")
                         .HasColumnType("integer")
                         .HasColumnName("staff_count");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
 
                     b.HasKey("Id")
                         .HasName("pk_businesses");
@@ -275,6 +285,11 @@ namespace BusinessTwin.Api.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("status");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
 
                     b.HasKey("Id")
                         .HasName("pk_scenarios");

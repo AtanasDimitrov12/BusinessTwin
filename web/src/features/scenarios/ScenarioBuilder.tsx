@@ -1,11 +1,13 @@
 import { Plus, Save } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { ChangeType } from '../../api/client'
 import { BusinessMap } from '../../components/BusinessMap'
 import { CasePlume } from '../../components/charts/ResultCharts'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
+import { ConflictNote } from '../../components/ui/ConflictNote'
 import { Card, ErrorNote, PageHeader, Segmented, Spinner } from '../../components/ui/primitives'
 import { isNegative, isZero } from '../../lib/format'
 import { useBaseline } from '../baseline/baseline'
@@ -13,21 +15,46 @@ import { ChangeEditor } from './ChangeEditor'
 import { changeMeta, defaultChange, fromScenarioDto, horizonOptions, isComplete, toChangeDto, type ScenarioForm } from './changeForm'
 import { CashWarning, KeyFacts, ResultHeadline } from './ResultParts'
 import { caseOf, highlightedFor, mapNodes } from './resultHelpers'
-import { useSaveScenario, useScenario, useSimulation } from './scenarios'
+import { fetchScenario, useSaveScenario, useScenario, useSimulation } from './scenarios'
 
 /** "Test a decision": stack one or more changes and see the result recalculated by the API as you type. */
 export function ScenarioBuilderPage() {
   const { id } = useParams()
   const scenario = useScenario(id)
+  // Bumped by "Load the latest version" after an edit conflict: the editor starts again from the fresh copy.
+  // (A background refetch alone never resets the editor: it copies the plan once, when it opens.)
+  const [loads, setLoads] = useState(0)
   if (id && scenario.isPending) return <Spinner />
   if (id && !scenario.data) return <ErrorNote error={scenario.error ?? new Error('This plan does not exist.')} />
-  return <ScenarioBuilder key={id ?? 'new'} id={id} initial={scenario.data ? fromScenarioDto(scenario.data) : undefined} />
+  return (
+    <ScenarioBuilder
+      key={`${id ?? 'new'}-${loads}`}
+      id={id}
+      initial={scenario.data ? fromScenarioDto(scenario.data) : undefined}
+      version={scenario.data?.version}
+      onReload={() => setLoads((n) => n + 1)}
+    />
+  )
 }
 
-function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm }) {
+function ScenarioBuilder({
+  id,
+  initial,
+  version: openedVersion,
+  onReload,
+}: {
+  id?: string
+  initial?: ScenarioForm
+  /** The version this editor opened; saves send it so the API can refuse one that would overwrite newer edits. */
+  version?: number
+  onReload: () => void
+}) {
   const navigate = useNavigate()
   const baseline = useBaseline()
   const save = useSaveScenario()
+  const queryClient = useQueryClient()
+  const version = useRef(openedVersion)
+  const [resolving, setResolving] = useState(false)
   const [form, setForm] = useState<ScenarioForm>(initial ?? { name: '', horizonMonths: 12, changes: [] })
 
   const draft = useMemo(
@@ -49,9 +76,30 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
   const onSave = async () => {
     const saved = await save.mutateAsync({
       id,
-      body: { name: form.name.trim() || 'My plan', horizonMonths: form.horizonMonths, changes: form.changes.map(toChangeDto), status: 'saved' },
+      body: {
+        name: form.name.trim() || 'My plan',
+        horizonMonths: form.horizonMonths,
+        changes: form.changes.map(toChangeDto),
+        status: 'saved',
+        version: version.current,
+      },
     })
     navigate(`/app/plans/${saved.id}`)
+  }
+
+  /** After an edit conflict: start again from what is saved now, or save these edits over it. */
+  const resolveConflict = async (keepMine: boolean) => {
+    if (!id) return
+    setResolving(true)
+    try {
+      const latest = await queryClient.fetchQuery({ queryKey: ['scenarios', id], queryFn: () => fetchScenario(id), staleTime: 0 })
+      save.reset()
+      if (!keepMine) return onReload()
+      version.current = latest?.version
+      await onSave()
+    } finally {
+      setResolving(false)
+    }
   }
 
   return (
@@ -67,7 +115,13 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
           )
         }
       />
-      <ErrorNote error={save.error} />
+      <ConflictNote
+        error={save.error}
+        what="this plan"
+        busy={resolving || save.isPending}
+        onLoadLatest={() => resolveConflict(false).catch(() => {})}
+        onKeepMine={() => resolveConflict(true).catch(() => {})}
+      />
 
       {form.changes.length === 0 ? (
         <DecisionPicker onPick={addChange} />

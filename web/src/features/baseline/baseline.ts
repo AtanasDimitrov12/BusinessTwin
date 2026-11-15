@@ -1,11 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, unwrap, type BaselineInput } from '../../api/client'
 
+export const fetchBaseline = async () => unwrap(await api.GET('/api/baseline'))
+
 export function useBaseline() {
-  return useQuery({
-    queryKey: ['baseline'],
-    queryFn: async () => unwrap(await api.GET('/api/baseline')),
-  })
+  return useQuery({ queryKey: ['baseline'], queryFn: fetchBaseline })
 }
 
 /** Calculated by the API's scenario engine; the browser only displays it. */

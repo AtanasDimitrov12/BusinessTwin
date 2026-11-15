@@ -64,6 +64,9 @@ Web ↔ API: REST over HTTPS, JSON, HTTP-only session cookie. API ↔ DB: EF Cor
 | `businesses` | The owner's salon, business type, staff count. One business per owner in the PoC |
 | `baselines` | Customers/month, average price, cost per service, staff hours, service time, wages, other fixed costs, cash on hand (money as `numeric`), plus `input_sources` recording entered/estimated per field |
 | `scenarios` | Named what-if on a baseline, horizon in months, status draft or saved |
+
+`businesses`, `baselines` and `scenarios` also carry a `version` (optimistic concurrency, see Implementation decisions).
+
 | `changes` | One change in a scenario: type (hire, price, marketing), start month, type-specific parameters as `jsonb` (new change types need no new table) |
 | `estimates` | Pessimistic, expected and optimistic value of each uncertain field of a change |
 
@@ -113,13 +116,25 @@ Decisions made while setting up the code, with their reason.
 | `DELETE /api/auth/account` deletes the Identity user; the business, baseline, scenarios, changes and estimates go with it by database cascade (23 Oct 2026) | Privacy: the owner can remove all their data, including the account itself. Deleting only the business (`DELETE /api/business`) keeps the account |
 | `rampUpMonths` is stored in `changes.parameters` (decimal map) and converted back to `int` when read | Keeps one jsonb map per change; the value is always written from an `int`, so the conversion is exact |
 | Landing-page example figures are real engine output for a labelled sample salon, pasted in as text | No invented marketing numbers; nothing is calculated in the browser |
+| **Edits from two devices: optimistic concurrency** (15 Nov 2026). `businesses`, `baselines` and `scenarios` have an integer `version`, configured as an EF Core concurrency token. DTOs return it; every save sends back the version the client loaded. `EditConflict.Claim` refuses a save whose version is not the stored one (409, problem `code: "edit-conflict"`) and otherwise bumps it, so EF writes the row with `WHERE version = loaded` and a save that races past the check fails too (`DbUpdateConcurrencyException`, turned into the same 409). Saving without a version when the row already exists (set-up finished on another device) is also a conflict. The web app then offers **Load the latest version** or **Keep my version** (`ConflictNote`); queries refetch on window focus | Before this, the last save silently won, and because a plan save replaces all its changes, a change added on one device could vanish. Alternatives rejected: last write wins (silent data loss); pessimistic edit locks (stuck locks when a phone sleeps or a tab closes, heartbeats needed); one session per account (owners use phone and laptop on purpose, and it does not cover two tabs); real-time sync with SignalR or CRDTs (far beyond the PoC budget). Optimistic concurrency fits rare conflicts between one owner's devices and is EF Core's standard approach (Microsoft, n.d.-a); 409 Conflict is the HTTP status for a request that conflicts with the current state of the resource (Fielding et al., 2022). An app-managed integer was chosen over PostgreSQL's `xmin` because it changes on every save even when no column changed, and it behaves the same on SQLite, so the API tests run without a database server |
+| Plan save adds the replacement changes explicitly (`db.Changes.AddRange`) (15 Nov 2026) | Bug found by the new API tests: new change rows already carry a Guid v7 id, so EF Core took them for existing rows and sent `UPDATE`s, and editing a saved plan failed |
+| API tests (`BusinessTwin.Api.Tests`): the real app in memory (`WebApplicationFactory`) on in-memory SQLite (15 Nov 2026) | Tests auth, ownership and concurrency through HTTP without Docker or PostgreSQL (Microsoft, n.d.-b). PostgreSQL-specific behaviour (`numeric`, `jsonb`) is not covered by them |
 
 ## Maintenance notes
 
 - **New change type**: engine `Inputs.cs` (new record) → `CaseBuilder` / `DemandModel` (and `DriverExplainer` if it has its own driver) → reference tests; then the `ChangeType` enum, `ChangeDto` fields and validation, and both directions of `EngineMapping`. No DB migration is needed: certain parameters go in `changes.parameters` (jsonb), uncertain ones in `estimates`.
 - **New engine rule**: add it in `ScenarioEngine.Validate` and on the API side (DTO or controller), see the validation decision above.
 - **DB schema change**: edit the entities or `AppDbContext`, then from `api/` run `dotnet ef migrations add <Name> -p BusinessTwin.Api -o Data/Migrations`. In development it is applied on start-up (`Database:MigrateOnStartup`).
+- **New editable table**: implement `IVersioned`, mark `Version` with `IsConcurrencyToken()`, return it in the DTO, accept `int? Version` on the save request and call `EditConflict.Claim` before changing the row. Child rows (like a plan's changes) are covered by their parent's version as long as they are only saved through the parent.
 - **DTO change**: building the API rewrites `api/openapi/openapi.json`. Run `npm run gen:api` in `web/` afterwards, or the frontend drifts from the API (CI fails on a stale file).
+
+## References
+
+Fielding, R., Nottingham, M., & Reschke, J. (Eds.). (2022). *HTTP semantics* (RFC 9110). RFC Editor. https://www.rfc-editor.org/rfc/rfc9110
+
+Microsoft. (n.d.-a). *Handling concurrency conflicts*. Microsoft Learn. Retrieved November 15, 2026, from https://learn.microsoft.com/en-us/ef/core/saving/concurrency
+
+Microsoft. (n.d.-b). *Integration tests in ASP.NET Core*. Microsoft Learn. Retrieved November 15, 2026, from https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests
 
 ## Open design questions
 

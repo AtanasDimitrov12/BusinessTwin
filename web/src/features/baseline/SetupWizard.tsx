@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRef, useState } from 'react'
 import { useForm, useWatch, type Path } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
@@ -8,11 +9,12 @@ import type { BaselineDto, BusinessDto, SourceLabel } from '../../api/client'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Logo } from '../../components/ui/Logo'
-import { Card, ErrorNote, InfoBox } from '../../components/ui/primitives'
+import { ConflictNote } from '../../components/ui/ConflictNote'
+import { Card, InfoBox } from '../../components/ui/primitives'
 import { SourceBadge } from '../../components/ui/SourceBadge'
 import { SourcePicker } from '../../components/ui/SourcePicker'
-import { useSaveBusiness } from '../business/business'
-import { useSaveBaseline } from './baseline'
+import { fetchBusiness, useSaveBusiness } from '../business/business'
+import { fetchBaseline, useSaveBaseline } from './baseline'
 import { parseTypedNumber } from '../../lib/numberInput'
 import { baselineFields, formatField, type BaselineField, type FieldDefinition, type WizardStep } from './fields'
 
@@ -64,6 +66,11 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
   const [step, setStep] = useState(0)
   const saveBusiness = useSaveBusiness()
   const saveBaseline = useSaveBaseline()
+  const queryClient = useQueryClient()
+  // The versions these edits started from. Each save sends them; the API refuses a save if another device saved
+  // in between (409 edit-conflict). Updated after every successful save so a retry does not conflict with itself.
+  const versions = useRef({ business: business?.version, baseline: baseline?.version })
+  const [resolving, setResolving] = useState(false)
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: initialValues(business, baseline), mode: 'onTouched' })
   const { errors, isSubmitting } = form.formState
   const sources = useWatch({ control: form.control, name: 'sources' })
@@ -78,12 +85,33 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
     if (await form.trigger(fieldsOf(current.key))) setStep((s) => Math.min(s + 1, steps.length - 1))
   }
 
-  const onSubmit = form.handleSubmit(async (v) => {
-    await saveBusiness.mutateAsync({ name: v.name, staffCount: Number(v.staffCount) })
+  async function saveAll(v: FormValues) {
+    const savedBusiness = await saveBusiness.mutateAsync({ name: v.name, staffCount: Number(v.staffCount), version: versions.current.business })
+    versions.current.business = savedBusiness?.version
     const normalised = Object.fromEntries(baselineFields.map((f) => [f.name, normalise(f, v.values[f.name])])) as Record<BaselineField, string>
-    await saveBaseline.mutateAsync({ ...normalised, sources: v.sources })
+    const savedBaseline = await saveBaseline.mutateAsync({ ...normalised, sources: v.sources, version: versions.current.baseline })
+    versions.current.baseline = savedBaseline?.version
     navigate('/app')
-  })
+  }
+  const onSubmit = (e?: React.BaseSyntheticEvent) => form.handleSubmit(saveAll)(e)
+
+  /** After an edit conflict: fetch what is saved now. Either show it (dropping these edits) or save over it. */
+  const resolveConflict = async (keepMine: boolean) => {
+    setResolving(true)
+    try {
+      const [latestBusiness, latestBaseline] = await Promise.all([
+        queryClient.fetchQuery({ queryKey: ['business'], queryFn: fetchBusiness, staleTime: 0 }),
+        queryClient.fetchQuery({ queryKey: ['baseline'], queryFn: fetchBaseline, staleTime: 0 }),
+      ])
+      versions.current = { business: latestBusiness?.version, baseline: latestBaseline?.version }
+      saveBusiness.reset()
+      saveBaseline.reset()
+      if (keepMine) await onSubmit()
+      else form.reset(initialValues(latestBusiness, latestBaseline))
+    } finally {
+      setResolving(false)
+    }
+  }
 
   return (
     <div className="min-h-dvh bg-canvas">
@@ -186,7 +214,13 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
             </>
           )}
 
-          <ErrorNote error={saveBusiness.error ?? saveBaseline.error} />
+          <ConflictNote
+            error={saveBusiness.error ?? saveBaseline.error}
+            what="your figures"
+            busy={resolving || isSubmitting}
+            onLoadLatest={() => resolveConflict(false).catch(() => {})}
+            onKeepMine={() => resolveConflict(true).catch(() => {})}
+          />
 
           <div className="flex justify-between pt-4">
             <Button variant="ghost" onClick={() => (step > 0 ? setStep(step - 1) : navigate(baseline ? '/app' : '/'))}>

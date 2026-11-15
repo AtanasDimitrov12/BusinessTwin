@@ -46,6 +46,7 @@ builder.Services.AddControllers().AddJsonOptions(o => ConfigureJson(o.JsonSerial
 builder.Services.ConfigureHttpJsonOptions(o => ConfigureJson(o.SerializerOptions));
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<InvalidScenarioHandler>();
+builder.Services.AddExceptionHandler<EditConflict.Handler>();
 
 // OpenAPI: the web app generates its TypeScript types from this document (also written at build time to api/openapi/).
 builder.Services.AddOpenApi(options => options.AddSchemaTransformer<DecimalAsStringSchemaTransformer>());
@@ -111,3 +112,6 @@ app.MapControllers();
 app.Run();
 
 record HealthDto(string Status, string Database);
+
+/// <summary>Entry point; public so the API tests can host the app in memory.</summary>
+public partial class Program;

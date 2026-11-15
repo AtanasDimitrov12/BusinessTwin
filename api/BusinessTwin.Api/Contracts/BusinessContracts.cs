@@ -4,11 +4,12 @@ using BusinessTwin.Api.Infrastructure;
 
 namespace BusinessTwin.Api.Contracts;
 
-public record BusinessDto(Guid Id, string Name, string BusinessType, int StaffCount, bool HasBaseline);
+public record BusinessDto(Guid Id, string Name, string BusinessType, int StaffCount, bool HasBaseline, int Version);
 
 public record SaveBusinessRequest(
     [Required, StringLength(100, MinimumLength = 1)] string Name,
-    [Range(1, 50)] int StaffCount);
+    [Range(1, 50)] int StaffCount,
+    int? Version = null);
 
 /// <summary>The baseline as the owner enters it. Money in euros, sent as decimal strings.</summary>
 public record BaselineInput(
@@ -20,7 +21,8 @@ public record BaselineInput(
     [DecimalRange(0, 10_000_000)] decimal WagesPerMonth,
     [DecimalRange(0, 10_000_000)] decimal OtherFixedCostsPerMonth,
     [DecimalRange(-10_000_000, 10_000_000)] decimal CashOnHand,
-    Dictionary<string, SourceLabel> Sources)
+    Dictionary<string, SourceLabel> Sources,
+    int? Version = null)
 {
     /// <summary>Field names that carry a source label, as used in <see cref="Sources"/>.</summary>
     public static readonly string[] FieldNames =
@@ -40,7 +42,8 @@ public record BaselineDto(
     decimal OtherFixedCostsPerMonth,
     decimal CashOnHand,
     Dictionary<string, SourceLabel> Sources,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    int Version);
 
 /// <summary>One month of the baseline as calculated by the engine. Every value here is labelled "calculated".</summary>
 public record BaselineSummaryDto(

@@ -1,5 +1,6 @@
 using BusinessTwin.Api.Contracts;
 using BusinessTwin.Api.Data;
+using BusinessTwin.Api.Infrastructure;
 using BusinessTwin.Engine;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,7 @@ public class BaselineController(AppDbContext db, OwnerScope owner) : ControllerB
             return Problem("Create your business before entering a baseline.", statusCode: StatusCodes.Status409Conflict);
 
         var baseline = business.Baseline;
+        if (EditConflict.Claim(baseline, input.Version) is { } refused) return refused;
         if (baseline is null)
         {
             baseline = new BaselineEntity { BusinessId = business.Id };
@@ -74,5 +76,5 @@ public class BaselineController(AppDbContext db, OwnerScope owner) : ControllerB
 
     private static BaselineDto ToDto(BaselineEntity b) => new(
         b.VisitsPerMonth, b.AveragePrice, b.CostPerService, b.StaffHoursPerMonth, b.ServiceTimeHours,
-        b.WagesPerMonth, b.OtherFixedCostsPerMonth, b.CashOnHand, b.InputSources, b.UpdatedAt);
+        b.WagesPerMonth, b.OtherFixedCostsPerMonth, b.CashOnHand, b.InputSources, b.UpdatedAt, b.Version);
 }

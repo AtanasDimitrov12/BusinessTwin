@@ -979,6 +979,8 @@ export interface components {
             };
             /** Format: date-time */
             updatedAt: string;
+            /** Format: int32 */
+            version: number;
         };
         BaselineInput: {
             /** Format: decimal */
@@ -1000,6 +1002,8 @@ export interface components {
             sources: {
                 [key: string]: components["schemas"]["SourceLabel"];
             };
+            /** Format: int32 */
+            version?: null | number;
         };
         BaselineSummaryDto: {
             /** Format: decimal */
@@ -1033,6 +1037,8 @@ export interface components {
             /** Format: int32 */
             staffCount: number;
             hasBaseline: boolean;
+            /** Format: int32 */
+            version: number;
         };
         /** @enum {unknown} */
         Case: "pessimistic" | "expected" | "optimistic";
@@ -1197,6 +1203,8 @@ export interface components {
             name: string;
             /** Format: int32 */
             staffCount: number;
+            /** Format: int32 */
+            version?: null | number;
         };
         SaveScenarioRequest: {
             name: string;
@@ -1204,6 +1212,8 @@ export interface components {
             horizonMonths: number;
             changes: components["schemas"]["ChangeDto"][];
             status?: components["schemas"]["ScenarioStatus"];
+            /** Format: int32 */
+            version?: null | number;
         };
         ScenarioDto: {
             /** Format: uuid */
@@ -1215,6 +1225,8 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             changes: components["schemas"]["ChangeDto"][];
+            /** Format: int32 */
+            version: number;
         };
         /** @enum {unknown} */
         ScenarioStatus: "draft" | "saved";

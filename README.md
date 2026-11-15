@@ -45,11 +45,11 @@ dotnet run --project BusinessTwin.Api        # http://localhost:5175, OpenAPI at
 
 | Task | Command |
 |---|---|
-| Engine tests | `cd api && dotnet test` |
+| Engine and API tests | `cd api && dotnet test` (API tests use in-memory SQLite; no database server needed) |
 | New migration | `cd api && dotnet tool restore && dotnet ef migrations add <Name> -p BusinessTwin.Api -o Data/Migrations` |
 | Refresh API types in the web app | `cd api && dotnet build`, then `cd web && npm run gen:api` |
 | Web build / lint | `cd web && npm run build && npm run lint` |
 
-CI (`.github/workflows/ci.yml`) builds both apps, runs the engine tests, and fails if the OpenAPI document or the generated TypeScript types are out of date.
+CI (`.github/workflows/ci.yml`) builds both apps, runs the engine and API tests, and fails if the OpenAPI document or the generated TypeScript types are out of date.
 
 See [`docs/`](docs/) for the project overview, architecture, calculation model and process, and [`CLAUDE.md`](CLAUDE.md) for the context Claude Code uses in this repo.

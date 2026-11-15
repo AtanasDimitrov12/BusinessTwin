@@ -17,6 +17,7 @@ The motivating example (Design Challenge): a salon with 4 workers at ~100 custom
 - Done (outside this repo): project plan, design challenge, gap analysis, BPMN to-be process (v2), tech stack research, clickable prototype, design document (17 Oct 2026).
 - **Web PoC in progress** (started 17 Oct 2026), built against `docs/architecture.md`. See README for how to run it.
   - Done: scenario engine (hire with ramp-up, price as % demand change, marketing; three cases; drivers) with reference tests; API with Identity cookie auth, `OwnerScope` guard, business/baseline/scenario endpoints, results and live `simulate` endpoint; EF Core schema + migration; Docker Compose; CI.
+  - Edits from two devices: optimistic concurrency (a `version` on business, baseline and scenario; 409 `edit-conflict`; the web app offers load latest / keep mine). API tests in `BusinessTwin.Api.Tests` (in-memory SQLite).
   - Web app (one design system since 15 Nov 2026: hair-colour swatch tints, black pill actions, Archivo, coral/teal case colours, a shared plume chart; landing page with a colour-band story and a live demo from pre-computed engine runs; see `docs/ux-design-research.md`; logo in `web/public/brand/`): public landing page, sign-in, 5-step setup wizard, baseline dashboard with business map, decision builder with live three-case preview, outcome page (charts, waterfall, cash warning, month table), plans comparison (pick plans to compare, case switch, common comparison period, sort, highlight conditions, sideways scroll), assumptions page. Design rationale: `docs/ux-design-research.md`.
   - Account deletion: `DELETE /api/auth/account` (cascades to all owner data) with a sidebar action in the web app.
   - Next: usability test with salon owners; adviser read-only sharing (later).
@@ -46,6 +47,7 @@ api/
   BusinessTwin.Api/      ASP.NET Core Web API: endpoints, auth, validation, EF Core
   BusinessTwin.Engine/   Scenario engine class library: pure C#, NO web or DB code
   BusinessTwin.Engine.Tests/  Unit tests against hand-worked reference cases
+  BusinessTwin.Api.Tests/     API tests over HTTP (in-memory SQLite)
 docker-compose.yml
 docs/
 ```

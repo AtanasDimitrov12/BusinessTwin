@@ -1,5 +1,6 @@
 using BusinessTwin.Api.Contracts;
 using BusinessTwin.Api.Data;
+using BusinessTwin.Api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ public class BusinessController(AppDbContext db, OwnerScope owner) : ControllerB
     public async Task<ActionResult<BusinessDto>> Save(SaveBusinessRequest request, CancellationToken ct)
     {
         var business = await owner.GetBusinessAsync(ct);
+        if (EditConflict.Claim(business, request.Version) is { } refused) return refused;
         if (business is null)
         {
             business = new Business { OwnerId = owner.UserId, Name = request.Name };
@@ -46,5 +48,5 @@ public class BusinessController(AppDbContext db, OwnerScope owner) : ControllerB
         return NoContent();
     }
 
-    private static BusinessDto ToDto(Business b) => new(b.Id, b.Name, b.BusinessType, b.StaffCount, b.Baseline is not null);
+    private static BusinessDto ToDto(Business b) => new(b.Id, b.Name, b.BusinessType, b.StaffCount, b.Baseline is not null, b.Version);
 }

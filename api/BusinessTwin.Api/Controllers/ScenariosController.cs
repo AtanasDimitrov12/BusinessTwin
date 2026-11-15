@@ -1,5 +1,6 @@
 using BusinessTwin.Api.Contracts;
 using BusinessTwin.Api.Data;
+using BusinessTwin.Api.Infrastructure;
 using BusinessTwin.Engine;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,12 +59,17 @@ public class ScenariosController(AppDbContext db, OwnerScope owner) : Controller
 
         var scenario = await LoadAsync(id, tracking: true, ct);
         if (scenario is null) return NotFound();
+        // The version bump also guards the changes: they are replaced in the same transaction as the scenario row.
+        if (EditConflict.Claim(scenario, request.Version) is { } refused) return refused;
 
         scenario.Name = request.Name.Trim();
         scenario.HorizonMonths = request.HorizonMonths;
         scenario.Status = request.Status;
         db.Changes.RemoveRange(scenario.Changes);
+        // New rows already carry an id (Guid v7), so EF would take them for existing rows and UPDATE them;
+        // adding them explicitly makes it INSERT.
         scenario.Changes = request.Changes.Select(EngineMapping.ToEntity).ToList();
+        db.Changes.AddRange(scenario.Changes);
         await db.SaveChangesAsync(ct);
         return EngineMapping.ToDto(scenario);
     }

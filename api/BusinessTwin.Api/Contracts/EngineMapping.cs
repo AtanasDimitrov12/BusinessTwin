@@ -81,5 +81,6 @@ public static class EngineMapping
 
     public static ScenarioDto ToDto(Scenario s) => new(
         s.Id, s.Name, s.HorizonMonths, s.Status, s.CreatedAt,
-        s.Changes.OrderBy(c => c.StartMonth).ThenBy(c => c.Id).Select(ToDto).ToList());
+        s.Changes.OrderBy(c => c.StartMonth).ThenBy(c => c.Id).Select(ToDto).ToList(),
+        s.Version);
 }

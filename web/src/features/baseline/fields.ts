@@ -1,7 +1,7 @@
 import type { BaselineInput } from '../../api/client'
 import { formatCount, formatEuro, formatHours } from '../../lib/format'
 
-export type BaselineField = Exclude<keyof BaselineInput, 'sources'>
+export type BaselineField = Exclude<keyof BaselineInput, 'sources' | 'version'>
 export type WizardStep = 'customers' | 'time' | 'costs'
 
 export interface FieldDefinition {

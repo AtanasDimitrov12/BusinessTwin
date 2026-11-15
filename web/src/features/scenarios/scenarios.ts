@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, must, unwrap, type ChangeDto, type SaveScenarioRequest } from '../../api/client'
+import { api, ApiError, must, unwrap, type ChangeDto, type SaveScenarioRequest } from '../../api/client'
 import { useDebounced } from '../../lib/useDebounced'
 
 export function useScenarios() {
@@ -9,12 +9,10 @@ export function useScenarios() {
   })
 }
 
+export const fetchScenario = async (id: string) => unwrap(await api.GET('/api/scenarios/{id}', { params: { path: { id } } }))
+
 export function useScenario(id: string | undefined) {
-  return useQuery({
-    queryKey: ['scenarios', id],
-    queryFn: async () => unwrap(await api.GET('/api/scenarios/{id}', { params: { path: { id: id! } } })),
-    enabled: !!id,
-  })
+  return useQuery({ queryKey: ['scenarios', id], queryFn: () => fetchScenario(id!), enabled: !!id })
 }
 
 /** Results are recalculated by the API on every request; the browser only displays them. */
@@ -54,10 +52,12 @@ export function useSimulation(draft: { horizonMonths: number; changes: ChangeDto
 export function useSaveScenario() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, body }: { id?: string; body: SaveScenarioRequest }) =>
-      id
-        ? must(await api.PUT('/api/scenarios/{id}', { params: { path: { id } }, body }))
-        : must(await api.POST('/api/scenarios', { body })),
+    mutationFn: async ({ id, body }: { id?: string; body: SaveScenarioRequest }) => {
+      if (!id) return must(await api.POST('/api/scenarios', { body }))
+      const saved = unwrap(await api.PUT('/api/scenarios/{id}', { params: { path: { id } }, body }))
+      if (!saved) throw new ApiError(404, 'This plan was deleted on another device or in another tab.')
+      return saved
+    },
     onSuccess: (scenario) => {
       queryClient.setQueryData(['scenarios', scenario.id], scenario)
       return queryClient.invalidateQueries({ queryKey: ['scenarios'] })

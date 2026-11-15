@@ -927,7 +927,8 @@
           "otherFixedCostsPerMonth",
           "cashOnHand",
           "sources",
-          "updatedAt"
+          "updatedAt",
+          "version"
         ],
         "type": "object",
         "properties": {
@@ -980,6 +981,10 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1042,6 +1047,13 @@
             "additionalProperties": {
               "$ref": "#/components/schemas/SourceLabel"
             }
+          },
+          "version": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1124,7 +1136,8 @@
           "name",
           "businessType",
           "staffCount",
-          "hasBaseline"
+          "hasBaseline",
+          "version"
         ],
         "type": "object",
         "properties": {
@@ -1144,6 +1157,10 @@
           },
           "hasBaseline": {
             "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1760,6 +1777,13 @@
           "staffCount": {
             "type": "integer",
             "format": "int32"
+          },
+          "version": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1786,6 +1810,13 @@
           },
           "status": {
             "$ref": "#/components/schemas/ScenarioStatus"
+          },
+          "version": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1796,7 +1827,8 @@
           "horizonMonths",
           "status",
           "createdAt",
-          "changes"
+          "changes",
+          "version"
         ],
         "type": "object",
         "properties": {
@@ -1823,6 +1855,10 @@
             "items": {
               "$ref": "#/components/schemas/ChangeDto"
             }
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

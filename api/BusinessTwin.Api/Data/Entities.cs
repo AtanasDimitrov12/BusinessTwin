@@ -26,7 +26,7 @@ public enum ChangeType
     Marketing,
 }
 
-public class Business
+public class Business : IVersioned
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public required string OwnerId { get; set; }
@@ -35,12 +35,13 @@ public class Business
     public string BusinessType { get; set; } = "salon";
     public int StaffCount { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public int Version { get; set; }
 
     public Baseline? Baseline { get; set; }
 }
 
 /// <summary>Today's monthly picture of the business. One per business in the PoC.</summary>
-public class Baseline
+public class Baseline : IVersioned
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid BusinessId { get; set; }
@@ -59,12 +60,13 @@ public class Baseline
     public Dictionary<string, SourceLabel> InputSources { get; set; } = [];
 
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public int Version { get; set; }
 
     public List<Scenario> Scenarios { get; set; } = [];
 }
 
 /// <summary>A named what-if on a baseline.</summary>
-public class Scenario
+public class Scenario : IVersioned
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public Guid BaselineId { get; set; }
@@ -73,6 +75,7 @@ public class Scenario
     public int HorizonMonths { get; set; } = 12;
     public ScenarioStatus Status { get; set; } = ScenarioStatus.Draft;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public int Version { get; set; }
 
     public List<ScenarioChange> Changes { get; set; } = [];
 }

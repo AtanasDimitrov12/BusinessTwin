@@ -105,13 +105,15 @@ public record ScenarioDto(
     int HorizonMonths,
     ScenarioStatus Status,
     DateTimeOffset CreatedAt,
-    IReadOnlyList<ChangeDto> Changes);
+    IReadOnlyList<ChangeDto> Changes,
+    int Version);
 
 public record SaveScenarioRequest(
     [Required, StringLength(100, MinimumLength = 1)] string Name,
     [Range(1, ScenarioEngine.MaxHorizonMonths)] int HorizonMonths,
     [Required, MinLength(1), MaxLength(10)] IReadOnlyList<ChangeDto> Changes,
-    ScenarioStatus Status = ScenarioStatus.Saved);
+    ScenarioStatus Status = ScenarioStatus.Saved,
+    int? Version = null);
 
 /// <summary>Run changes against the owner's baseline without saving them (live preview in the scenario builder).</summary>
 public record SimulateRequest(

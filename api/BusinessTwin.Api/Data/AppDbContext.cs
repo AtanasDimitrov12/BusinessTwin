@@ -38,6 +38,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             e.HasOne(b => b.Owner).WithMany().HasForeignKey(b => b.OwnerId).OnDelete(DeleteBehavior.Cascade);
             e.Property(b => b.Name).HasMaxLength(100);
             e.Property(b => b.BusinessType).HasMaxLength(30);
+            e.Property(b => b.Version).IsConcurrencyToken();
         });
 
         builder.Entity<Baseline>(e =>
@@ -55,6 +56,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             e.Property(b => b.OtherFixedCostsPerMonth).HasColumnType(Money);
             e.Property(b => b.CashOnHand).HasColumnType(Money);
             e.Property(b => b.InputSources).HasJsonbConversion();
+            e.Property(b => b.Version).IsConcurrencyToken();
         });
 
         builder.Entity<Scenario>(e =>
@@ -63,6 +65,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             e.HasOne(s => s.Baseline).WithMany(b => b.Scenarios).OnDelete(DeleteBehavior.Cascade);
             e.Property(s => s.Name).HasMaxLength(100);
             e.Property(s => s.Status).HasConversion<string>().HasMaxLength(20);
+            e.Property(s => s.Version).IsConcurrencyToken();
         });
 
         builder.Entity<ScenarioChange>(e =>

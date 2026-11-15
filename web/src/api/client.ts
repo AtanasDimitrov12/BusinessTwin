@@ -26,18 +26,26 @@ export type WaterfallStepDto = Schemas['WaterfallStepDto']
 
 export class ApiError extends Error {
   readonly status: number
+  /** Problem code from the API, e.g. "edit-conflict". */
+  readonly code?: string
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, code?: string) {
     super(message)
     this.status = status
+    this.code = code
   }
+}
+
+/** The save was refused because someone saved a newer version on another device or tab (409 "edit-conflict"). */
+export function isEditConflict(error: unknown): error is ApiError {
+  return error instanceof ApiError && error.code === 'edit-conflict'
 }
 
 /** Unwraps an openapi-fetch result: returns data, null on 404, and throws ApiError otherwise. */
 export function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T | null {
   if (result.response.status === 404) return null
   if (result.error !== undefined || !result.response.ok) {
-    throw new ApiError(result.response.status, problemMessage(result.error) ?? result.response.statusText)
+    throw new ApiError(result.response.status, problemMessage(result.error) ?? result.response.statusText, problemCode(result.error))
   }
   return result.data as T
 }
@@ -47,6 +55,10 @@ export function must<T>(result: { data?: T; error?: unknown; response: Response 
   const data = unwrap(result)
   if (data === null) throw new ApiError(404, 'Not found.')
   return data
+}
+
+function problemCode(error: unknown): string | undefined {
+  return error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' ? error.code : undefined
 }
 
 function problemMessage(error: unknown): string | undefined {

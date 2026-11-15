@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="BusinessTwin.Api.Tests/BusinessTwin.Api.Tests.csproj" />
   <Project Path="BusinessTwin.Api/BusinessTwin.Api.csproj" />
   <Project Path="BusinessTwin.Engine.Tests/BusinessTwin.Engine.Tests.csproj" />
   <Project Path="BusinessTwin.Engine/BusinessTwin.Engine.csproj" />
