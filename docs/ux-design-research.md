@@ -40,10 +40,14 @@ The first rendition used the logo navy as a large background field; the owner fo
 - **Story:** sticky chart in a white panel beside five short chapters (wages first, ramp-up, new versus moved customers, the tight cash month, three different years).
 - **Libraries:** d3-scale and d3-shape for chart geometry, Motion for line morphing and the month reveal, Base UI for the accessible sliders.
 
-**System**
+**System (landing page and app, since 15 Nov 2026)**
 
-- Edges are crisp 1 px lines (`--shadow-card`); only floating layers (popovers, tooltips) cast a real offset shadow. Radius 12 px for panels, 8 px for buttons.
-- Every value still carries its source badge (entered / estimated / sample / calculated); the three-case estimate inputs keep a colour bar per case.
+- One token set for both (`web/src/index.css`): black actions and focus; soft swatch tints (mint, sky, lilac, peach) for colour fields and selected states; coral for "worse" and the bad case, teal for "better" and the good case, amber for "what a decision changes".
+- Buttons are pills: black for the one main action (teal ring on hover), quiet grey or tinted fills for the rest. Text links are underlined, never told apart by colour alone.
+- Panels are white with a 1px edge and 20px corners; only floating layers (popovers, tooltips, the example cards) cast a real offset shadow.
+- In the app: page titles in the condensed display type, the current page on a mint swatch in the sidebar, the result headline on mint (better) or peach (worse), and the estimate inputs coloured per case.
+- The plume chart (`web/src/components/charts/PlumeChart.tsx`) is shared: the landing hero and story, the sign-in panel, the decision builder's live preview and the plan outcome page all show the three cases the same way. It takes engine output only; numbers are converted for geometry, labels use the API's exact decimal strings.
+- Every value still carries its source badge (entered / estimated / sample / calculated).
 - Light theme only: owners use it in a lit salon or at the counter after closing.
 
 ## References

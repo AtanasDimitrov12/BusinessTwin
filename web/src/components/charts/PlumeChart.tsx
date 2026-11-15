@@ -4,7 +4,8 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
 
 /**
- * The "plume": one decision run three times, drawn like a weather ensemble chart. d3 supplies the scales and the
+ * The "plume": one decision run three times, drawn like a weather ensemble chart. Used on the landing page and in the
+ * app (decision builder, plan outcome), so both show results the same way. d3 supplies the scales and the
  * smooth curves, Motion morphs the lines when the data changes (the demo sliders) and slides the reveal clip when the
  * story moves to another month. Values are pasted engine output; this component only turns them into geometry.
  */
@@ -50,19 +51,20 @@ export function PlumeChart({
   series,
   domain,
   height,
-  months = 12,
+  months,
   notes = [],
   endLabels,
   zeroLabel,
   zeroLabelAt = 'start',
   formatEnd,
+  endText,
   drawIn = false,
 }: {
   series: Series
   /** Fixed value range; omit to fit the range to the data (with padding, always including zero). */
   domain?: [number, number]
   height: number
-  /** Months revealed (0–12). */
+  /** Months revealed (0 to the last month in the series). */
   months?: number
   notes?: Note[]
   /** Label each line at month 12 with its value (the demo); needs a right gutter. */
@@ -71,6 +73,8 @@ export function PlumeChart({
   /** Where the zero-line label sits: at the start (lines start on zero) or the end (cash, where they start above it). */
   zeroLabelAt?: 'start' | 'end'
   formatEnd?: (value: number) => string
+  /** Ready-made end labels (decimal strings from the API, formatted), used instead of formatEnd. */
+  endText?: Partial<Record<CaseKey, string>>
   /** Reveal from month 0 on first render: the page's one orchestrated moment. */
   drawIn?: boolean
 }) {
@@ -88,20 +92,23 @@ export function PlumeChart({
   const gutter = endLabels ? (width < 480 ? 92 : 132) : 8
   const plotW = Math.max(0, width - gutter)
   const plotH = height - axis
-  const x = scaleLinear().domain([0, 12]).range([0, plotW])
+  // Series run from month 0 (the moment of the decision) to the plan's last month: 6, 12, 24 or 36.
+  const last = series.expected.length - 1
+  const tickEvery = last <= 12 ? 1 : last <= 24 ? 2 : 3
+  const x = scaleLinear().domain([0, last]).range([0, plotW])
   const y = scaleLinear().domain(domain ?? fit(series)).range([plotH, 6]).clamp(true)
   const toPath = line<number>()
     .x((_, i) => x(i))
     .y((v) => y(v))
     .curve(curveMonotoneX)
 
-  const shown = drawn ? months : 0
+  const shown = drawn ? (months ?? last) : 0
   const keys = order.filter((k) => series[k as keyof Series])
 
   // End labels: sorted top to bottom and pushed apart so they never overlap.
   const ends = endLabels
     ? (['optimistic', 'expected', 'pessimistic'] as CaseKey[])
-        .map((k) => ({ k, v: series[k][12], y: y(series[k][12]) }))
+        .map((k) => ({ k, v: series[k][last], y: y(series[k][last]) }))
         .sort((a, b) => a.y - b.y)
         .reduce<{ k: CaseKey; v: number; y: number }[]>((acc, e) => {
           const prev = acc[acc.length - 1]
@@ -127,12 +134,14 @@ export function PlumeChart({
             </clipPath>
           </defs>
 
-          {Array.from({ length: 13 }, (_, m) => (
+          {Array.from({ length: last + 1 }, (_, m) => (
             <g key={m}>
               <line x1={x(m)} x2={x(m)} y1={0} y2={plotH} stroke="currentColor" className="text-black/[0.07]" />
-              <text x={x(m)} y={height - 6} textAnchor="middle" className="fill-muted text-[11px] font-medium tabular-nums">
-                {m === 0 ? 'Now' : m}
-              </text>
+              {(m === 0 || m % tickEvery === 0) && (
+                <text x={x(m)} y={height - 6} textAnchor="middle" className="fill-muted text-[11px] font-medium tabular-nums">
+                  {m === 0 ? 'Now' : m}
+                </text>
+              )}
             </g>
           ))}
           <motion.line
@@ -198,16 +207,16 @@ export function PlumeChart({
 
           {ends.map((e) => (
             <g key={e.k}>
-              <motion.circle initial={false} animate={{ cy: y(e.v) }} transition={{ duration: reduce ? 0 : 0.45, ease }} cx={x(12)} r={5} fill={color[e.k]} stroke="white" strokeWidth={2.5} />
+              <motion.circle initial={false} animate={{ cy: y(e.v) }} transition={{ duration: reduce ? 0 : 0.45, ease }} cx={x(last)} r={5} fill={color[e.k]} stroke="white" strokeWidth={2.5} />
               <motion.text
                 initial={false}
                 animate={{ y: e.y + 5 }}
                 transition={{ duration: reduce ? 0 : 0.45, ease }}
-                x={x(12) + 12}
+                x={x(last) + 12}
                 className="text-[15px] font-bold tabular-nums"
                 style={{ fill: color[e.k] }}
               >
-                {formatEnd ? formatEnd(e.v) : e.v}
+                {endText?.[e.k] ?? (formatEnd ? formatEnd(e.v) : e.v)}
               </motion.text>
             </g>
           ))}

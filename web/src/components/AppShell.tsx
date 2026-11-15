@@ -89,11 +89,11 @@ function SidebarNav({ onNavigate }: { onNavigate: () => void }) {
           onClick={onNavigate}
           className={({ isActive }) =>
             `group flex items-center gap-3 rounded-[10px] px-3 py-2 text-[15px] transition-colors ${
-              isActive ? 'bg-black/[0.06] font-semibold text-ink' : 'text-ink/80 hover:bg-black/[0.035] hover:text-ink'
+              isActive ? 'bg-swatch-mint font-semibold text-ink' : 'text-ink/80 hover:bg-black/[0.035] hover:text-ink'
             }`
           }
         >
-          <item.icon size={18} className="text-muted group-aria-[current=page]:text-accent" aria-hidden />
+          <item.icon size={18} className="text-muted group-aria-[current=page]:text-teal-strong" aria-hidden />
           {item.label}
           {item.to === '/app/plans' && !!plans.data?.length && (
             <span className="ml-auto rounded-full bg-black/[0.06] px-2 text-xs font-medium text-muted">{plans.data.length}</span>

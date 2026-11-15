@@ -17,6 +17,7 @@ import type { CaseResultDto, MonthResultDto, SimulationResultDto, WaterfallStepD
 import { formatCount, formatEuroDelta, formatEuroWhole, isNegative, toPlot } from '../../lib/format'
 import { caseLabels } from '../../lib/cases'
 import { ChartTooltip, Legend } from './chartKit'
+import { PlumeChart } from './PlumeChart'
 import { axisProps, chartColors as c, euroTick } from './chartTheme'
 
 // Every chart keeps the API's exact strings next to the plotted numbers; tooltips and labels read the strings.
@@ -143,63 +144,6 @@ export function CashChart({ baseline, result }: { baseline: MonthResultDto[]; re
   )
 }
 
-/** Total result over the horizon for the baseline and each case. */
-export function CaseRangeChart({ result }: { result: SimulationResultDto }) {
-  const data = [
-    { name: 'Baseline', value: toPlot(result.baselineSummary.totalResult), label: result.baselineSummary.totalResult, tone: 'base' as const },
-    ...(['pessimistic', 'expected', 'optimistic'] as const).map((k) => {
-      const r = result.cases.find((x) => x.case === k)!
-      return {
-        name: caseLabels[k],
-        value: toPlot(r.summary.totalResult),
-        label: r.summary.totalResult,
-        delta: r.difference.totalResult,
-        tone: isNegative(r.difference.totalResult) ? ('bad' as const) : ('good' as const),
-      }
-    }),
-  ]
-  const fill = { base: c.accent, good: c.good, bad: c.bad }
-  return (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 24, right: 8, bottom: 0, left: 4 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={c.grid} vertical={false} />
-        <XAxis dataKey="name" {...axisProps} />
-        <YAxis tickFormatter={euroTick} width={56} {...axisProps} />
-        <ReferenceLine y={data[0].value} stroke={c.amber} strokeDasharray="5 3" strokeWidth={1.5} />
-        <ReferenceLine y={0} stroke={c.ink} strokeOpacity={0.25} />
-        <Tooltip
-          isAnimationActive={false}
-          cursor={{ fill: c.grid, opacity: 0.5 }}
-          content={(args: TooltipArgs<(typeof data)[number]>) => {
-            const d = datum(args)
-            return d ? (
-              <ChartTooltip
-                active={args.active}
-                title={d.name}
-                rows={[
-                  { label: `Result over ${result.horizonMonths} months`, value: formatEuroWhole(d.label) },
-                  ...('delta' in d && d.delta ? [{ label: 'vs baseline', value: formatEuroDelta(d.delta) }] : []),
-                ]}
-              />
-            ) : null
-          }}
-        />
-        <Bar isAnimationActive={false} dataKey="value" radius={[7, 7, 0, 0]} maxBarSize={72}>
-          {data.map((d) => (
-            <Cell key={d.name} fill={fill[d.tone]} />
-          ))}
-          <LabelList
-            dataKey="label"
-            position="top"
-            formatter={(v: unknown) => formatEuroWhole(String(v))}
-            style={{ fontSize: 11, fontFamily: 'inherit', fontVariantNumeric: 'tabular-nums', fill: c.ink }}
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  )
-}
-
 const stepLabels: Record<string, string> = {
   baseline: 'Without the decision',
   extraVisits: 'Extra visits',
@@ -209,7 +153,6 @@ const stepLabels: Record<string, string> = {
   scenario: 'With the decision',
 }
 
-/** From the baseline total, through each cause, to the scenario total. */
 export function WaterfallChart({ steps }: { steps: WaterfallStepDto[] }) {
   const data = steps.map((s) => ({
     name: stepLabels[s.key] ?? s.key,
@@ -301,6 +244,35 @@ export function CapacityChart({ result }: { result: CaseResultDto }) {
           { label: 'Visits wanted (demand)', color: c.amber },
           { label: 'Visits possible (capacity)', color: c.accent, dashed: true },
           { label: 'Visits served', color: c.good },
+        ]}
+      />
+    </div>
+  )
+}
+
+/**
+ * The three cases as a plume, month by month: the running total compared with no change. The same chart the landing
+ * page uses, so a plan looks the way the product was introduced. Numbers are converted for geometry only; the end
+ * labels use the API's exact decimal strings.
+ */
+export function CasePlume({ result, height = 260 }: { result: SimulationResultDto; height?: number }) {
+  const caseRun = (k: 'pessimistic' | 'expected' | 'optimistic') => result.cases.find((x) => x.case === k)!
+  const line = (k: 'pessimistic' | 'expected' | 'optimistic') => [0, ...caseRun(k).cumulativeGapByMonth.map(toPlot)]
+  const end = (k: 'pessimistic' | 'expected' | 'optimistic') => formatEuroDelta(caseRun(k).cumulativeGapByMonth.at(-1) ?? '0')
+  return (
+    <div>
+      <PlumeChart
+        series={{ pessimistic: line('pessimistic'), expected: line('expected'), optimistic: line('optimistic') }}
+        endText={{ pessimistic: end('pessimistic'), expected: end('expected'), optimistic: end('optimistic') }}
+        endLabels
+        height={height}
+        zeroLabel="No change"
+      />
+      <Legend
+        items={[
+          { label: caseLabels.optimistic, color: 'var(--color-teal-strong)' },
+          { label: caseLabels.expected, color: 'var(--color-ink)' },
+          { label: caseLabels.pessimistic, color: 'var(--color-coral-strong)' },
         ]}
       />
     </div>

@@ -1,10 +1,10 @@
 /** Chart colours, matching the design tokens in index.css. */
 export const chartColors = {
-  accent: '#012856',
-  accentSoft: '#b7c8e2',
+  accent: '#000000',
+  accentSoft: '#b9d3f5',
   amber: '#c85a12',
-  good: '#00b598',
-  bad: '#d7261e',
+  good: '#00a088',
+  bad: '#c9381f',
   grid: '#eceef1',
   axis: '#8a8f98',
   ink: '#000000',

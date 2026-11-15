@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { ChangeType } from '../../api/client'
 import { BusinessMap } from '../../components/BusinessMap'
-import { ImpactChart } from '../../components/charts/ResultCharts'
+import { CasePlume } from '../../components/charts/ResultCharts'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Card, ErrorNote, PageHeader, Segmented, Spinner } from '../../components/ui/primitives'
@@ -195,9 +195,9 @@ function LivePreview({
             <KeyFacts result={caseOf(result, 'expected')} horizonMonths={result.horizonMonths} />
             <CashWarning result={result} />
             <Card className="p-5">
-              <h3 className="font-display text-[17px] font-semibold">Month by month (expected case)</h3>
-              <p className="mb-3 text-xs text-muted">Bars: how each month compares with today. Line: the running total.</p>
-              <ImpactChart result={caseOf(result, 'expected')} />
+              <h3 className="font-display text-[17px] font-semibold">Three cases, month by month</h3>
+              <p className="mb-3 text-xs text-muted">Money gained or lost compared with no change. Updates as you type.</p>
+              <CasePlume result={result} />
             </Card>
             <PreviewMap result={result} types={types} horizonMonths={horizonMonths} />
           </div>

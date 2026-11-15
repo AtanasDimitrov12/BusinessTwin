@@ -2,7 +2,7 @@ import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { CaseKey, CaseResultDto, SimulationResultDto } from '../../api/client'
-import { CapacityChart, CaseRangeChart, CashChart, ImpactChart, WaterfallChart } from '../../components/charts/ResultCharts'
+import { CapacityChart, CasePlume, CashChart, ImpactChart, WaterfallChart } from '../../components/charts/ResultCharts'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { Badge, Card, ErrorNote, Segmented, Spinner } from '../../components/ui/primitives'
 import { Tooltip } from '../../components/ui/Tooltip'
@@ -87,8 +87,8 @@ export function OutcomePage() {
         <ChartCard title="Month by month" sub="How each month compares with today, and the running total.">
           <ImpactChart result={selected} />
         </ChartCard>
-        <ChartCard title="Three cases" sub={`Total result over ${result.horizonMonths} months. Dashed line: without the decision.`}>
-          <CaseRangeChart result={result} />
+        <ChartCard title="Three cases, month by month" sub="Money gained or lost compared with no change, in the bad, normal and good case.">
+          <CasePlume result={result} />
         </ChartCard>
         <ChartCard title="Cash in the bank" sub="End-of-month cash. A red dot means cash is below zero.">
           <CashChart baseline={result.baseline} result={selected} />

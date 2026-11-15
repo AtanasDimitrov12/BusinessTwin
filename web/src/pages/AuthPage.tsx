@@ -6,7 +6,10 @@ import { Button } from '../components/ui/Button'
 import { Field } from '../components/ui/Field'
 import { Logo } from '../components/ui/Logo'
 import { ErrorNote } from '../components/ui/primitives'
+import { PlumeChart } from '../components/charts/PlumeChart'
 import { useRegister, useSignIn } from '../features/auth/auth'
+import { formatEuroDelta } from '../lib/format'
+import { runningTotal } from './landing/story'
 
 const schema = z.object({
   email: z.email('Enter a valid email address.'),
@@ -64,14 +67,14 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
             {mode === 'signIn' ? (
               <>
                 New here?{' '}
-                <Link to="/register" state={location.state} className="font-semibold text-accent hover:underline">
+                <Link to="/register" state={location.state} className="font-semibold text-ink underline decoration-2 underline-offset-4 hover:decoration-teal">
                   Create an account
                 </Link>
               </>
             ) : (
               <>
                 Already have an account?{' '}
-                <Link to="/login" state={location.state} className="font-semibold text-accent hover:underline">
+                <Link to="/login" state={location.state} className="font-semibold text-ink underline decoration-2 underline-offset-4 hover:decoration-teal">
                   Sign in
                 </Link>
               </>
@@ -88,41 +91,18 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
   )
 }
 
-const exampleNodes = [
-  { label: 'Customer demand', value: '420', sub: 'visits wanted / month', kind: 'input' },
-  { label: 'Team capacity', value: '448', sub: 'visits possible / month', kind: 'input' },
-  { label: 'Customers served', value: '420', sub: 'the smaller of the two', kind: 'derived' },
-  { label: 'Sales', value: '€17,640', sub: '420 × €42', kind: 'derived' },
-  { label: 'Cost of services', value: '€2,520', sub: '420 × €6', kind: 'derived' },
-  { label: 'Contribution', value: '€15,120', sub: 'sales − cost of services', kind: 'derived' },
-  { label: 'Fixed costs', value: '€12,500', sub: 'wages, rent, other', kind: 'input' },
-  { label: 'Monthly result', value: '€2,620', sub: 'contribution − fixed costs', kind: 'result' },
-] as const
-
-/** Right-hand panel from the prototype: how the numbers connect, for a sample salon. */
+/** Right-hand panel: the landing page's example, so signing in feels like the same product. Real engine output. */
 function ExamplePanel() {
+  const euro = (n: number) => formatEuroDelta(String(n))
   return (
-    <div className="hidden min-w-[360px] flex-col justify-center bg-accent px-10 py-12 lg:flex lg:flex-[2]">
-      <div className="text-xs font-semibold text-white/50">Sample salon · a normal month</div>
-      <div className="mb-6 mt-1 text-sm text-white/75">How the numbers connect</div>
-      <div className="space-y-1.5">
-        {exampleNodes.map((n) => (
-          <div
-            key={n.label}
-            className={`flex items-center justify-between gap-4 rounded-[14px] px-4 py-2.5 ${
-              n.kind === 'result' ? 'mt-2 bg-white shadow-lg' : n.kind === 'derived' ? 'bg-white/[0.12]' : 'bg-white/[0.06]'
-            }`}
-          >
-            <div className="min-w-0">
-              <div className={`truncate text-xs font-semibold ${n.kind === 'result' ? 'text-muted' : 'text-white/60'}`}>{n.label}</div>
-              <div className={`truncate text-[11px] ${n.kind === 'result' ? 'text-muted' : 'text-white/45'}`}>{n.sub}</div>
-            </div>
-            <div className={`shrink-0 font-mono ${n.kind === 'result' ? 'text-xl text-accent' : 'text-base text-white'}`}>{n.value}</div>
-          </div>
-        ))}
+    <div className="hidden min-w-[380px] flex-col justify-center bg-swatch-mint px-10 py-12 lg:flex lg:flex-[2]">
+      <p className="text-lg font-bold">Example: a salon of four hires a fifth stylist</p>
+      <p className="mt-1 text-sm text-ink/70">Money gained or lost compared with not hiring, in a bad, a normal and a good case.</p>
+      <div className="mt-6 rounded-[24px] bg-surface p-5 shadow-[0_24px_60px_-28px_rgb(0_0_0/0.3)]">
+        <PlumeChart series={runningTotal} height={230} endLabels formatEnd={euro} zeroLabel="Not hiring" drawIn />
       </div>
-      <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-relaxed text-white/55">
-        Change one input and you see exactly which numbers move, and why.
+      <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/70">
+        Same decision, three outcomes. Set up your salon and test your own in about ten minutes.
       </p>
     </div>
   )

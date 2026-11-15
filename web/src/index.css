@@ -1,11 +1,11 @@
 @import 'tailwindcss';
 
 /*
- * Business Twin design tokens. Visual world (since 15 Nov 2026, see docs/ux-design-research.md):
- * Dutch modernist grid meets the weather "plume" (weerpluim) — a forecast run several times.
- * Pure black type on white, one committed colour field in the logo's navy, the logo's teal for "better",
- * red for "worse", amber for "what a decision changes". One family, Archivo: condensed and heavy for display,
- * normal width for text and UI. Edges are crisp 1px lines; only floating layers cast a real (offset) shadow.
+ * Business Twin design tokens (since 15 Nov 2026, see docs/ux-design-research.md). One system for the landing page
+ * and the app: a salon's hair-colour swatch ring. White and near-white grounds, black type and black actions, soft
+ * swatch tints (mint, sky, lilac, peach) as colour fields, coral for "worse" and the bad case, the logo's teal for
+ * "better" and the good case, amber for "what a decision changes". Archivo throughout: condensed and heavy for
+ * display, normal width for text and UI. Edges are crisp 1px lines; floating layers cast a real offset shadow.
  * Light theme only. Text colours meet WCAG 2.2 AA contrast on canvas and surface.
  */
 @theme {
@@ -13,7 +13,7 @@
   --font-display: 'Archivo Variable', system-ui, sans-serif;
   --font-mono: var(--font-sans); /* numbers: same face, tabular figures (see base layer) */
 
-  --color-canvas: #f3f4f6;
+  --color-canvas: #f6f7f8;
   --color-surface: #ffffff;
   --color-ink: #000000;
   --color-muted: #555a62;
@@ -21,11 +21,11 @@
   --color-line: #dfe2e6;
   --color-line-soft: #eceef1;
 
-  --color-accent: #012856; /* logo navy: actions, links, selection, and the page's one colour field */
+  --color-accent: #000000; /* actions, selection and focus are black, as on the landing page */
   --color-accent-dark: #000000;
-  --color-accent-50: #eaf0f8;
-  --color-accent-100: #d9e3f1;
-  --color-accent-200: #b7c8e2;
+  --color-accent-50: #eef4fd; /* sky swatch tints for selected and derived states */
+  --color-accent-100: #dceafb;
+  --color-accent-200: #b9d3f5;
 
   --color-teal: #00b598; /* logo teal: the optimistic line and "better" fills (not for small text) */
 
@@ -49,15 +49,15 @@
   --color-good-50: #e2f6f1;
   --color-good-200: #a3e2d3;
 
-  --color-bad: #d7261e;
-  --color-bad-50: #fff0ef;
-  --color-bad-200: #ffc8c4;
+  --color-bad: #c9381f; /* coral, darkened for text contrast */
+  --color-bad-50: #fff0eb;
+  --color-bad-200: #ffc7b6;
 
   /* Crisp edges instead of the soft-shadow card kit; real offset shadows only on layers that float. */
   --shadow-card: 0 0 0 1px var(--color-line);
   --shadow-lift: 0 0 0 1px rgb(0 0 0 / 0.08), 0 14px 32px -10px rgb(0 0 0 / 0.28);
 
-  --radius-card: 0.75rem;
+  --radius-card: 1.25rem;
 
   /* Motion tokens (Emil Kowalski's design-engineering rules, .claude/skills/emil-design-eng).
      Built-in CSS easings are too weak; enter/exit uses a strong ease-out, on-screen movement ease-in-out,

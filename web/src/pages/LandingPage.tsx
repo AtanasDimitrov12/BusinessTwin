@@ -8,7 +8,7 @@ import { Logo } from '../components/ui/Logo'
 import { Tooltip } from '../components/ui/Tooltip'
 import { formatEuroDelta, formatEuroWhole } from '../lib/format'
 import { demoGrid, shareSteps } from './landing/demoGrid'
-import { PlumeChart, type Note, type Series } from './landing/PlumeChart'
+import { PlumeChart, type Note, type Series } from '../components/charts/PlumeChart'
 import { breakEvenNewVisits, cash, runningTotal } from './landing/story'
 
 // One story, told with colour: a fictional salon deciding whether to hire a fifth stylist. Every figure is real
