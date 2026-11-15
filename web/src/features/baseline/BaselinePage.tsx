@@ -1,4 +1,4 @@
-import { ArrowRight, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { BaselineDto, BaselineSummaryDto, BusinessDto } from '../../api/client'
 import { BusinessMap } from '../../components/BusinessMap'
@@ -27,7 +27,7 @@ export function BaselinePage({ business, baseline }: { business: BusinessDto; ba
               <Pencil size={15} /> Correct figures
             </ButtonLink>
             <ButtonLink to="/app/decide">
-              Test a decision <ArrowRight size={16} />
+              Test a decision
             </ButtonLink>
           </>
         }
@@ -124,14 +124,14 @@ function Overview({ baseline, summary: s, planCount }: { baseline: BaselineDto; 
             </p>
           </Card>
 
-          <div className="rounded-[var(--radius-card)] bg-ink p-7 text-white shadow-lift">
+          <div className="rounded-[var(--radius-card)] bg-accent p-7 text-white">
             <div className="text-xs font-semibold text-white/60">{limited ? 'Customers you cannot serve' : 'Free capacity'}</div>
             <div className="mt-1 font-mono text-5xl font-semibold">{formatCount(limited ? s.unservedDemand : s.unusedCapacity)}</div>
             <div className="mb-6 mt-1 text-sm text-white/70">
               {limited ? 'visits a month: your team is fully booked' : `visits a month unused (${formatPercent(s.utilisation)} booked)`}
             </div>
             <ButtonLink to="/app/decide" variant="light" className="w-full">
-              Test a decision <ArrowRight size={16} />
+              Test a decision
             </ButtonLink>
             {planCount > 0 && (
               <Link to="/app/plans" className="mt-3 block text-center text-sm text-white/75 hover:text-white">

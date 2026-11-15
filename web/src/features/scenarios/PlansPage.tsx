@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, Check, Plus, X } from 'lucide-react'
+import { AlertTriangle, Check, Plus, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { CaseKey, ScenarioDto, SimulationResultDto } from '../../api/client'
@@ -122,7 +122,7 @@ export function PlansPage() {
         <Card className="border-2 border-dashed border-black/[0.1] p-12 text-center">
           <p className="mb-5 text-muted">No plans yet. Test a decision and save it to compare it here.</p>
           <ButtonLink to="/app/decide">
-            Test a decision <ArrowRight size={16} />
+            Test a decision
           </ButtonLink>
         </Card>
       ) : (

@@ -8,7 +8,7 @@ import type { BaselineDto, BusinessDto, SourceLabel } from '../../api/client'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Logo } from '../../components/ui/Logo'
-import { Card, ErrorNote, Eyebrow, InfoBox } from '../../components/ui/primitives'
+import { Card, ErrorNote, InfoBox } from '../../components/ui/primitives'
 import { SourceBadge } from '../../components/ui/SourceBadge'
 import { SourcePicker } from '../../components/ui/SourcePicker'
 import { useSaveBusiness } from '../business/business'
@@ -116,10 +116,7 @@ export function SetupWizard({ business, baseline }: { business: BusinessDto | nu
       </header>
 
       <main className="mx-auto max-w-xl px-4 py-12 sm:px-6 sm:py-16">
-        <Eyebrow className="mb-2 text-amber">
-          Step {step + 1} of {steps.length}
-        </Eyebrow>
-        <h1 className="font-display text-[2.25rem] font-bold leading-[1.08] tracking-[-0.03em]">{current.title}</h1>
+        <h1 className="font-display font-extrabold font-stretch-[72%] leading-[0.95] tracking-[-0.015em] text-[2.75rem]">{current.title}</h1>
         <p className="mb-9 mt-3 text-[17px] text-muted">{current.intro}</p>
 
         <form onSubmit={(e) => onSubmit(e).catch(() => {})} noValidate className="space-y-5">

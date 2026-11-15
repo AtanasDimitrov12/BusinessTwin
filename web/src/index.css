@@ -1,50 +1,63 @@
 @import 'tailwindcss';
 
 /*
- * Business Twin design tokens: an Apple-style system (see .claude/skills/apple-design).
- * Neutral greys carry the structure; colour is used sparingly and always means something:
- * blue accent = what you can act on, amber = what a decision changes, green/red = better/worse.
- * Type is the platform system font (SF Pro on Apple devices), Inter elsewhere; numbers use tabular figures.
+ * Business Twin design tokens. Visual world (since 15 Nov 2026, see docs/ux-design-research.md):
+ * Dutch modernist grid meets the weather "plume" (weerpluim) — a forecast run several times.
+ * Pure black type on white, one committed colour field in the logo's navy, the logo's teal for "better",
+ * red for "worse", amber for "what a decision changes". One family, Archivo: condensed and heavy for display,
+ * normal width for text and UI. Edges are crisp 1px lines; only floating layers cast a real (offset) shadow.
  * Light theme only. Text colours meet WCAG 2.2 AA contrast on canvas and surface.
  */
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter Variable', system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Variable', system-ui, sans-serif;
+  --font-sans: 'Archivo Variable', system-ui, sans-serif;
+  --font-display: 'Archivo Variable', system-ui, sans-serif;
   --font-mono: var(--font-sans); /* numbers: same face, tabular figures (see base layer) */
 
-  --color-canvas: #f5f5f7;
+  --color-canvas: #f3f4f6;
   --color-surface: #ffffff;
-  --color-ink: #1d1d1f;
-  --color-muted: #6e6e73;
-  --color-faint: #86868b;
-  --color-line: #e3e3e8;
-  --color-line-soft: #ededf0;
+  --color-ink: #000000;
+  --color-muted: #555a62;
+  --color-faint: #8a8f98;
+  --color-line: #dfe2e6;
+  --color-line-soft: #eceef1;
 
-  --color-accent: #0066cc; /* action blue: links, primary buttons, selection */
-  --color-accent-dark: #0052a3;
-  --color-accent-50: #eef5fd;
-  --color-accent-100: #ddebfb;
-  --color-accent-200: #b4d3f5;
+  --color-accent: #012856; /* logo navy: actions, links, selection, and the page's one colour field */
+  --color-accent-dark: #000000;
+  --color-accent-50: #eaf0f8;
+  --color-accent-100: #d9e3f1;
+  --color-accent-200: #b7c8e2;
+
+  --color-teal: #00b598; /* logo teal: the optimistic line and "better" fills (not for small text) */
+
+  /* Landing page swatches (hair-colour ring): soft tints that give each part of the story its own colour field.
+     Lines and text on them use the -strong variants, which keep at least 3:1 (graphics) or 4.5:1 (text). */
+  --color-swatch-mint: #dcf4eb;
+  --color-swatch-sky: #dceafb;
+  --color-swatch-lilac: #e9e2fa;
+  --color-swatch-peach: #ffe2d4;
+  --color-coral: #ff6b57;
+  --color-coral-strong: #c9381f;
+  --color-teal-strong: #007a66;
 
   --color-amber: #b84c00;
   --color-amber-dark: #8a3900;
   --color-amber-50: #fff4e8;
   --color-amber-200: #ffd3a8;
 
-  --color-good: #1f7a38;
-  --color-good-dark: #165c2a;
-  --color-good-50: #ebf7ee;
-  --color-good-200: #b4e2c1;
+  --color-good: #007a64; /* teal, darkened for text contrast */
+  --color-good-dark: #005c4b;
+  --color-good-50: #e2f6f1;
+  --color-good-200: #a3e2d3;
 
-  --color-bad: #d70015;
-  --color-bad-50: #fff1f1;
-  --color-bad-200: #ffc9cc;
+  --color-bad: #d7261e;
+  --color-bad-50: #fff0ef;
+  --color-bad-200: #ffc8c4;
 
-  /* Depth instead of hard borders: a hairline plus a soft, wide shadow. Bigger surfaces read as thicker. */
-  --shadow-card: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 18px rgb(0 0 0 / 0.04);
-  --shadow-lift: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 56px rgb(0 0 0 / 0.12);
+  /* Crisp edges instead of the soft-shadow card kit; real offset shadows only on layers that float. */
+  --shadow-card: 0 0 0 1px var(--color-line);
+  --shadow-lift: 0 0 0 1px rgb(0 0 0 / 0.08), 0 14px 32px -10px rgb(0 0 0 / 0.28);
 
-  --radius-card: 1.375rem;
+  --radius-card: 0.75rem;
 
   /* Motion tokens (Emil Kowalski's design-engineering rules, .claude/skills/emil-design-eng).
      Built-in CSS easings are too weak; enter/exit uses a strong ease-out, on-screen movement ease-in-out,
@@ -107,15 +120,15 @@
 
   body {
     @apply bg-canvas text-ink font-sans antialiased;
-    font-size: 1.0625rem; /* 17px, Apple's body size */
+    font-size: 1rem;
     line-height: 1.47;
-    letter-spacing: -0.005em;
+    letter-spacing: 0;
   }
   /* Tracking is size-specific: large text tightens, small text stays near zero. Utilities override these. */
-  h1, h2, h3, .font-display { letter-spacing: -0.022em; }
-  h1 { letter-spacing: -0.028em; }
-  .text-xs, .text-sm { letter-spacing: 0.003em; } /* small text: slightly open, never tight */
-  .font-mono { font-variant-numeric: tabular-nums; letter-spacing: -0.015em; }
+  h1, h2, h3, .font-display { letter-spacing: -0.015em; }
+  h1 { letter-spacing: -0.025em; }
+  .text-xs, .text-sm { letter-spacing: 0.005em; } /* small text: slightly open, never tight */
+  .font-mono { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 
   :focus-visible {
     outline: 3px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
@@ -127,77 +140,13 @@
   }
 }
 
-/* Scroll reveals on the landing page (see lib/useReveal.ts). Animations, not transitions, so they
-   do not interfere with hover transitions on the same elements. */
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Landing-page plume (pages/landing/Plume.tsx): the clip slides right as the story moves through the months,
+   and each step's notes fade in once the line has arrived. */
+.plume-reveal {
+  transform-origin: 0 0;
+  transition: transform 800ms var(--ease-in-out);
 }
-
-@keyframes reveal-grow-x {
-  from {
-    transform: scaleX(0);
-  }
-
-  to {
-    transform: scaleX(1);
-  }
-}
-
-[data-reveal]:not([data-inview]),
-[data-reveal-children]:not([data-inview])>* {
-  opacity: 0;
-}
-
-[data-reveal][data-inview],
-[data-reveal-children][data-inview]>* {
-  animation: reveal-up 600ms var(--ease-out) both;
-}
-
-[data-reveal-bars] .reveal-bar {
-  transform-origin: left;
-}
-
-[data-reveal-bars]:not([data-inview]) .reveal-bar {
-  transform: scaleX(0);
-}
-
-[data-reveal-bars][data-inview] .reveal-bar {
-  animation: reveal-grow-x 800ms var(--ease-in-out) both;
-}
-
-/* Stagger: one item after another, 60ms apart (30-80ms keeps a cascade without feeling slow). */
-[data-reveal-children]> :nth-child(2),
-[data-reveal-bars]> :nth-child(2) .reveal-bar {
-  animation-delay: 60ms;
-}
-
-[data-reveal-children]> :nth-child(3),
-[data-reveal-bars]> :nth-child(3) .reveal-bar {
-  animation-delay: 120ms;
-}
-
-[data-reveal-children]> :nth-child(4),
-[data-reveal-bars]> :nth-child(4) .reveal-bar {
-  animation-delay: 180ms;
-}
-
-[data-reveal-children]> :nth-child(5),
-[data-reveal-bars]> :nth-child(5) .reveal-bar {
-  animation-delay: 240ms;
-}
-
-[data-reveal-children]> :nth-child(6),
-[data-reveal-bars]> :nth-child(6) .reveal-bar {
-  animation-delay: 300ms;
-}
+.plume-note { animation: fade-in 300ms var(--ease-out) 300ms both; }
 
 /* Reduced motion means fewer and gentler animations, not none: keep fades that help reading, drop movement. */
 @keyframes fade-in {
@@ -216,15 +165,8 @@
   }
 
   .animate-rise,
-  .animate-rise-slow,
-  [data-reveal][data-inview],
-  [data-reveal-children][data-inview]>* {
+  .animate-rise-slow {
     animation: fade-in 200ms ease both !important;
-  }
-
-  [data-reveal-bars] .reveal-bar {
-    animation: none !important;
-    transform: none !important;
   }
 
   *,
@@ -269,16 +211,16 @@
 /* Materials: translucent chrome that content scrolls under (apple-design §12).
    Solid when the visitor asks for less transparency or more contrast. */
 @utility material {
-  background-color: rgb(255 255 255 / 0.72);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
+  background-color: rgb(255 255 255 / 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 @utility material-dark {
-  background-color: rgb(29 29 31 / 0.72);
+  background-color: rgb(0 0 0 / 0.86);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .material { background-color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .material-dark { background-color: #1d1d1f; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .material-dark { background-color: #000; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

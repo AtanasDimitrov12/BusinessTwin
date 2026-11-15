@@ -44,7 +44,7 @@ export function OutcomePage() {
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="font-display text-[2rem] font-bold leading-[1.08] md:text-[2.5rem]">{s.name}</h1>
+            <h1 className="font-display font-extrabold font-stretch-[72%] leading-[0.95] tracking-[-0.015em] text-[2.5rem] md:text-[3.25rem]">{s.name}</h1>
             <div className="mt-2 flex flex-wrap gap-2">
               {s.changes.map((c, i) => (
                 <Badge key={i} tone="amber">

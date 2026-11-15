@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowRight } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
@@ -36,7 +35,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:flex-[3] lg:px-20">
         <div className="mx-auto w-full max-w-md">
           <Logo size={42} />
-          <h1 className="mt-14 font-display text-[2.5rem] font-bold leading-[1.08] tracking-[-0.03em]">
+          <h1 className="mt-14 font-display font-extrabold font-stretch-[72%] leading-[0.95] tracking-[-0.015em] text-[3.25rem]">
             {mode === 'signIn' ? 'Welcome back' : 'Test your first decision'}
           </h1>
           <p className="mt-3 text-[17px] text-muted">
@@ -57,7 +56,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
             />
             <ErrorNote error={error} />
             <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-              {mode === 'signIn' ? 'Sign in' : 'Create account'} <ArrowRight size={18} />
+              {mode === 'signIn' ? 'Sign in' : 'Create account'}
             </Button>
           </form>
 
@@ -103,7 +102,7 @@ const exampleNodes = [
 /** Right-hand panel from the prototype: how the numbers connect, for a sample salon. */
 function ExamplePanel() {
   return (
-    <div className="hidden min-w-[360px] flex-col justify-center bg-ink px-10 py-12 lg:flex lg:flex-[2]">
+    <div className="hidden min-w-[360px] flex-col justify-center bg-accent px-10 py-12 lg:flex lg:flex-[2]">
       <div className="text-xs font-semibold text-white/50">Sample salon · a normal month</div>
       <div className="mb-6 mt-1 text-sm text-white/75">How the numbers connect</div>
       <div className="space-y-1.5">

@@ -1,49 +1,36 @@
-import {
-  AlertTriangle,
-  ArrowRight,
-  ArrowUp,
-  BookOpen,
-  Calculator,
-  CalendarClock,
-  Check,
-  ChevronDown,
-  Eye,
-  FileSpreadsheet,
-  Lock,
-  Scale,
-  ShieldCheck,
-  Tags,
-  Trash2,
-  Users,
-} from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { Slider } from '@base-ui/react/slider'
+import { ArrowUp, ChevronDown, Minus, Plus } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { ButtonLink } from '../components/ui/Button'
-import { buttonClass } from '../components/ui/buttonClass'
 import { Logo } from '../components/ui/Logo'
 import { Tooltip } from '../components/ui/Tooltip'
-import { Badge, Eyebrow } from '../components/ui/primitives'
-import { SourceBadge } from '../components/ui/SourceBadge'
-import { changeMeta } from '../features/scenarios/changeForm'
-import { useReveal } from '../lib/useReveal'
+import { formatEuroDelta, formatEuroWhole } from '../lib/format'
+import { demoGrid, shareSteps } from './landing/demoGrid'
+import { PlumeChart, type Note, type Series } from './landing/PlumeChart'
+import { breakEvenNewVisits, cash, runningTotal } from './landing/story'
 
-// Example figures on this page are real scenario-engine output for labelled sample salons, pasted in as text.
-// Nothing here is calculated in the browser.
+// One story, told with colour: a fictional salon deciding whether to hire a fifth stylist. Every figure is real
+// scenario-engine output (landing/story.ts, landing/demoGrid.ts); the browser formats and draws, it never calculates.
+
+const delta = (n: number) => formatEuroDelta(String(n))
+const money = (n: number) => formatEuroWhole(String(n)).replace('-', '−')
+
+/** Display type: Archivo condensed and heavy, the page's loud voice. */
+const display = 'font-display font-extrabold font-stretch-[72%] leading-[0.92] tracking-[-0.015em]'
 
 export function LandingPage() {
   return (
-    <div className="bg-canvas text-ink">
+    <div className="overflow-x-clip bg-surface text-ink">
       <SiteNav />
       <main>
         <Hero />
-        <FactStrip />
-        <Problem />
-        <HowItWorks />
-        <Decisions />
-        <Features />
         <Story />
-        <Trust />
+        <YourSalon />
+        <Honest />
         <Faq />
-        <FinalCta />
+        <Close />
       </main>
       <SiteFooter />
       <BackToTop />
@@ -51,311 +38,340 @@ export function LandingPage() {
   )
 }
 
-/** Appears once the visitor has scrolled past the hero. Smooth scrolling comes from index.css (off for reduced motion). */
-function BackToTop() {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 600)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <Tooltip label="Back to top">
-    <button
-      type="button"
-      onClick={() => window.scrollTo({ top: 0 })}
-      aria-label="Back to top"
-      tabIndex={visible ? 0 : -1}
-      aria-hidden={!visible}
-      className={`fixed bottom-6 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-ink/85 text-white shadow-lift backdrop-blur transition-[opacity,translate,scale,background-color] duration-200 ease-out hover:bg-ink active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:right-6 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
-        }`}
-    >
-      <ArrowUp size={20} aria-hidden />
-    </button>
-    </Tooltip>
-  )
-}
-
 function Container({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 }
 
-function SectionTitle({ eyebrow, title, sub, center = false }: { eyebrow: string; title: ReactNode; sub?: ReactNode; center?: boolean }) {
-  const reveal = useReveal()
-  return (
-    <div {...reveal} data-reveal className={`mb-14 max-w-3xl ${center ? 'mx-auto text-center' : ''}`}>
-      <Eyebrow className="mb-3 text-[17px] text-amber">{eyebrow}</Eyebrow>
-      <h2 className="font-display text-[2.25rem] font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">{title}</h2>
-      {sub && <p className="mt-5 text-xl leading-snug text-muted md:text-[21px]">{sub}</p>}
-    </div>
-  )
-}
-
 function SiteNav() {
   return (
-    <header className="material sticky top-0 z-40 border-b border-black/[0.06]">
+    <header className="material sticky top-0 z-40 border-b border-line">
       <Container className="flex h-14 items-center justify-between gap-4">
-        <Logo size={30} />
-        <nav className="hidden items-center gap-8 text-[13px] text-ink/80 md:flex" aria-label="Page sections">
-          <a href="#how" className="transition-colors hover:text-ink">How it works</a>
-          <a href="#decisions" className="transition-colors hover:text-ink">Decisions</a>
-          <a href="#why" className="transition-colors hover:text-ink">Why it's different</a>
-          <a href="#faq" className="transition-colors hover:text-ink">FAQ</a>
+        <Logo size={28} />
+        <nav className="hidden items-center gap-8 text-sm font-medium md:flex" aria-label="Page sections">
+          {[
+            ['#story', 'The story'],
+            ['#your-salon', 'How it works'],
+            ['#faq', 'Questions'],
+          ].map(([href, label]) => (
+            <a key={href} href={href} className="underline-offset-4 hover:underline">
+              {label}
+            </a>
+          ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <ButtonLink to="/login" variant="ghost" size="sm">Sign in</ButtonLink>
-          <ButtonLink to="/register" size="sm">Start free</ButtonLink>
+        <div className="flex items-center gap-1.5">
+          <ButtonLink to="/login" variant="ghost" size="sm">
+            Sign in
+          </ButtonLink>
+          <Link
+            to="/register"
+            className="inline-flex select-none items-center rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-white transition-[scale] duration-150 ease-out active:scale-[0.97]"
+          >
+            Start free
+          </Link>
         </div>
       </Container>
     </header>
   )
 }
 
+// ── Hero: what it is in one line, then a decision to play with ───────────
+
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-surface">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(60%_60%_at_50%_100%,var(--color-accent-50),transparent)]"
-      />
-      <Container className="relative flex flex-col items-center pb-24 pt-20 text-center md:pt-28">
-        <div className="flex animate-rise-slow flex-col items-center">
-          <h1 className="max-w-4xl font-display text-[2.75rem] font-bold leading-[1.04] tracking-[-0.035em] sm:text-6xl lg:text-[5rem]">
-            Before you decide, see what{' '}
-            <span className="bg-gradient-to-r from-accent to-amber bg-clip-text text-transparent">might</span> happen.
-          </h1>
-          <p className="mt-6 max-w-2xl text-xl leading-snug text-muted md:text-[21px]">
-            Thinking of hiring a stylist, raising prices or spending more on marketing? Business Twin shows how it could change your customers, staff
-            time, costs and cash, month by month, in a pessimistic, expected and optimistic case.
+    <section className="border-b border-line">
+      {/* Text and a working example side by side, sized so both fit in a laptop's first screen. */}
+      <Container className="grid items-center gap-10 py-10 md:py-14 lg:min-h-[calc(100svh-3.5rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12 lg:py-10">
+        <div>
+          <h1 className={`${display} text-[clamp(2.9rem,4.9vw,4.4rem)]`}>Test salon decisions before you make them.</h1>
+          <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
+            Hiring a stylist, raising your prices or starting a campaign? Business Twin plays it out over the next twelve months, in a bad, a normal
+            and a good case.
           </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <ButtonLink to="/register" size="lg">
-              Test your first decision <ArrowRight size={18} />
-            </ButtonLink>
-            <a href="#how" className={buttonClass('secondary', 'lg')}>
-              See how it works
-            </a>
-          </div>
-          <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted">
-            {['Free to try', 'Data stored in the EU', 'No accounting knowledge needed'].map((t) => (
-              <li key={t} className="flex items-center gap-1.5">
-                <Check size={16} className="text-good" aria-hidden /> {t}
-              </li>
-            ))}
-          </ul>
+          {/* The page's one loud button: highest contrast in the hero, a teal ring on hover, a press that gives. */}
+          <Link
+            to="/register"
+            className="mt-8 inline-flex select-none items-center rounded-full bg-ink px-8 py-4 text-[17px] font-semibold text-white transition-[box-shadow,scale] duration-200 ease-out hover:shadow-[0_0_0_4px_var(--color-surface),0_0_0_7px_var(--color-teal)] active:scale-[0.97]"
+          >
+            Start with your salon
+          </Link>
+          <p className="mt-4 text-sm text-muted">Free to try. Set-up takes about ten minutes.</p>
         </div>
-        <HeroVisual />
+
+        <Demo />
       </Container>
     </section>
   )
 }
 
-/**
- * Product preview built from real UI pieces. The figures are real engine output for the sample salon
- * (420 visits at €42, hire 120 h at €3,200 + €400/month campaign, 12 months), not invented marketing numbers.
- */
-function HeroVisual() {
-  const months = [
-    { m: 1, v: '−€2,002', h: 100 },
-    { m: 2, v: '−€1,483', h: 74 },
-    { m: 3, v: '−€965', h: 48 },
-    { m: 4, v: '−€446', h: 22 },
-    { m: 5, v: '−€446', h: 22 },
-    { m: 6, v: '−€446', h: 22 },
-  ]
+/** The hero demo: one control picks one of the pre-computed engine runs for the example hire. */
+const DEMO_COST = 2400
+
+function Demo() {
+  const [share, setShare] = useState(60)
+  const run = demoGrid[`${share}-${DEMO_COST}`]
+  const series: Series = { pessimistic: run.pessimistic.total, expected: run.expected.total, optimistic: run.optimistic.total }
+  const normal = run.expected.paidBack ? `Paid back in month ${run.expected.paidBack}` : 'Not paid back within a year'
+  const bad =
+    run.pessimistic.lowestCash < 0
+      ? `Cash drops to ${money(run.pessimistic.lowestCash)} in month ${run.pessimistic.lowestCashMonth}`
+      : `Cash stays above ${money(run.pessimistic.lowestCash)}`
+
   return (
-    <div className="relative mt-16 w-full max-w-2xl animate-rise-slow text-left [animation-delay:80ms]" aria-label="Example result for a sample salon">
-      <div className="rounded-[28px] bg-surface p-5 shadow-lift sm:p-7">
-        <div className="mb-4 flex items-center justify-between gap-2">
-          <div>
-            <div className="text-xs font-semibold text-muted">Sample salon</div>
-            <div className="font-display text-lg font-semibold">Hire a stylist + local campaign</div>
-          </div>
-          <Badge tone="accent">12 months</Badge>
-        </div>
-        <div className="rounded-[20px] bg-bad-50 p-5">
-          <div className="text-xs font-semibold text-muted">Expected case</div>
-          <div className="mt-1 font-mono text-4xl font-semibold text-bad">−€8,467</div>
-          <div className="text-xs font-semibold text-bad">less over the year than not doing it</div>
-          <div className="mt-3">
-            <div className="relative h-2 rounded-full bg-white">
-              <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-gradient-to-r from-bad via-accent to-good opacity-75" />
-              <div className="absolute -top-1 left-[64%] size-4 -translate-x-1/2 rounded-full border-2 border-white bg-accent shadow" />
-            </div>
-            <div className="mt-1.5 flex justify-between font-mono text-[10px] text-muted">
-              <span>Pessimistic −€33,102</span>
-              <span>Optimistic +€5,270</span>
-            </div>
-          </div>
-        </div>
-        <div className="mt-4">
-          <div className="mb-2 text-xs font-semibold text-muted">Each month vs today (expected)</div>
-          <div className="flex h-20 items-start gap-2 border-t border-black/[0.08] pt-px">
-            {months.map((b) => (
-              <div key={b.m} className="flex h-full flex-1 items-start" title={`Month ${b.m}: ${b.v}`}>
-                <div className="w-full rounded-b-md bg-bad/75" style={{ height: `${b.h}%` }} />
-              </div>
-            ))}
-          </div>
-          <div className="mt-1 flex gap-2 font-mono text-[10px] text-faint">
-            {months.map((b) => (
-              <span key={b.m} className="flex-1 text-center">M{b.m}</span>
-            ))}
-          </div>
-        </div>
-        <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-dark">
-          It only pays off if most of the new stylist’s customers are <strong>new</strong> to the salon. Worth knowing before you sign a contract.
-        </p>
+    <figure id="try" className="scroll-mt-20 rounded-[28px] border border-line bg-surface p-5 shadow-[0_24px_60px_-28px_rgb(0_0_0/0.3)] sm:p-7">
+      <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <span className="font-bold">Example: a salon of four hires a fifth stylist</span>
+        <span className="text-sm text-muted">Gained or lost vs not hiring</span>
+      </figcaption>
+      <div className="mt-4">
+        <PlumeChart series={series} height={230} endLabels formatEnd={delta} zeroLabel="Not hiring" drawIn />
       </div>
-      <div className="material absolute -bottom-8 -left-2 rounded-2xl px-4 py-2.5 shadow-lift sm:-left-12">
-        <div className="text-xs font-semibold text-muted">To break even</div>
-        <div className="text-base font-semibold text-accent">
-          <span className="font-mono">100</span> new visits a month
-        </div>
+
+      <div className="mt-6 grid gap-6 border-t border-line pt-5 sm:grid-cols-2 sm:gap-8">
+        <DemoSlider label="New customers" value={share} steps={shareSteps} onChange={setShare} show={(v) => `${v}%`} hint="Of her customers, how many are new to the salon. The rest move from colleagues." />
+        {/* Two fixed rows, so the card keeps its height whatever the outcome says. */}
+        <dl className="grid content-start gap-3" aria-live="polite">
+          <Verdict label="Normal case" text={normal} tone="ink" />
+          <Verdict label="Bad case" text={bad} tone={run.pessimistic.lowestCash < 0 ? 'bad' : 'ink'} />
+        </dl>
       </div>
-      <div className="material absolute -top-8 right-2 rounded-2xl px-4 py-2.5 shadow-lift sm:-right-12">
-        <div className="text-xs font-semibold text-muted">Optimistic case</div>
-        <div className="text-base font-semibold text-good-dark">Monthly result catches up in month 3</div>
-      </div>
+    </figure>
+  )
+}
+
+function Verdict({ label, text, tone }: { label: string; text: string; tone: 'ink' | 'bad' }) {
+  return (
+    <div className="grid content-start">
+      <dt className="text-sm text-muted">{label}</dt>
+      {/* Room for two lines, so a longer outcome never changes the card's height. */}
+      <dd className="relative min-h-[2.9rem]">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={text}
+            className={`block text-[17px] font-bold leading-snug ${tone === 'bad' ? 'text-coral-strong' : 'text-ink'}`}
+            initial={{ opacity: 0, filter: 'blur(4px)', y: 4 }}
+            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+            exit={{ opacity: 0, filter: 'blur(4px)', y: -4 }}
+            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+          >
+            {text}
+          </motion.span>
+        </AnimatePresence>
+      </dd>
     </div>
   )
 }
 
-function FactStrip() {
+function DemoSlider({
+  label,
+  value,
+  steps,
+  onChange,
+  show,
+  hint,
+}: {
+  label: string
+  value: number
+  steps: number[]
+  onChange: (v: number) => void
+  show: (v: number) => string
+  hint: string
+}) {
+  const index = steps.indexOf(value)
+  const step = (d: number) => onChange(steps[Math.min(steps.length - 1, Math.max(0, index + d))])
+  const nudge =
+    'flex size-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface transition-[background-color,scale] duration-150 hover:bg-canvas active:scale-[0.92]'
   return (
-    <section className="bg-canvas">
-      <Container className="grid gap-10 pb-6 pt-20 text-center sm:grid-cols-3">
-        <Fact value="2,890" label="Dutch hair salons work with 3 to 10 FTE" />
-        <Fact value="26–40%" label="employer costs on top of a gross salary in NL" />
-        <Fact value="21 days" label="median cash buffer of personal-services firms (US data)" />
-      </Container>
-      <Container className="pb-4 text-center text-xs text-faint">
-        Sources: Schippers &amp; Beulen (2025), Panteia; Multiplier (2026); Farrell &amp; Wheat (2016), JPMorgan Chase Institute.
-      </Container>
-    </section>
+    <Slider.Root value={index} min={0} max={steps.length - 1} step={1} onValueChange={(i) => onChange(steps[i as number])}>
+      <div className="flex items-baseline justify-between gap-3">
+        <Slider.Label className="font-bold">{label}</Slider.Label>
+        <span className={`${display} text-[2.5rem] tabular-nums`}>{show(value)}</span>
+      </div>
+      <div className="mt-1 flex items-center gap-2">
+        <button type="button" onClick={() => step(-1)} aria-label="Fewer new customers" className={nudge}>
+          <Minus size={14} aria-hidden />
+        </button>
+        <Slider.Control className="flex h-8 flex-1 touch-none items-center">
+          <Slider.Track className="h-1.5 w-full rounded-full bg-black/10">
+            <Slider.Indicator className="rounded-full bg-ink" />
+            <Slider.Thumb
+              getAriaValueText={(_formatted, i) => show(steps[i])}
+              className="size-6 rounded-full border-[3px] border-ink bg-white shadow-[0_2px_6px_rgb(0_0_0/0.25)] outline-none transition-[scale] duration-150 focus-visible:ring-4 focus-visible:ring-black/20 data-[dragging]:scale-110"
+            />
+          </Slider.Track>
+        </Slider.Control>
+        <button type="button" onClick={() => step(1)} aria-label="More new customers" className={nudge}>
+          <Plus size={14} aria-hidden />
+        </button>
+      </div>
+      <p className="mt-2 text-[13px] leading-relaxed text-muted">{hint}</p>
+    </Slider.Root>
   )
 }
 
-function Fact({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <div className="font-display text-5xl font-bold tracking-[-0.035em] text-ink">{value}</div>
-      <div className="mx-auto mt-1 max-w-[16rem] text-sm text-muted">{label}</div>
-    </div>
-  )
+// ── Story: the same hire, month by month; the stage changes colour per chapter ──
+
+type Swatch = 'mint' | 'sky' | 'lilac' | 'peach'
+const swatchBg: Record<Swatch, string> = {
+  mint: 'var(--color-swatch-mint)',
+  sky: 'var(--color-swatch-sky)',
+  lilac: 'var(--color-swatch-lilac)',
+  peach: 'var(--color-swatch-peach)',
+}
+type Beat = { month: number; mode: 'total' | 'cash'; swatch: Swatch; title: string; body: ReactNode; notes: Note[] }
+
+const beats: Beat[] = [
+  {
+    month: 1,
+    mode: 'total',
+    swatch: 'mint',
+    title: 'Month 1. The wages start before the customers do.',
+    body: (
+      <>
+        She costs €2,400 a month from her first day, while her chair is still mostly empty. Every case starts in the red: between{' '}
+        {delta(runningTotal.optimistic[1])} and {delta(runningTotal.pessimistic[1])} in the first month.
+      </>
+    ),
+    notes: [{ month: 1, value: runningTotal.pessimistic[1], text: `${delta(runningTotal.optimistic[1])} to ${delta(runningTotal.pessimistic[1])}`, tone: 'neutral', place: 'below' }],
+  },
+  {
+    month: 5,
+    mode: 'total',
+    swatch: 'sky',
+    title: 'A client base takes five months.',
+    body: (
+      <>
+        She sees more customers every month until she is fully booked. In the normal case the hire is {delta(runningTotal.expected[4])} behind in
+        month 4. That is the lowest point, before it starts to earn.
+      </>
+    ),
+    notes: [{ month: 4, value: runningTotal.expected[4], text: `Lowest point ${delta(runningTotal.expected[4])}`, tone: 'expected', place: 'below' }],
+  },
+  {
+    month: 8,
+    mode: 'total',
+    swatch: 'lilac',
+    title: 'Only new customers add money.',
+    body: (
+      <>
+        Some of her customers simply move from colleagues: more work for her, no extra sales. Are 40%, 60% or 80% of them new? Nobody knows, so the
+        owner gives all three. That one guess is why the lines split. To cover her cost she needs about {breakEvenNewVisits} new visits a month.
+      </>
+    ),
+    notes: [
+      { month: 8, value: runningTotal.optimistic[8], text: '80% new', tone: 'optimistic' },
+      { month: 8, value: runningTotal.expected[8], text: '60% new', tone: 'expected' },
+      { month: 8, value: runningTotal.pessimistic[8], text: '40% new', tone: 'pessimistic', place: 'below' },
+    ],
+  },
+  {
+    month: 6,
+    mode: 'cash',
+    swatch: 'peach',
+    title: 'Profit is not cash.',
+    body: (
+      <>
+        The bank account tells its own story. In the bad case it drops to {money(cash.pessimistic[4])} in month 4: wages due, money not in yet.
+        Business Twin marks every month like that, so the tight month is never a surprise.
+      </>
+    ),
+    notes: [{ month: 4, value: cash.pessimistic[4], text: `${money(cash.pessimistic[4])} in month 4`, tone: 'pessimistic', place: 'below' }],
+  },
+  {
+    month: 12,
+    mode: 'total',
+    swatch: 'mint',
+    title: 'Month 12. One hire, three different years.',
+    body: (
+      <>
+        Good case: ahead from month 5, {delta(runningTotal.optimistic[12])} after a year. Normal case: paid back in month 11. Bad case: never paid
+        back, {delta(runningTotal.pessimistic[12])}. Same decision. Now the owner chooses knowing all three.
+      </>
+    ),
+    notes: [
+      { month: 5, value: runningTotal.optimistic[5], text: 'Paid back, month 5', tone: 'optimistic' },
+      { month: 11, value: runningTotal.expected[11], text: 'Paid back, month 11', tone: 'expected' },
+      { month: 12, value: runningTotal.pessimistic[12], text: delta(runningTotal.pessimistic[12]), tone: 'pessimistic' },
+    ],
+  },
+]
+
+const storyTotal: Series = runningTotal
+const storyCash: Series = { pessimistic: cash.pessimistic, expected: cash.expected, optimistic: cash.optimistic, withoutHire: cash.withoutHire }
+
+/** Which story step sits just below the middle of the viewport (where text is read under a sticky chart on phones). */
+function useActiveStep(count: number) {
+  const [active, setActive] = useState(0)
+  const refs = useRef<(HTMLElement | null)[]>([])
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.step))
+      },
+      { rootMargin: '-55% 0px -35% 0px' },
+    )
+    refs.current.slice(0, count).forEach((el) => el && observer.observe(el))
+    return () => observer.disconnect()
+  }, [count])
+  return { active, register: (i: number) => (el: HTMLElement | null) => void (refs.current[i] = el) }
 }
 
-function Problem() {
-  const tools = [
-    { icon: CalendarClock, title: 'Booking software', text: 'shows last month’s bookings and income.' },
-    { icon: BookOpen, title: 'Your accountant', text: 'explains the results after the year is over.' },
-    { icon: FileSpreadsheet, title: 'A spreadsheet', text: 'needs you to build every formula yourself.' },
-    { icon: Calculator, title: 'Online calculators', text: 'answer one question, one at a time.' },
-  ]
-  const reveal = useReveal()
+function Story() {
+  const { active, register } = useActiveStep(beats.length)
+  const beat = beats[active]
+  const isCash = beat.mode === 'cash'
   return (
-    <section className="py-24 md:py-32">
-      <Container>
-        <SectionTitle
-          eyebrow="The problem"
-          title="Your tools show the past. Your decisions are about the future."
-          sub="For a salon of five, one hire changes the whole cost base. Yet no tool links customers, staff time and cash for the decision in front of you."
-        />
-        <div {...reveal} data-reveal-children className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {tools.map((t) => (
-            <div key={t.title} className="rounded-[22px] bg-surface p-6 shadow-card">
-              <t.icon size={20} className="text-muted" aria-hidden />
-              <div className="mt-3 font-semibold">{t.title}</div>
-              <p className="mt-1 text-sm text-muted">{t.text}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-10 max-w-2xl text-xl leading-snug md:text-[21px]">
-          <strong className="font-semibold text-accent">Business Twin connects them</strong>: one model of your salon where demand, staff time, costs and
-          cash move together when you change something.
+    <section
+      id="story"
+      aria-labelledby="story-title"
+      className="scroll-mt-14 transition-[background-color] duration-700"
+      style={{ backgroundColor: swatchBg[beat.swatch] }}
+    >
+      <Container className="pt-20 md:pt-28">
+        <h2 id="story-title" className={`${display} max-w-3xl text-[clamp(2.5rem,6vw,4.5rem)]`}>
+          Four stylists. One more chair. Twelve months.
+        </h2>
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink/70">
+          Here is what Business Twin showed the owner, one month at a time. Scroll, and watch the year unfold.
         </p>
       </Container>
-    </section>
-  )
-}
 
-function HowItWorks() {
-  const steps = [
-    {
-      title: 'Describe a normal month',
-      text: 'Customers, prices, staff hours, costs and cash. Start from a sample salon and replace the numbers you know. About ten minutes.',
-      visual: (
-        <div className="space-y-2 text-xs">
-          {[
-            ['Customers per month', '420', 'entered'],
-            ['Average price', '€42.00', 'entered'],
-            ['Time per visit', '1.25 h', 'estimated'],
-          ].map(([l, v, s]) => (
-            <div key={l} className="flex items-center justify-between gap-2 rounded-xl bg-surface px-3 py-2 shadow-card">
-              <span className="text-muted">{l}</span>
-              <span className="flex items-center gap-2 font-mono">
-                {v} <SourceBadge source={s as 'entered' | 'estimated'} />
+      <Container className="grid gap-x-14 pb-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="sticky top-14 z-10 -mx-4 px-4 pt-4 sm:-mx-6 sm:px-6 lg:order-last lg:top-24 lg:mx-0 lg:h-fit lg:px-0 lg:pt-12">
+          <div className="rounded-[24px] bg-white p-4 shadow-[0_18px_40px_-20px_rgb(0_0_0/0.35)] sm:p-6">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className={`${display} text-[clamp(2rem,4.5vw,3.25rem)] tabular-nums`} aria-live="polite">
+                Month {beat.month}
               </span>
+              <span className="text-right text-sm text-muted">{isCash ? 'Cash in the bank' : 'Gained or lost vs not hiring'}</span>
             </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: 'Add a decision',
-      text: 'Hire, price or marketing, alone or combined. For anything uncertain you give three guesses: pessimistic, expected and optimistic.',
-      visual: (
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          {[
-            ['Pessimistic', '20%', 'bg-bad'],
-            ['Expected', '35%', 'bg-accent'],
-            ['Optimistic', '50%', 'bg-good'],
-          ].map(([l, v, c]) => (
-            <div key={l} className="overflow-hidden rounded-xl bg-surface shadow-card">
-              <div className={`h-1 ${c}`} />
-              <div className="px-2 pt-1.5 text-[9px] font-semibold text-muted">{l}</div>
-              <div className="pb-2 font-mono text-base">{v}</div>
+            <div className="mt-3">
+              <PlumeChart
+                key={beat.mode}
+                series={isCash ? storyCash : storyTotal}
+                domain={isCash ? [-3500, 13000] : [-14000, 17500]}
+                height={240}
+                months={beat.month}
+                notes={beat.notes}
+                zeroLabel={isCash ? '€0 in the bank' : 'Not hiring'}
+                zeroLabelAt={isCash ? 'end' : 'start'}
+              />
             </div>
-          ))}
-          <div className="col-span-3 text-left text-[11px] text-muted">…of the new stylist’s customers are new to the salon</div>
+            <Legend withoutHire={isCash} />
+          </div>
         </div>
-      ),
-    },
-    {
-      title: 'Compare three cases',
-      text: 'See sales, costs, result and cash for every month ahead, when the decision catches up, whether cash runs short, and why.',
-      visual: (
-        <div className="flex h-24 items-end gap-3 px-2">
-          {[
-            ['Today', 'h-[55%]', 'bg-accent'],
-            ['Pess.', 'h-[35%]', 'bg-bad'],
-            ['Exp.', 'h-[68%]', 'bg-good'],
-            ['Opt.', 'h-[90%]', 'bg-good'],
-          ].map(([l, h, c]) => (
-            <div key={l} className="flex h-full flex-1 flex-col justify-end text-center">
-              <div className={`${h} ${c} rounded-t-md opacity-85`} />
-              <div className="mt-1 text-[10px] text-muted">{l}</div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-  ]
-  const reveal = useReveal()
-  return (
-    <section id="how" className="scroll-mt-20 bg-surface py-24 md:py-32">
-      <Container>
-        <SectionTitle eyebrow="How it works" title="Three steps from a hunch to a clear picture" center />
-        <ol {...reveal} data-reveal-children className="grid gap-6 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <li key={s.title} className="flex flex-col rounded-[28px] bg-canvas p-7">
-              <span className="flex size-9 items-center justify-center rounded-full bg-ink font-mono text-sm font-semibold text-white">{i + 1}</span>
-              <h3 className="mt-5 font-display text-2xl font-bold">{s.title}</h3>
-              <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">{s.text}</p>
-              <div className="mt-6 rounded-[20px] bg-black/[0.035] p-4">{s.visual}</div>
+
+        <ol className="lg:pt-12">
+          {beats.map((b, i) => (
+            <li
+              key={b.title}
+              ref={register(i)}
+              data-step={i}
+              className={`flex min-h-[85vh] flex-col justify-end pb-[8vh] pt-10 transition-opacity duration-300 lg:justify-center lg:pb-10 ${
+                i === active ? 'opacity-100' : 'opacity-30'
+              }`}
+            >
+              <h3 className="text-[1.65rem] font-bold leading-tight md:text-[1.9rem]">{b.title}</h3>
+              <p className="mt-4 max-w-md text-lg leading-relaxed text-ink/75">{b.body}</p>
             </li>
           ))}
         </ol>
@@ -364,209 +380,172 @@ function HowItWorks() {
   )
 }
 
-function Decisions() {
-  const questions = {
-    hire: {
-      q: 'Will a new stylist pay off, and when?',
-      asks: ['Working hours and full monthly cost', 'Customers per month and how many are new', 'How long until they are fully booked'],
-    },
-    price: {
-      q: 'What happens if I charge €5 more?',
-      asks: ['The new average price', 'How many visits you might lose (or gain)', 'When the new price starts'],
-    },
-    marketing: {
-      q: 'Is the campaign worth it, even if it disappoints?',
-      asks: ['Monthly campaign cost', 'New customers it might bring', 'Whether your team has time to serve them'],
-    },
-  } as const
-  const reveal = useReveal()
-  return (
-    <section id="decisions" className="scroll-mt-20 py-24 md:py-32">
-      <Container>
-        <SectionTitle
-          eyebrow="Decisions you can test"
-          title="The three decisions that change a salon most"
-          sub="Test one, or combine them, e.g. hire a stylist and run a campaign to fill the new chair."
-        />
-        <div {...reveal} data-reveal-children className="grid gap-6 md:grid-cols-3">
-          {(Object.keys(questions) as (keyof typeof questions)[]).map((k) => {
-            const m = changeMeta[k]
-            return (
-              <article key={k} className="group rounded-[28px] bg-surface p-7 shadow-card transition-[translate,scale,box-shadow] duration-200 ease-out motion-safe:hover:-translate-y-1 hover:shadow-lift">
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-amber-50 text-amber transition-colors group-hover:bg-accent group-hover:text-white">
-                  <m.icon size={22} aria-hidden />
-                </span>
-                <div className="mt-5 text-xs font-semibold text-muted">{m.title}</div>
-                <h3 className="mt-1 font-display text-2xl font-bold leading-tight">“{questions[k].q}”</h3>
-                <ul className="mt-5 space-y-2 border-t border-black/[0.06] pt-5 text-[15px] text-muted">
-                  {questions[k].asks.map((a) => (
-                    <li key={a} className="flex gap-2">
-                      <Check size={16} className="mt-0.5 shrink-0 text-good" aria-hidden /> {a}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            )
-          })}
-        </div>
-      </Container>
-    </section>
-  )
-}
-
-function Features() {
-  const reveal = useReveal()
-  return (
-    <section id="why" className="scroll-mt-20 bg-surface py-24 md:py-32">
-      <Container>
-        <SectionTitle
-          eyebrow="Why it's different"
-          title="Built around how a salon actually works"
-          sub="Not a finance tool with a salon skin: staff time, new versus moved customers and cash are part of the model from the start."
-        />
-        <div {...reveal} data-reveal-children className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-6">
-          <Tile className="md:col-span-4 md:row-span-2 bg-ink text-white" title="Three cases, not one guess" text="Your estimates are uncertain, and that is fine. Every uncertain number gets a pessimistic, expected and optimistic value, and you see all three outcomes side by side." dark>
-            <div className="mt-8 flex h-40 items-end gap-4">
-              {[
-                ['Without', '50%', 'bg-white/30'],
-                ['Pessimistic', '28%', 'bg-[#ff6961]'],
-                ['Expected', '66%', 'bg-white'],
-                ['Optimistic', '92%', 'bg-[#30d158]'],
-              ].map(([l, h, c]) => (
-                <div key={l} className="flex h-full flex-1 flex-col justify-end text-center">
-                  <div className={`rounded-t-lg ${c}`} style={{ height: h }} />
-                  <div className="mt-2 text-xs text-white/70">{l}</div>
-                </div>
-              ))}
-            </div>
-          </Tile>
-          <Tile className="md:col-span-2" icon={AlertTriangle} title="A cash warning before it happens" text="Wages start in month one, customers come gradually. Every month where cash drops below zero is flagged." />
-          <Tile className="md:col-span-2" icon={Users} title="New or moved customers?" text="A new stylist’s regulars may simply move from colleagues. Only new customers add sales, and you decide the share." />
-          <Tile className="md:col-span-2" icon={Scale} title="Demand and staff time, separately" text="Marketing brings customers, not hands. You see unused capacity, or demand your team cannot serve." />
-          <Tile className="md:col-span-2" icon={Tags} title="Every number labelled" text="Entered, estimated, sample or calculated: you always know where a figure comes from.">
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              <SourceBadge source="entered" />
-              <SourceBadge source="estimated" />
-              <SourceBadge source="sample" />
-              <SourceBadge source="calculated" />
-            </div>
-          </Tile>
-          <Tile className="md:col-span-2" icon={Eye} title="See why, not just what" text="Each result is split into its causes: extra visits, price, wages, marketing, so you can question it." />
-        </div>
-      </Container>
-    </section>
-  )
-}
-
-function Tile({
-  title,
-  text,
-  icon: Icon,
-  className = '',
-  dark = false,
-  children,
-}: {
-  title: string
-  text: string
-  icon?: typeof Users
-  className?: string
-  dark?: boolean
-  children?: ReactNode
-}) {
-  return (
-    <div className={`rounded-[28px] p-7 ${dark ? '' : 'bg-canvas'} ${className}`}>
-      {Icon && <Icon size={22} className="text-amber" aria-hidden />}
-      <h3 className={`font-display font-bold ${dark ? 'text-3xl md:text-[2.5rem] md:leading-[1.08]' : 'mt-3 text-xl'}`}>{title}</h3>
-      <p className={`mt-2 text-[15px] leading-relaxed ${dark ? 'max-w-lg text-white/75' : 'text-muted'}`}>{text}</p>
-      {children}
-    </div>
-  )
-}
-
-function Story() {
-  const quote = useReveal()
-  const card = useReveal()
-  const bars = useReveal()
-  return (
-    <section className="py-24 md:py-32">
-      <Container className="grid items-center gap-12 lg:grid-cols-2">
-        <div {...quote} data-reveal>
-          <Eyebrow className="mb-3 text-amber">The question that started it</Eyebrow>
-          <blockquote className="font-display text-2xl font-semibold leading-snug tracking-[-0.025em] md:text-[2.25rem] md:leading-[1.15]">
-            “Four stylists see about 100 customers each. I hire a fifth. Wages start in month one, but she sees maybe 50 customers at first, and
-            some of those just move from colleagues. <span className="text-amber">Does it pay off, when, and does cash run short first?</span>”
-          </blockquote>
-          <p className="mt-6 text-muted">
-            Business Twin answers exactly this kind of question, with your own numbers and your own uncertainty.
-          </p>
-          <ButtonLink to="/register" className="mt-8">
-            Try it with your salon <ArrowRight size={16} />
-          </ButtonLink>
-        </div>
-        <div {...card} data-reveal className="rounded-[28px] bg-surface p-7 shadow-lift" style={{ animationDelay: '120ms' }}>
-          <div className="mb-4 flex items-center justify-between">
-            <div className="font-semibold">Running total vs not hiring</div>
-            <Badge tone="neutral">Sample salon</Badge>
-          </div>
-          <p className="mb-4 text-xs text-muted">
-            4 stylists, 400 visits at €30. The new stylist costs €2,400 a month and grows to 150 appointments in five months; 60% are new to the
-            salon.
-          </p>
-          <ol {...bars} data-reveal-bars className="space-y-2">
-            {[
-              ['Month 1', '−€1,914', 40],
-              ['Month 2', '−€3,342', 71],
-              ['Month 3', '−€4,284', 90],
-              ['Month 4', '−€4,740', 100],
-              ['Month 5', '−€4,710', 99],
-              ['Month 6', '−€4,680', 99],
-            ].map(([m, v, w]) => (
-              <li key={m as string} className="grid grid-cols-[4.5rem_1fr_5rem] items-center gap-3 text-sm">
-                <span className="text-muted">{m}</span>
-                <span className="h-2.5 rounded-full bg-black/[0.06]">
-                  <span className="reveal-bar block h-full rounded-full bg-bad/70" style={{ width: `${w}%` }} />
-                </span>
-                <span className="text-right font-mono text-bad">{v}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-5 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-dark">
-            The monthly result catches up in <strong>month 5</strong>, but the salon is still <strong>€4,680 behind</strong> after six months. Both
-            facts matter for the decision.
-          </p>
-        </div>
-      </Container>
-    </section>
-  )
-}
-
-function Trust() {
+function Legend({ withoutHire }: { withoutHire: boolean }) {
   const items = [
-    { icon: Lock, title: 'Your data stays in the EU', text: 'Hosted in an EU region, with sign-in handled by proven, standard security components.' },
-    { icon: ShieldCheck, title: 'Only what the model needs', text: 'Monthly totals, no customer names, no bank connection.' },
-    { icon: Trash2, title: 'Delete it any time', text: 'Remove your salon and every plan with one action.' },
-    { icon: Scale, title: 'Estimates, not advice', text: 'Business Twin supports your judgement. It never tells you what to do.' },
+    { label: 'Good case', swatch: 'bg-teal-strong h-[3px]' },
+    { label: 'Normal case', swatch: 'bg-ink h-[4px]' },
+    { label: 'Bad case', swatch: 'bg-coral-strong h-[3px]' },
   ]
-  const reveal = useReveal()
   return (
-    <section className="bg-surface py-20 md:py-24">
+    <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-muted">
+      {items.map((i) => (
+        <li key={i.label} className="flex items-center gap-2">
+          <span className={`w-5 rounded-full ${i.swatch}`} aria-hidden /> {i.label}
+        </li>
+      ))}
+      {withoutHire && (
+        <li className="flex items-center gap-2">
+          <span className="w-5 border-t-2 border-dotted border-faint" aria-hidden /> Without the hire
+        </li>
+      )}
+    </ul>
+  )
+}
+
+// ── Your salon: from her story to yours ──────────────────────────────────
+
+// Hand-drawn marker strokes behind the example values, painted in one after another the first time the sentence is seen.
+const BRUSH = 'M2,8 C10,5 30,4 50,5 C70,6 88,3 98,6 C99.5,10 99,15 97.5,19 C80,21 60,19 40,20.5 C25,21.5 10,21 2.5,19 C0.5,15 1,11 2,8 Z'
+const brushColors = ['#b4e9d3', '#ffc7ae', '#d6c9f7', '#bcd7f7', '#ffe08a']
+const paint = {
+  hidden: { clipPath: 'inset(0 100% 0 0)' },
+  shown: { clipPath: 'inset(0 0% 0 0)', transition: { duration: 0.55, ease: [0.77, 0, 0.175, 1] as const } },
+}
+
+/** The example sentence: its blanks are painted in, left to right, like a highlighter on paper. */
+function BrushSentence({ children }: { children: ReactNode }) {
+  const reduce = useReducedMotion()
+  return (
+    <motion.p
+      initial={reduce ? false : 'hidden'}
+      whileInView="shown"
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ staggerChildren: 0.22, delayChildren: 0.15 }}
+      className="text-[clamp(1.4rem,2.6vw,2rem)] font-medium leading-[1.7]"
+    >
+      {children}
+    </motion.p>
+  )
+}
+
+/** A sample value inside the example sentence: what the owner would type. */
+function Blank({ children, n }: { children: ReactNode; n: number }) {
+  return (
+    <span className="relative inline-block whitespace-nowrap px-1.5 font-bold">
+      <motion.svg
+        aria-hidden
+        viewBox="0 0 100 24"
+        preserveAspectRatio="none"
+        variants={paint}
+        className="absolute -left-1 top-[0.18em] h-[calc(100%-0.2em)] w-[calc(100%+0.5rem)]"
+        style={{ rotate: n % 2 ? '1.2deg' : '-1.2deg' }}
+      >
+        <path d={BRUSH} fill={brushColors[n % brushColors.length]} />
+      </motion.svg>
+      <span className="relative">{children}</span>
+    </span>
+  )
+}
+
+const decisions: { name: string; swatch: Swatch; question: string; asks: string }[] = [
+  { name: 'Hire', swatch: 'mint', question: 'Will a new stylist pay off, and when?', asks: 'Hours, full monthly cost, customers a month, how many are new, and the time to get fully booked.' },
+  { name: 'Price', swatch: 'peach', question: 'What happens if I charge €5 more?', asks: 'The new average price, and how many visits you might lose or gain.' },
+  { name: 'Marketing', swatch: 'lilac', question: 'Is a campaign worth it, even if it disappoints?', asks: 'The monthly cost, the new customers it might bring, and whether the team has time for them.' },
+]
+
+function YourSalon() {
+  return (
+    <section id="your-salon" className="scroll-mt-14 py-24 md:py-32" aria-labelledby="your-salon-title">
       <Container>
-        <SectionTitle eyebrow="Trust" title="Honest numbers, handled with care" center />
-        <div {...reveal} data-reveal-children className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((i) => (
-            <div key={i.title} className="text-center">
-              <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent-50 text-accent">
-                <i.icon size={22} aria-hidden />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+          <div>
+            <h2 id="your-salon-title" className={`${display} text-[clamp(2.5rem,6vw,4.5rem)]`}>
+              Now run your own salon.
+            </h2>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
+              Describe one normal month. It takes about ten minutes, and you can start from a sample salon and replace what you know.
+            </p>
+          </div>
+          <div className="lg:pt-3">
+            <BrushSentence>
+              We see <Blank n={0}>420</Blank> visits a month at <Blank n={1}>€42</Blank> each. The team has <Blank n={2}>560</Blank> hours with
+              customers, wages are <Blank n={3}>€9,000</Blank> and there is <Blank n={4}>€6,000</Blank> in the bank.
+            </BrushSentence>
+            <p className="mt-3 text-sm text-muted">Example values. You type your own.</p>
+          </div>
+        </div>
+
+        <h3 className="mt-24 text-2xl font-bold md:text-[1.75rem]">Then test a decision, or combine them.</h3>
+        <ul className="mt-8 grid gap-4 md:grid-cols-3">
+          {decisions.map((d) => (
+            <li key={d.name} className="flex flex-col rounded-[24px] p-6 sm:p-7" style={{ backgroundColor: swatchBg[d.swatch] }}>
+              <span className={`${display} text-[clamp(2.75rem,4.6vw,3.75rem)]`}>{d.name}</span>
+              <span className="mt-5 text-xl font-semibold leading-snug">“{d.question}”</span>
+              <span className="mt-auto pt-8 text-[15px] leading-relaxed text-ink/70">
+                <span className="mb-1 block text-sm font-semibold text-ink">You enter</span>
+                {d.asks}
               </span>
-              <h3 className="mt-4 font-semibold">{i.title}</h3>
-              <p className="mt-1 text-sm text-muted">{i.text}</p>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
+  )
+}
+
+// ── Honest: what it is, what it is not, and why salons ───────────────────
+
+function Honest() {
+  const panels: { title: string; swatch: Swatch; items: string[] }[] = [
+    {
+      title: 'It is',
+      swatch: 'sky',
+      items: ['Your own figures, run through one model of your salon.', 'Three cases for everything you are unsure about.', 'Profit and cash, month by month, kept apart.'],
+    },
+    {
+      title: 'It is not',
+      swatch: 'peach',
+      items: ['A forecast. It shows what could happen, not what will.', 'Financial advice. The decision stays yours.', 'Accounting software. No bookkeeping, no bank connection.'],
+    },
+  ]
+  return (
+    <section className="pb-24 md:pb-32" aria-labelledby="honest-title">
+      <Container>
+        <h2 id="honest-title" className={`${display} max-w-3xl text-[clamp(2.5rem,6vw,4.5rem)]`}>
+          Honest about what it is.
+        </h2>
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {panels.map((p) => (
+            <div key={p.title} className="rounded-[24px] p-6 sm:p-8" style={{ backgroundColor: swatchBg[p.swatch] }}>
+              <h3 className="text-2xl font-bold">{p.title}</h3>
+              <ul className="mt-4 divide-y divide-black/10">
+                {p.items.map((t) => (
+                  <li key={t} className="py-4 text-lg leading-snug">
+                    {t}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
+        <div className="mt-12 grid gap-8 md:grid-cols-2">
+          <p className="text-lg leading-relaxed">
+            Your data is stored in the EU. Business Twin only asks for monthly totals, never customer names, and one action deletes your salon and
+            every plan.
+          </p>
+          <p className="text-[15px] leading-relaxed text-muted">
+            Why salons first: <strong className="font-semibold text-ink">2,890</strong> Dutch hair salons work with 3 to 10 FTE (Schippers &amp;
+            Beulen, 2025, Panteia). An employee costs <strong className="font-semibold text-ink">26–40%</strong> on top of the gross salary
+            (Multiplier, 2026). Personal-services firms hold a median cash buffer of just <strong className="font-semibold text-ink">21 days</strong>{' '}
+            (Farrell &amp; Wheat, 2016, JPMorgan Chase Institute, US data).
+          </p>
+        </div>
       </Container>
     </section>
   )
 }
+
+// ── Questions ────────────────────────────────────────────────────────────
 
 function Faq() {
   const faqs = [
@@ -596,17 +575,20 @@ function Faq() {
     },
   ]
   return (
-    <section id="faq" className="scroll-mt-20 py-24 md:py-32">
-      <Container className="max-w-3xl">
-        <SectionTitle eyebrow="FAQ" title="Questions owners ask" center />
-        <div className="divide-y divide-black/[0.06] rounded-[28px] bg-surface shadow-card">
+    <section id="faq" className="scroll-mt-14 border-t border-line py-24 md:py-32" aria-labelledby="faq-title">
+      <Container>
+        {/* Full width, so the title reads on one line; the questions sit below it. */}
+        <h2 id="faq-title" className={`${display} text-[clamp(2.5rem,6vw,4.5rem)] sm:whitespace-nowrap`}>
+          Questions owners ask.
+        </h2>
+        <div className="mt-10 max-w-4xl border-t-2 border-ink">
           {faqs.map((f) => (
-            <details key={f.q} className="group px-6 py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
+            <details key={f.q} className="group border-b border-line">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                 {f.q}
-                <ChevronDown size={18} className="shrink-0 text-muted transition-transform duration-200 ease-out group-open:rotate-180" aria-hidden />
+                <ChevronDown size={20} className="shrink-0 transition-transform duration-200 ease-out group-open:rotate-180" aria-hidden />
               </summary>
-              <p className="mt-3 text-[15px] leading-relaxed text-muted">{f.a}</p>
+              <p className="max-w-2xl pb-6 text-[15px] leading-relaxed text-muted">{f.a}</p>
             </details>
           ))}
         </div>
@@ -615,58 +597,104 @@ function Faq() {
   )
 }
 
-function FinalCta() {
-  const reveal = useReveal()
+// ── Close ────────────────────────────────────────────────────────────────
+
+function Close() {
   return (
-    <section className="px-4 pb-20 sm:px-6 lg:px-8">
-      <div {...reveal} data-reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[36px] bg-ink px-6 py-20 text-center text-white sm:px-12">
-        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-amber/35 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 size-96 rounded-full bg-accent/40 blur-3xl" />
-        <h2 className="relative mx-auto max-w-3xl font-display text-4xl font-bold leading-[1.07] tracking-[-0.03em] md:text-[3.25rem]">
-          Your next decision deserves more than a gut feeling.
+    <section className="bg-ink py-24 text-white md:py-32">
+      <Container className="grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
+        <h2 className={`${display} text-[clamp(2.75rem,7vw,5.5rem)]`}>
+          See all three before you decide.
         </h2>
-        <p className="relative mx-auto mt-5 max-w-xl text-xl text-white/70">Set up your salon in about ten minutes and test your first decision today.</p>
-        <div className="relative mt-8 flex flex-wrap justify-center gap-3">
-          <ButtonLink to="/register" variant="light" size="lg">
-            Start free <ArrowRight size={18} />
-          </ButtonLink>
-          <ButtonLink to="/login" variant="glass" size="lg">
-            Sign in
-          </ButtonLink>
+        <div>
+          <p className="max-w-sm text-lg leading-relaxed text-white/70">Free to try. Set-up takes about ten minutes, starting from a sample salon.</p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <ButtonLink to="/register" variant="light" size="lg">
+              Start with your salon
+            </ButtonLink>
+            <ButtonLink to="/login" variant="glass" size="lg">
+              Sign in
+            </ButtonLink>
+          </div>
         </div>
-      </div>
+      </Container>
     </section>
   )
 }
 
 function SiteFooter() {
   return (
-    <footer className="border-t border-black/[0.06] bg-canvas">
-      <Container className="grid gap-8 py-12 md:grid-cols-[2fr_1fr_1fr]">
-        <div>
-          <Logo />
-          <p className="mt-4 max-w-sm text-sm text-muted">
+    <footer>
+      <Container className="flex flex-wrap items-start justify-between gap-8 py-12">
+        <div className="max-w-sm">
+          <Logo size={26} />
+          <p className="mt-4 text-sm text-muted">
             A decision simulator for small service businesses. Results are estimates based on your own figures, not a forecast and not financial
             advice.
           </p>
         </div>
-        <div>
-          <div className="text-sm font-semibold">Product</div>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li><a href="#how" className="hover:text-ink">How it works</a></li>
-            <li><a href="#decisions" className="hover:text-ink">Decisions</a></li>
-            <li><a href="#faq" className="hover:text-ink">FAQ</a></li>
+        <nav aria-label="Footer" className="flex gap-12 text-sm">
+          <ul className="space-y-2">
+            <li>
+              <a href="#story" className="hover:underline">
+                The story
+              </a>
+            </li>
+            <li>
+              <a href="#your-salon" className="hover:underline">
+                How it works
+              </a>
+            </li>
+            <li>
+              <a href="#faq" className="hover:underline">
+                Questions
+              </a>
+            </li>
           </ul>
-        </div>
-        <div>
-          <div className="text-sm font-semibold">Account</div>
-          <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li><a href="/register" className="hover:text-ink">Create account</a></li>
-            <li><a href="/login" className="hover:text-ink">Sign in</a></li>
+          <ul className="space-y-2">
+            <li>
+              <a href="/register" className="hover:underline">
+                Create account
+              </a>
+            </li>
+            <li>
+              <a href="/login" className="hover:underline">
+                Sign in
+              </a>
+            </li>
           </ul>
-        </div>
+        </nav>
       </Container>
-      <Container className="border-t border-black/[0.06] py-6 text-xs text-muted">© 2026 Business Twin · Fontys ICT research project</Container>
+      <Container className="pb-8 text-xs text-muted">© 2026 Business Twin, a Fontys ICT research project</Container>
     </footer>
+  )
+}
+
+/** Appears once the visitor has scrolled past the hero. Smooth scrolling comes from index.css (off for reduced motion). */
+function BackToTop() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return (
+    <Tooltip label="Back to top">
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0 })}
+        aria-label="Back to top"
+        tabIndex={visible ? 0 : -1}
+        aria-hidden={!visible}
+        className={`fixed bottom-6 right-4 z-40 flex size-11 items-center justify-center rounded-full bg-ink text-white transition-[opacity,translate,scale] duration-200 ease-out active:scale-[0.95] sm:right-6 ${
+          visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
+      >
+        <ArrowUp size={20} aria-hidden />
+      </button>
+    </Tooltip>
   )
 }

@@ -1,4 +1,4 @@
-import { ArrowLeftRight, ArrowRight, CalendarDays, ChevronRight, Pencil, Receipt, Tag, Users, type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight, CalendarDays, ChevronRight, Pencil, Receipt, Tag, Users, type LucideIcon } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import type { BaselineDto, BaselineSummaryDto, ChangeDto, EstimateDto, ScenarioDto, SourceLabel } from '../../api/client'
 import { Button, ButtonLink } from '../../components/ui/Button'
@@ -471,7 +471,7 @@ function PlanAssumptions({ plan }: { plan: ScenarioDto }) {
             <Pencil size={13} aria-hidden /> Adjust
           </ButtonLink>
           <ButtonLink to={`/app/plans/${plan.id}`} variant="ghost" size="sm">
-            Results <ArrowRight size={13} aria-hidden />
+            Results
           </ButtonLink>
         </div>
       </div>

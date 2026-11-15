@@ -71,7 +71,7 @@ function Node({
   highlighted,
   tone,
 }: MapNode & { label: string; kind: 'input' | 'derived' | 'result'; highlighted: boolean; tone: 'accent' | 'good' | 'bad' }) {
-  const resultBg = { accent: 'bg-ink border-ink', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
+  const resultBg = { accent: 'bg-accent border-accent', good: 'bg-good-dark border-good-dark', bad: 'bg-bad border-bad' }[tone]
   const style =
     kind === 'result'
       ? `${resultBg} text-white shadow-lift`

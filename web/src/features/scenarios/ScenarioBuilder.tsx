@@ -1,4 +1,4 @@
-import { ArrowRight, Plus, Save } from 'lucide-react'
+import { Plus, Save } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { ChangeType } from '../../api/client'
@@ -127,7 +127,7 @@ function ScenarioBuilder({ id, initial }: { id?: string; initial?: ScenarioForm 
               <LivePreview simulation={simulation} complete={!!draft} types={form.changes.map((c) => c.type)} horizonMonths={form.horizonMonths} />
               {id && (
                 <Button variant="ghost" onClick={() => navigate(`/app/plans/${id}`)}>
-                  See the full outcome <ArrowRight size={16} />
+                  See the full outcome
                 </Button>
               )}
             </div>
@@ -159,7 +159,7 @@ function DecisionPicker({ onPick }: { onPick: (type: ChangeType) => void }) {
               <span className="font-display text-xl font-bold">{m.title}</span>
               <span className="mt-1 text-sm leading-relaxed text-muted">{m.description}</span>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
-                Start <ArrowRight size={14} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
+                Start
               </span>
             </button>
           )
