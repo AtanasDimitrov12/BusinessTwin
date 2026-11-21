@@ -11,7 +11,7 @@ import { demoGrid, shareSteps } from './landing/demoGrid'
 import { PlumeChart, type Note, type Series } from '../components/charts/PlumeChart'
 import { breakEvenNewVisits, cash, runningTotal } from './landing/story'
 
-// One story, told with colour: a fictional salon deciding whether to hire a fifth stylist. Every figure is real
+// One story, told with colour: a fictional salon deciding whether to hire a fifth employee. Every figure is real
 // scenario-engine output (landing/story.ts, landing/demoGrid.ts); the browser formats and draws, it never calculates.
 
 const delta = (n: number) => formatEuroDelta(String(n))
@@ -27,7 +27,7 @@ export function LandingPage() {
       <main>
         <Hero />
         <Story />
-        <YourSalon />
+        <YourBusiness />
         <Honest />
         <Faq />
         <Close />
@@ -50,7 +50,7 @@ function SiteNav() {
         <nav className="hidden items-center gap-8 text-sm font-medium md:flex" aria-label="Page sections">
           {[
             ['#story', 'The story'],
-            ['#your-salon', 'How it works'],
+            ['#your-business', 'How it works'],
             ['#faq', 'Questions'],
           ].map(([href, label]) => (
             <a key={href} href={href} className="underline-offset-4 hover:underline">
@@ -82,9 +82,9 @@ function Hero() {
       {/* Text and a working example side by side, sized so both fit in a laptop's first screen. */}
       <Container className="grid items-center gap-10 py-10 md:py-14 lg:min-h-[calc(100svh-3.5rem)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12 lg:py-10">
         <div>
-          <h1 className={`${display} text-[clamp(2.9rem,4.9vw,4.4rem)]`}>Test salon decisions before you make them.</h1>
+          <h1 className={`${display} text-[clamp(2.9rem,4.9vw,4.4rem)]`}>Test business decisions before you make them.</h1>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
-            Hiring a stylist, raising your prices or starting a campaign? Business Twin plays it out over the next twelve months, in a bad, a normal
+            Hiring an employee, raising your prices or starting a campaign? Business Twin plays it out over the next twelve months, in a bad, a normal
             and a good case.
           </p>
           {/* The page's one loud button: highest contrast in the hero, a teal ring on hover, a press that gives. */}
@@ -92,7 +92,7 @@ function Hero() {
             to="/register"
             className="mt-8 inline-flex select-none items-center rounded-full bg-ink px-8 py-4 text-[17px] font-semibold text-white transition-[box-shadow,scale] duration-200 ease-out hover:shadow-[0_0_0_4px_var(--color-surface),0_0_0_7px_var(--color-teal)] active:scale-[0.97]"
           >
-            Start with your salon
+            Start with your business
           </Link>
           <p className="mt-4 text-sm text-muted">Free to try. Set-up takes about ten minutes.</p>
         </div>
@@ -119,7 +119,7 @@ function Demo() {
   return (
     <figure id="try" className="scroll-mt-20 rounded-[28px] border border-line bg-surface p-5 shadow-[0_24px_60px_-28px_rgb(0_0_0/0.3)] sm:p-7">
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <span className="font-bold">Example: a salon of four hires a fifth stylist</span>
+        <span className="font-bold">Example: a salon of four hires a fifth employee</span>
         <span className="text-sm text-muted">Gained or lost vs not hiring</span>
       </figcaption>
       <div className="mt-4">
@@ -127,7 +127,7 @@ function Demo() {
       </div>
 
       <div className="mt-6 grid gap-6 border-t border-line pt-5 sm:grid-cols-2 sm:gap-8">
-        <DemoSlider label="New customers" value={share} steps={shareSteps} onChange={setShare} show={(v) => `${v}%`} hint="Of her customers, how many are new to the salon. The rest move from colleagues." />
+        <DemoSlider label="New customers" value={share} steps={shareSteps} onChange={setShare} show={(v) => `${v}%`} hint="Of the new employee's customers, how many are new to the salon. The rest move from colleagues." />
         {/* Two fixed rows, so the card keeps its height whatever the outcome says. */}
         <dl className="grid content-start gap-3" aria-live="polite">
           <Verdict label="Normal case" text={normal} tone="ink" />
@@ -227,7 +227,7 @@ const beats: Beat[] = [
     title: 'Month 1. The wages start before the customers do.',
     body: (
       <>
-        She costs €2,400 a month from her first day, while her chair is still mostly empty. Every case starts in the red: between{' '}
+        The new employee costs €2,400 a month from day one, while their schedule is still mostly empty. Every case starts in the red: between{' '}
         {delta(runningTotal.optimistic[1])} and {delta(runningTotal.pessimistic[1])} in the first month.
       </>
     ),
@@ -240,7 +240,7 @@ const beats: Beat[] = [
     title: 'A client base takes five months.',
     body: (
       <>
-        She sees more customers every month until she is fully booked. In the normal case the hire is {delta(runningTotal.expected[4])} behind in
+        The new employee sees more customers every month until fully booked. In the normal case the hire is {delta(runningTotal.expected[4])} behind in
         month 4. That is the lowest point, before it starts to earn.
       </>
     ),
@@ -253,8 +253,9 @@ const beats: Beat[] = [
     title: 'Only new customers add money.',
     body: (
       <>
-        Some of her customers simply move from colleagues: more work for her, no extra sales. Are 40%, 60% or 80% of them new? Nobody knows, so the
-        owner gives all three. That one guess is why the lines split. To cover her cost she needs about {breakEvenNewVisits} new visits a month.
+        Some of the new employee's customers simply move from colleagues: more work, but no extra sales. Are 40%, 60% or 80% of them new? Nobody
+        knows, so the owner gives all three. That one guess is why the lines split. To pay for the hire, the salon needs about {breakEvenNewVisits}{' '}
+        new visits a month.
       </>
     ),
     notes: [
@@ -328,7 +329,7 @@ function Story() {
     >
       <Container className="pt-20 md:pt-28">
         <h2 id="story-title" className={`${display} max-w-3xl text-[clamp(2.5rem,6vw,4.5rem)]`}>
-          Four stylists. One more chair. Twelve months.
+          Four employees. One new hire. Twelve months.
         </h2>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink/70">
           Here is what Business Twin showed the owner, one month at a time. Scroll, and watch the year unfold.
@@ -402,7 +403,7 @@ function Legend({ withoutHire }: { withoutHire: boolean }) {
   )
 }
 
-// ── Your salon: from her story to yours ──────────────────────────────────
+// ── Your business: from the example salon's story to yours ──────────────────────────────────
 
 // Hand-drawn marker strokes behind the example values, painted in one after another the first time the sentence is seen.
 const BRUSH = 'M2,8 C10,5 30,4 50,5 C70,6 88,3 98,6 C99.5,10 99,15 97.5,19 C80,21 60,19 40,20.5 C25,21.5 10,21 2.5,19 C0.5,15 1,11 2,8 Z'
@@ -448,22 +449,22 @@ function Blank({ children, n }: { children: ReactNode; n: number }) {
 }
 
 const decisions: { name: string; swatch: Swatch; question: string; asks: string }[] = [
-  { name: 'Hire', swatch: 'mint', question: 'Will a new stylist pay off, and when?', asks: 'Hours, full monthly cost, customers a month, how many are new, and the time to get fully booked.' },
+  { name: 'Hire', swatch: 'mint', question: 'Will a new employee pay off, and when?', asks: 'Hours, full monthly cost, customers a month, how many are new, and the time to get fully booked.' },
   { name: 'Price', swatch: 'peach', question: 'What happens if I charge €5 more?', asks: 'The new average price, and how many visits you might lose or gain.' },
   { name: 'Marketing', swatch: 'lilac', question: 'Is a campaign worth it, even if it disappoints?', asks: 'The monthly cost, the new customers it might bring, and whether the team has time for them.' },
 ]
 
-function YourSalon() {
+function YourBusiness() {
   return (
-    <section id="your-salon" className="scroll-mt-14 py-24 md:py-32" aria-labelledby="your-salon-title">
+    <section id="your-business" className="scroll-mt-14 py-24 md:py-32" aria-labelledby="your-business-title">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
           <div>
-            <h2 id="your-salon-title" className={`${display} text-[clamp(2.5rem,6vw,4.5rem)]`}>
-              Now run your own salon.
+            <h2 id="your-business-title" className={`${display} text-[clamp(2.5rem,6vw,4.5rem)]`}>
+              Now run your own business.
             </h2>
             <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
-              Describe one normal month. It takes about ten minutes, and you can start from a sample salon and replace what you know.
+              Describe one normal month. It takes about ten minutes, and you can start from sample figures and replace what you know.
             </p>
           </div>
           <div className="lg:pt-3">
@@ -500,7 +501,7 @@ function Honest() {
     {
       title: 'It is',
       swatch: 'sky',
-      items: ['Your own figures, run through one model of your salon.', 'Three cases for everything you are unsure about.', 'Profit and cash, month by month, kept apart.'],
+      items: ['Your own figures, run through one model of your business.', 'Three cases for everything you are unsure about.', 'Profit and cash, month by month, kept apart.'],
     },
     {
       title: 'It is not',
@@ -530,7 +531,7 @@ function Honest() {
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2">
           <p className="text-lg leading-relaxed">
-            Your data is stored in the EU. Business Twin only asks for monthly totals, never customer names, and one action deletes your salon and
+            Your data is stored in the EU. Business Twin only asks for monthly totals, never customer names, and one action deletes your business and
             every plan.
           </p>
           <p className="text-[15px] leading-relaxed text-muted">
@@ -559,7 +560,7 @@ function Faq() {
     },
     {
       q: 'What information do I need?',
-      a: 'A normal month: number of visits, average price, cost per visit, staff hours, time per visit, wages, other fixed costs and cash in the bank. Your booking system and bank app usually have these. You can start from a sample salon.',
+      a: 'A normal month: number of visits, average price, cost per visit, staff hours, time per visit, wages, other fixed costs and cash in the bank. Your booking system and bank app usually have these. You can start from sample figures.',
     },
     {
       q: 'How accurate are the results?',
@@ -571,7 +572,7 @@ function Faq() {
     },
     {
       q: 'Who is behind Business Twin?',
-      a: 'Business Twin is a research project at Fontys University of Applied Sciences (2026), developed with and for small salon owners in the Netherlands.',
+      a: 'Business Twin is a research project at Fontys University of Applied Sciences (2026), developed with and for owners of small service businesses in the Netherlands, starting with hair salons.',
     },
   ]
   return (
@@ -607,10 +608,10 @@ function Close() {
           See all three before you decide.
         </h2>
         <div>
-          <p className="max-w-sm text-lg leading-relaxed text-white/70">Free to try. Set-up takes about ten minutes, starting from a sample salon.</p>
+          <p className="max-w-sm text-lg leading-relaxed text-white/70">Free to try. Set-up takes about ten minutes, starting from sample figures.</p>
           <div className="mt-6 flex flex-wrap gap-2">
             <ButtonLink to="/register" variant="light" size="lg">
-              Start with your salon
+              Start with your business
             </ButtonLink>
             <ButtonLink to="/login" variant="glass" size="lg">
               Sign in
@@ -641,7 +642,7 @@ function SiteFooter() {
               </a>
             </li>
             <li>
-              <a href="#your-salon" className="hover:underline">
+              <a href="#your-business" className="hover:underline">
                 How it works
               </a>
             </li>

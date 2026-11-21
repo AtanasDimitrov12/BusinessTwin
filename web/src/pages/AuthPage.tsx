@@ -43,8 +43,8 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'register' }) {
           </h1>
           <p className="mt-3 text-[17px] text-muted">
             {mode === 'signIn'
-              ? 'Sign in to see your salon and saved plans.'
-              : 'Create a free account. Setting up your salon takes about ten minutes, and you can start from a sample.'}
+              ? 'Sign in to see your business and saved plans.'
+              : 'Create a free account. Setting up your business takes about ten minutes, and you can start from a sample.'}
           </p>
 
           <form onSubmit={(e) => onSubmit(e).catch(() => {})} noValidate className="mt-8 space-y-4">
@@ -96,13 +96,13 @@ function ExamplePanel() {
   const euro = (n: number) => formatEuroDelta(String(n))
   return (
     <div className="hidden min-w-[380px] flex-col justify-center bg-swatch-mint px-10 py-12 lg:flex lg:flex-[2]">
-      <p className="text-lg font-bold">Example: a salon of four hires a fifth stylist</p>
+      <p className="text-lg font-bold">Example: a salon of four hires a fifth employee</p>
       <p className="mt-1 text-sm text-ink/70">Money gained or lost compared with not hiring, in a bad, a normal and a good case.</p>
       <div className="mt-6 rounded-[24px] bg-surface p-5 shadow-[0_24px_60px_-28px_rgb(0_0_0/0.3)]">
         <PlumeChart series={runningTotal} height={230} endLabels formatEnd={euro} zeroLabel="Not hiring" drawIn />
       </div>
       <p className="mt-6 max-w-sm text-sm leading-relaxed text-ink/70">
-        Same decision, three outcomes. Set up your salon and test your own in about ten minutes.
+        Same decision, three outcomes. Set up your business and test your own in about ten minutes.
       </p>
     </div>
   )

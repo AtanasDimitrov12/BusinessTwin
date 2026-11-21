@@ -1,9 +1,9 @@
 /**
- * The landing-page story: one fictional salon hires a fifth stylist. Every figure is real Business Twin engine
+ * The landing-page story: one fictional salon hires a fifth employee. Every figure is real Business Twin engine
  * output for these inputs, pasted in (nothing is calculated in the browser; numbers are used for chart geometry and
  * formatted for display only).
  *
- * Salon: 4 stylists, 400 visits a month at €38 (cost per visit €5), 480 staff hours, 1 h per visit,
+ * Salon: 4 employees, 400 visits a month at €38 (cost per visit €5), 480 staff hours, 1 h per visit,
  * wages €9,600, other fixed costs €2,500, €2,000 in the bank.
  * Hire from month 1: 120 h a month, €2,400 a month, full speed after 5 months,
  * 120 / 150 / 170 customers a month at full speed, of whom 40% / 60% / 80% are new to the salon.
@@ -27,5 +27,5 @@ export const cash: Record<CaseKey | 'withoutHire', number[]> = {
   optimistic: [2000, 1598, 2093, 3486, 5776, 8964, 12152, 15340, 18528, 21716, 24904, 28092, 31280],
 }
 
-/** New visits a month the hire needs to cover her cost (€2,400 ÷ €33 left per visit). */
+/** New visits a month the salon needs to cover the hire's cost (€2,400 ÷ €33 left per visit). */
 export const breakEvenNewVisits = 73
