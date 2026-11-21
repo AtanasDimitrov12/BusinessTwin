@@ -1,4 +1,4 @@
-import { ArrowLeftRight, CalendarDays, ChevronRight, Pencil, Receipt, Tag, Users, type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight, CalendarDays, ChevronDown, ChevronRight, Pencil, Receipt, Tag, Users, type LucideIcon } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import type { BaselineDto, BaselineSummaryDto, ChangeDto, EstimateDto, ScenarioDto, SourceLabel } from '../../api/client'
 import { Button, ButtonLink } from '../../components/ui/Button'
@@ -29,12 +29,16 @@ const sections = [
   { id: 'plans', title: 'The guesses in your plans' },
   { id: 'unknowns', title: 'What no one can know for sure' },
 ] as const
+type SectionId = (typeof sections)[number]['id']
 
 export function AssumptionsPage() {
   const business = useBusiness()
   const baseline = useBaseline()
   const summary = useBaselineSummary(!!baseline.data)
   const scenarios = useScenarios()
+  // Every section starts closed, so the page opens as a short table of contents. A link to #plans opens that one.
+  const [open, setOpen] = useState<SectionId[]>(() => sections.filter((x) => `#${x.id}` === window.location.hash).map((x) => x.id))
+  const toggle = (id: SectionId) => setOpen((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]))
 
   if (baseline.isPending || summary.isPending) return <Spinner />
   const b = baseline.data
@@ -42,6 +46,8 @@ export function AssumptionsPage() {
   if (!b || !s) return null
   const plans = scenarios.data ?? []
   const visible = sections.filter((x) => x.id !== 'plans' || plans.length > 0)
+  const allOpen = visible.every((x) => open.includes(x.id))
+  const sectionProps = (id: SectionId) => ({ id, open: open.includes(id), onToggle: () => toggle(id) })
 
   return (
     <div className="max-w-4xl">
@@ -50,11 +56,12 @@ export function AssumptionsPage() {
         sub="Where every number comes from: what you told us, how Business Twin works it out, and what stays uncertain."
       />
 
-      <nav aria-label="On this page" className="-mt-2 mb-12 flex flex-wrap gap-2">
+      <nav aria-label="On this page" className="-mt-2 mb-8 flex flex-wrap items-center gap-2">
         {visible.map((x, i) => (
           <a
             key={x.id}
             href={`#${x.id}`}
+            onClick={() => setOpen((o) => (o.includes(x.id) ? o : [...o, x.id]))}
             className="inline-flex items-center gap-2 rounded-full bg-surface py-1.5 pl-1.5 pr-3.5 text-[13px] font-medium text-ink shadow-card transition-[background-color,scale] duration-150 ease-out hover:bg-accent-50 active:scale-[0.97]"
           >
             <span className="flex size-5 items-center justify-center rounded-full bg-ink text-[11px] font-semibold text-white">{i + 1}</span>
@@ -63,14 +70,20 @@ export function AssumptionsPage() {
         ))}
       </nav>
 
-      <div className="space-y-16">
-        <Section n={1} id="inputs" title="What you told us" intro="A normal month in your salon. Every decision you test is compared with this starting point.">
+      <div className="mb-2 flex justify-end">
+        <Button variant="ghost" size="sm" onClick={() => setOpen(allOpen ? [] : visible.map((x) => x.id))}>
+          {allOpen ? 'Close all sections' : 'Open all sections'}
+        </Button>
+      </div>
+
+      <div className="space-y-4">
+        <Section n={1} {...sectionProps('inputs')} title="What you told us" intro="A normal month in your salon. Every decision you test is compared with this starting point.">
           <Inputs baseline={b} salonName={business.data?.name} staffCount={business.data?.staffCount} />
         </Section>
 
         <Section
           n={2}
-          id="calculation"
+          {...sectionProps('calculation')}
           title="How the numbers are worked out"
           intro="Business Twin turns your figures into one month’s result, step by step. Each line uses your own numbers, so you can check it."
         >
@@ -80,7 +93,7 @@ export function AssumptionsPage() {
         {plans.length > 0 && (
           <Section
             n={3}
-            id="plans"
+            {...sectionProps('plans')}
             title="The guesses in your plans"
             intro="For anything uncertain you gave three values. The model runs once with each, which gives the three cases you see in results."
           >
@@ -90,7 +103,7 @@ export function AssumptionsPage() {
 
         <Section
           n={plans.length > 0 ? 4 : 3}
-          id="unknowns"
+          {...sectionProps('unknowns')}
           title="What no one can know for sure"
           intro="These are the limits of any estimate. Keep them in mind when you read a result."
         >
@@ -101,21 +114,58 @@ export function AssumptionsPage() {
   )
 }
 
-function Section({ n, id, title, intro, children }: { n: number; id: string; title: string; intro: string; children: ReactNode }) {
+/**
+ * A numbered section that opens and closes. The heading is the toggle (a button inside the h2, so screen readers
+ * hear both the heading and its state); the intro stays visible when closed, so a closed page still reads as a
+ * summary. Content is only rendered while open.
+ */
+function Section({
+  n,
+  id,
+  title,
+  intro,
+  open,
+  onToggle,
+  children,
+}: {
+  n: number
+  id: string
+  title: string
+  intro: string
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  const panel = `${id}-panel`
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-8">
-      <div className="mb-5 flex gap-4">
-        <span className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white" aria-hidden>
-          {n}
-        </span>
-        <div>
-          <h2 id={`${id}-title`} className="font-display text-2xl font-bold leading-tight md:text-[1.75rem]">
-            {title}
-          </h2>
-          <p className="mt-1.5 max-w-2xl text-[15px] leading-relaxed text-muted">{intro}</p>
+    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-8 border-b border-black/[0.08] pb-4 last:border-b-0">
+      <h2 id={`${id}-title`}>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={panel}
+          onClick={onToggle}
+          className="group -mx-3 flex w-[calc(100%+1.5rem)] gap-4 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-black/[0.03]"
+        >
+          <span className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white" aria-hidden>
+            {n}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-2xl font-bold leading-tight md:text-[1.75rem]">{title}</span>
+            <span className="mt-1.5 block max-w-2xl text-[15px] font-normal leading-relaxed tracking-normal text-muted">{intro}</span>
+          </span>
+          <ChevronDown
+            size={22}
+            className={`mt-1.5 shrink-0 text-muted transition-transform duration-200 ease-out group-hover:text-ink ${open ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
+        </button>
+      </h2>
+      {open && (
+        <div id={panel} className="animate-rise pb-8 pt-3">
+          {children}
         </div>
-      </div>
-      {children}
+      )}
     </section>
   )
 }
@@ -393,10 +443,10 @@ const SHOWN_AT_FIRST = 5
 
 /**
  * One row per plan, opened on demand: the owner sees every plan's name at a glance and reads the guesses of the one
- * they care about. The newest plan starts open so the section never looks empty.
+ * they care about. All plans start closed, like the sections.
  */
 function PlanList({ plans }: { plans: ScenarioDto[] }) {
-  const [open, setOpen] = useState<string[]>(plans[0] ? [plans[0].id] : [])
+  const [open, setOpen] = useState<string[]>([])
   const [showAll, setShowAll] = useState(false)
   const visible = showAll ? plans : plans.slice(0, SHOWN_AT_FIRST)
   const hidden = plans.length - visible.length
@@ -408,7 +458,7 @@ function PlanList({ plans }: { plans: ScenarioDto[] }) {
       {plans.length > 1 && (
         <div className="flex justify-end">
           <Button variant="ghost" size="sm" onClick={() => setOpen(allOpen ? [] : visible.map((p) => p.id))}>
-            {allOpen ? 'Close all' : 'Open all'}
+            {allOpen ? 'Close all plans' : 'Open all plans'}
           </Button>
         </div>
       )}
